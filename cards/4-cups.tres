@@ -6,6 +6,6 @@
 [resource]
 script = ExtResource("1_031ha")
 value = 4
-suit = 3
+suit = 1
 image = ExtResource("1_l8cxg")
 metadata/_custom_type_script = "uid://dlnqp8plkee5b"

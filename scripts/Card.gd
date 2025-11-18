@@ -2,10 +2,10 @@ extends Resource
 class_name Card
 
 enum Suit {
-	SWORD,
 	CLUB,
+	CUP,
 	GOLD,
-	CUP
+	SWORD
 }
 
 enum CardValue {
@@ -22,7 +22,7 @@ enum CardValue {
 }
 
 ## Defines the value of the card from 1 to 12.
-@export var value: CardValue =  CardValue.ONE
+@export var value: CardValue = CardValue.ONE
 
 ## Defines the suit of the card.
 @export var suit: Suit

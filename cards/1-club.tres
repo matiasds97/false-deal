@@ -5,6 +5,5 @@
 
 [resource]
 script = ExtResource("1_0at6t")
-suit = 1
 image = ExtResource("1_6mtmh")
 metadata/_custom_type_script = "uid://dlnqp8plkee5b"

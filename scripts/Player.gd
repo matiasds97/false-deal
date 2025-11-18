@@ -60,68 +60,43 @@ func sort_hand() -> void:
 	hand.sort_custom(func(a, b): return a.compare(b) > 0)
 
 func get_envido_points() -> int:
-	# Calculate the best envido possible with the cards in hand
+	# Envido: if there are at least two cards of the same suit,
+	# take the two cards with the highest envido values (10/11/12 count as 0)
+	# and return 20 + sum_of_those_two. If no two-cards same suit exist,
+	# return the highest single envido card value (or 0).
+
 	var suits_cards = {}
-	
-	# Group ALL cards by suit, not just envido cards
 	for card in hand:
 		if not suits_cards.has(card.suit):
 			suits_cards[card.suit] = []
 		suits_cards[card.suit].append(card)
-	
+
 	var max_envido = 0
-	
-	# Calculate best envido for each suit
+	# Check each suit for at least two cards and compute best pair
 	for suit in suits_cards.keys():
 		var cards_of_suit = suits_cards[suit]
-		
-		# Separate envido and non-envido cards
-		var envido_cards = []
-		var non_envido_cards = []
-		
-		for card in cards_of_suit:
-			if card.is_envido_card():
-				envido_cards.append(card)
-			else:
-				non_envido_cards.append(card)
-		
-		# Calculate possible envido scores for this suit
-		var suit_envido = 0
-		
-		# Option 1: Two or more envido cards in the suit (20 + two highest envido values)
-		if envido_cards.size() >= 2:
-			# Sort envido cards by their envido value in descending order
-			envido_cards.sort_custom(func(a, b): return a.get_envido_value() > b.get_envido_value())
-			# Take the two highest envido cards
-			var envido_score = 20 + envido_cards[0].get_envido_value() + envido_cards[1].get_envido_value()
-			suit_envido = max(suit_envido, envido_score)
-		
-		# Option 2: Two or more non-envido cards in the suit (worth 20 points)
-		if non_envido_cards.size() >= 2:
-			suit_envido = max(suit_envido, 20)
-		
-		# Option 3: One envido card + one or more non-envido cards in the suit (20 + highest envido card value)
-		if envido_cards.size() >= 1 and non_envido_cards.size() >= 1:
-			# Find the highest envido value among envido cards 
-			var highest_envido_value = 0
-			for card in envido_cards:
-				if card.get_envido_value() > highest_envido_value:
-					highest_envido_value = card.get_envido_value()
+		if cards_of_suit.size() < 2:
+			continue
 
-			var mixed_envido = 20 + highest_envido_value
-			suit_envido = max(suit_envido, mixed_envido)
-		
-		# Option 4: Just one envido card (no envido possible with just one card in suit)
-		# Only if there are no other options
-		if envido_cards.size() == 1 and non_envido_cards.size() == 0 and suit_envido == 0:
-			# With just one envido card in the suit, you can't form envido
-			# So this doesn't contribute to the score
-			pass
-		
-		max_envido = max(max_envido, suit_envido)
-	
-	# If no envido possible, return 0
-	return max_envido
+		# compute envido values for cards in this suit (10/11/12 -> 0)
+		var vals = []
+		for c in cards_of_suit:
+			vals.append(c.get_envido_value())
+		# sort descending
+		vals.sort_custom(func(a, b): return a > b)
+		var pair_sum = vals[0] + vals[1]
+		var suit_envido = 20 + pair_sum
+		if suit_envido > max_envido:
+			max_envido = suit_envido
+
+	if max_envido > 0:
+		return max_envido
+
+	# Fallback: no pair of same suit -> best single envido card (0..7)
+	var best_single = 0
+	for c in hand:
+		best_single = max(best_single, c.get_envido_value())
+	return best_single
 
 func _to_string() -> String:
 	var result = "Player: %s\n" % name
