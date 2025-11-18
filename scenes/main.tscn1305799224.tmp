@@ -1,0 +1,51 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3p4n1b1x285a"]
+
+[ext_resource type="Script" uid="uid://cvax87e42kcfx" path="res://TrucoMain.gd" id="1"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="DeckLabel" type="Label" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 60.0
+text = "Cartas restantes en el mazo: 34"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="PlayersLabel" type="Label" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 60.0
+offset_right = 310.0
+offset_bottom = 180.0
+text = "Jugadores"
+vertical_alignment = 1
+
+[node name="GameStateLabel" type="Label" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 180.0
+offset_right = 310.0
+offset_bottom = 240.0
+text = "Estado del juego"
+vertical_alignment = 1
+
+[node name="ControlsVBox" type="VBoxContainer" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 250.0
+offset_right = 210.0
+offset_bottom = 350.0
