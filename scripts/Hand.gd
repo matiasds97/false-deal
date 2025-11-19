@@ -26,6 +26,28 @@ func _ready() -> void:
 	
 	_get_envido_value_label()
 	_set_envido_value_label()
+	
+	var deal_button: Button = ui.get_node("MarginContainer2/PanelContainer/HBoxContainer/DealButton")
+	deal_button.pressed.connect(deal_new_hand)
+
+func deal_new_hand() -> void:
+	deck.reset()
+	cards_in_hand.clear()
+	
+	for i in range(3):
+		var drawn_card: Card = deck.draw_card()
+		if drawn_card:
+			cards_in_hand.append(drawn_card)
+			
+	var card_nodes: Array[MeshInstance3D] = [card_1, card_2, card_3]
+	for j in range(cards_in_hand.size()):
+		var card: Card = cards_in_hand[j]
+		var card_node: MeshInstance3D = card_nodes[j]
+		card_node.set_surface_override_material(0, card.material)
+		card_node.get_surface_override_material(0).albedo_texture = card.image
+		card_node.visible = true
+		
+	_set_envido_value_label()
 
 func _get_envido_value_label() -> void:
 	envido_value_label = ui.get_child(0).get_child(0).get_child(0).get_child(1)
@@ -38,7 +60,6 @@ func get_envido_points() -> int:
 	# If there are at least two cards of the same suit, envido = 20 + sum of the two
 	# highest envido values in that suit (cards 10/11/12 count as 0).
 	# Otherwise return the highest single envido card value.
-
 	var suits_cards = {}
 	for card in cards_in_hand:
 		if not suits_cards.has(card.suit):

@@ -2,6 +2,7 @@ extends Node
 class_name Deck
 
 var cards: Array[Card] = []
+var all_cards: Array[Card] = []
 
 func _ready() -> void:
 	var card_resources: Array[Card] = []
@@ -19,6 +20,10 @@ func _ready() -> void:
 			file_name = dir.get_next()
 		dir.list_dir_end()
 		cards = card_resources.duplicate()
+		all_cards = card_resources.duplicate()
+
+func reset() -> void:
+	cards = all_cards.duplicate()
 
 func draw_card() -> Card:
 	if cards.size() == 0:

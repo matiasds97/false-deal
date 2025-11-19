@@ -123,3 +123,28 @@ text = "Envido: "
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "0"
+
+[node name="MarginContainer2" type="MarginContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -59.0
+offset_right = 133.0
+grow_vertical = 0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 20
+
+[node name="PanelContainer" type="PanelContainer" parent="UI/MarginContainer2"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0vyix")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/MarginContainer2/PanelContainer"]
+layout_mode = 2
+
+[node name="DealButton" type="Button" parent="UI/MarginContainer2/PanelContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Deal Cards"
