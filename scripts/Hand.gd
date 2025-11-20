@@ -7,9 +7,10 @@ extends Marker3D
 var cards_in_hand: Array[Card] = []
 
 @export var deck: Deck
-@export var ui: Control
 
-var envido_value_label: Label
+signal envido_calculated(score: int)
+signal flor_detected(has_flor: bool)
+
 
 func _ready() -> void:
 	for i in range(3):
@@ -24,11 +25,8 @@ func _ready() -> void:
 		card_node.get_surface_override_material(0).albedo_texture = card.image
 		card_node.visible = true
 	
-	_get_envido_value_label()
-	_set_envido_value_label()
-	
-	var deal_button: Button = ui.get_node("MarginContainer2/PanelContainer/HBoxContainer/DealButton")
-	deal_button.pressed.connect(deal_new_hand)
+	emit_signal("envido_calculated", get_envido_points())
+	emit_signal("flor_detected", has_flor())
 
 func deal_new_hand() -> void:
 	deck.reset()
@@ -47,19 +45,15 @@ func deal_new_hand() -> void:
 		card_node.get_surface_override_material(0).albedo_texture = card.image
 		card_node.visible = true
 		
-	_set_envido_value_label()
+		card_node.visible = true
+		
+	emit_signal("envido_calculated", get_envido_points())
+	emit_signal("flor_detected", has_flor())
 
-func _get_envido_value_label() -> void:
-	envido_value_label = ui.get_child(0).get_child(0).get_child(0).get_child(1)
-
-func _set_envido_value_label() -> void:
-	var envido: int = get_envido_points()
-	envido_value_label.text = str(envido)
-
+## If there are at least two cards of the same suit, envido = 20 + sum of the two
+## highest envido values in that suit (cards 10/11/12 count as 0).
+## Otherwise return the highest single envido card value.
 func get_envido_points() -> int:
-	# If there are at least two cards of the same suit, envido = 20 + sum of the two
-	# highest envido values in that suit (cards 10/11/12 count as 0).
-	# Otherwise return the highest single envido card value.
 	var suits_cards = {}
 	for card in cards_in_hand:
 		if not suits_cards.has(card.suit):
@@ -89,3 +83,14 @@ func get_envido_points() -> int:
 	for c in cards_in_hand:
 		best_single = max(best_single, c.get_envido_value())
 	return best_single
+
+## If all three cards are of the same suit, return true.
+## Otherwise return false.
+func has_flor() -> bool:
+	if cards_in_hand.size() < 3:
+		return false
+	var first_suit = cards_in_hand[0].suit
+	for i in range(1, cards_in_hand.size()):
+		if cards_in_hand[i].suit != first_suit:
+			return false
+	return true
