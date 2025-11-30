@@ -101,3 +101,17 @@ func get_envido_value() -> int:
 		else:
 			return value
 	return 0
+
+# Override str() to return a string representation of the card.
+func _to_string() -> String:
+	var suit_name: String
+	match suit:
+		Suit.CLUB:
+			suit_name = "Club"
+		Suit.CUP:
+			suit_name = "Cup"
+		Suit.GOLD:
+			suit_name = "Gold"
+		Suit.SWORD:
+			suit_name = "Sword"
+	return "%s of %s" % [value, suit_name]

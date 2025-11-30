@@ -1,10 +1,15 @@
-[gd_scene load_steps=12 format=3 uid="uid://c3m7lgp4gxmbn"]
+[gd_scene load_steps=17 format=3 uid="uid://c3m7lgp4gxmbn"]
 
 [ext_resource type="Script" uid="uid://bq3w2mabv2hb5" path="res://scripts/Hand.gd" id="1_i6a42"]
+[ext_resource type="Script" uid="uid://f5t5okbpxgcg" path="res://scripts/TrucoManager.gd" id="1_pspv1"]
 [ext_resource type="Script" uid="uid://chpu4iupivv7r" path="res://scripts/Deck.gd" id="2_0vyix"]
 [ext_resource type="Script" uid="uid://b2kauy5wcsssw" path="res://scripts/IntermittentLight.gd" id="2_47gtt"]
+[ext_resource type="Script" uid="uid://c5l4c5yo26h5n" path="res://scripts/TrucoHumanPlayerController.gd" id="2_sjdlu"]
+[ext_resource type="Script" uid="uid://bb30jga5fr8vr" path="res://scripts/TrucoCPUPlayerController.gd" id="3_drbld"]
 [ext_resource type="Script" uid="uid://c56pmoeww7vlq" path="res://scripts/UI.gd" id="4_lvhdv"]
 [ext_resource type="AudioStream" uid="uid://c57pqlncckyxp" path="res://audio/sounds/card-place-1.ogg" id="4_yriev"]
+[ext_resource type="Script" uid="uid://bast0hh7ibgn5" path="res://scripts/Table.gd" id="5_477cx"]
+[ext_resource type="Script" uid="uid://dhyfhi6fa8mta" path="res://scripts/RivalHand.gd" id="9_drbld"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_0vyix"]
 size = Vector3(1.2, 0.05, 0.8)
@@ -33,6 +38,20 @@ expand_margin_bottom = 10.0
 
 [node name="TrucoRoom" type="Node3D"]
 
+[node name="TrucoManager" type="Node" parent="." node_paths=PackedStringArray("deck", "player_nodes", "table")]
+script = ExtResource("1_pspv1")
+deck = NodePath("../Deck")
+player_nodes = [NodePath("../HumanPlayer"), NodePath("../CPUPlayer")]
+table = NodePath("../Table")
+
+[node name="HumanPlayer" type="Node" parent="." node_paths=PackedStringArray("hand_visual")]
+script = ExtResource("2_sjdlu")
+hand_visual = NodePath("../HumanHand")
+
+[node name="CPUPlayer" type="Node" parent="." node_paths=PackedStringArray("rival_hand_visual")]
+script = ExtResource("3_drbld")
+rival_hand_visual = NodePath("../CPUHand")
+
 [node name="Deck" type="Node" parent="."]
 script = ExtResource("2_0vyix")
 
@@ -41,6 +60,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
 mesh = SubResource("BoxMesh_0vyix")
 skeleton = NodePath("../Room")
 surface_material_override/0 = SubResource("StandardMaterial3D_47gtt")
+script = ExtResource("5_477cx")
 
 [node name="TableCenter" type="Marker3D" parent="Table"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025858521, 0)
@@ -71,32 +91,57 @@ rise_time = 0.195
 transform = Transform3D(1, 0, 0, 0, 0.88617915, 0.46334273, 0, -0.46334273, 0.88617915, 0, 1.3062776, 0.79786175)
 fov = 50.0
 
-[node name="Hand" type="Marker3D" parent="." node_paths=PackedStringArray("deck")]
+[node name="HumanHand" type="Marker3D" parent="." node_paths=PackedStringArray("deck", "table")]
 transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 1.0696, 0.570086)
 script = ExtResource("1_i6a42")
 deck = NodePath("../Deck")
+table = NodePath("../Table")
 
-[node name="Card1" type="MeshInstance3D" parent="Hand"]
+[node name="Card1" type="MeshInstance3D" parent="HumanHand"]
 transform = Transform3D(0.9966375, -0.08193849, 0, 0.021207253, 0.25794867, -0.96592605, 0.079146534, 0.9626775, 0.25881913, -0.061, -0.001, 0)
 mesh = SubResource("PlaneMesh_txkv6")
 skeleton = NodePath("../..")
 
-[node name="Card2" type="MeshInstance3D" parent="Hand"]
+[node name="Card2" type="MeshInstance3D" parent="HumanHand"]
 transform = Transform3D(1, 0, 0, 0, 0.25881904, -0.96592575, 0, 0.96592575, 0.25881904, 0, 0, 0)
 mesh = SubResource("PlaneMesh_txkv6")
 skeleton = NodePath("../..")
 
-[node name="Card3" type="MeshInstance3D" parent="Hand"]
+[node name="Card3" type="MeshInstance3D" parent="HumanHand"]
 transform = Transform3D(1, 0, 0, 0, 0.25881898, -0.96592593, 0, 0.9659255, 0.2588191, 0.061, -0.002, 0)
 mesh = SubResource("PlaneMesh_txkv6")
 skeleton = NodePath("../..")
 
-[node name="HandLight" type="OmniLight3D" parent="Hand"]
+[node name="HandLight" type="OmniLight3D" parent="HumanHand"]
 transform = Transform3D(1, 0, 0, 0, 0.9999999, 0, 0, 0, 0.9999999, 0.0036427956, 0.017486572, 0.07671642)
 light_energy = 0.1
 
-[node name="CardSoundsPlayer" type="AudioStreamPlayer3D" parent="Hand"]
+[node name="CardSoundsPlayer" type="AudioStreamPlayer3D" parent="HumanHand"]
 stream = ExtResource("4_yriev")
+
+[node name="CPUHand" type="Marker3D" parent="." node_paths=PackedStringArray("table")]
+transform = Transform3D(-1, 0, -8.7422784e-08, 0, 1.0000001, 0, 8.742278e-08, 0, -1.0000001, 0, 1.07, -0.57)
+script = ExtResource("9_drbld")
+table = NodePath("../Table")
+
+[node name="Card1" type="MeshInstance3D" parent="CPUHand"]
+transform = Transform3D(0.9966375, -0.08193849, 0, 0.021207253, 0.25794867, -0.96592605, 0.079146534, 0.9626775, 0.25881913, -0.061, -0.001, 0)
+mesh = SubResource("PlaneMesh_txkv6")
+skeleton = NodePath("../..")
+
+[node name="Card2" type="MeshInstance3D" parent="CPUHand"]
+transform = Transform3D(1, 0, 0, 0, 0.25881904, -0.96592575, 0, 0.96592575, 0.25881904, 0, 0, 0)
+mesh = SubResource("PlaneMesh_txkv6")
+skeleton = NodePath("../..")
+
+[node name="Card3" type="MeshInstance3D" parent="CPUHand"]
+transform = Transform3D(1, 0, 0, 0, 0.25881898, -0.96592593, 0, 0.9659255, 0.2588191, 0.061, -0.002, 0)
+mesh = SubResource("PlaneMesh_txkv6")
+skeleton = NodePath("../..")
+
+[node name="CardSoundsPlayer" type="AudioStreamPlayer3D" parent="CPUHand"]
+stream = ExtResource("4_yriev")
+max_distance = 2.5
 
 [node name="UI" type="Control" parent="."]
 layout_mode = 3

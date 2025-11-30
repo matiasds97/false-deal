@@ -13,15 +13,18 @@ var card_sounds: Array[AudioStream] = [
 ]
 
 var cards_in_hand: Array[Card] = []
-var thrown_cards_count: int = 0
 var initial_transforms: Array[Transform3D] = []
 var hover_tweens: Dictionary = {}
 
 
 @export var deck: Deck
+@export var table: Table
 
 signal envido_calculated(score: int)
 signal flor_detected(has_flor: bool)
+signal card_selected(card: Card, card_node: MeshInstance3D)
+
+var can_interact: bool = false
 
 
 func _ready() -> void:
@@ -81,9 +84,30 @@ func _add_collision_to_card(card_node: MeshInstance3D) -> void:
 	static_body.mouse_exited.connect(_on_card_mouse_exited.bind(card_node))
 
 func _on_card_input_event(_camera: Node, event: InputEvent, _position: Vector3, _normal: Vector3, _shape_idx: int, card_node: MeshInstance3D) -> void:
+	if not can_interact:
+		return
+
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		play_card_throw_sound()
-		throw_card(card_node)
+		# Find the Card resource associated with this node
+		var idx = -1
+		if card_node == card_1: idx = 0
+		elif card_node == card_2: idx = 1
+		elif card_node == card_3: idx = 2
+		
+		if idx != -1 and idx < cards_in_hand.size():
+			var card = cards_in_hand[idx]
+			emit_signal("card_selected", card, card_node)
+			# We don't throw immediately, we wait for the controller to tell us (or we could do optimistic, but let's be strict for now)
+			# play_card_throw_sound()
+			# throw_card(card_node)
+
+func enable_interaction() -> void:
+	can_interact = true
+	# Optional: Visual cue like highlighting cards
+
+func disable_interaction() -> void:
+	can_interact = false
+
 
 func _on_card_mouse_entered(card_node: MeshInstance3D) -> void:
 	# Only apply effect if card is still in hand
@@ -158,10 +182,13 @@ func throw_card(card_node: MeshInstance3D) -> void:
 	var random_offset = Vector3(rng.randf_range(-0.009, 0.009), 0, rng.randf_range(-0.009, 0.009))
 	target_pos += random_offset
 	
-	# Stack height
-	# Base height to avoid z-fighting with table + stacking offset
-	target_pos.y += 0.01 + (thrown_cards_count * 0.001)
-	thrown_cards_count += 1
+	# Stack height from Table
+	if table:
+		var stack_height = table.get_stack_height()
+		print("[Hand] Table has %d cards, stack height: %.4f" % [table.cards_on_table.size(), stack_height])
+		target_pos.y += stack_height
+	else:
+		printerr("Table not assigned to Hand!")
 	
 	# Animation
 	var tween = create_tween()
@@ -189,14 +216,19 @@ func play_card_throw_sound() -> void:
 func deal_new_hand() -> void:
 	deck.reset()
 	cards_in_hand.clear()
-	thrown_cards_count = 0
+	
+	# Clean up any thrown cards still in the scene
+	var card_nodes: Array[MeshInstance3D] = [card_1, card_2, card_3]
+	for card_node in card_nodes:
+		# If card was thrown (reparented), bring it back
+		if card_node.get_parent() != self:
+			card_node.reparent(self, false)
 	
 	for i in range(3):
 		var drawn_card: Card = deck.draw_card()
 		if drawn_card:
 			cards_in_hand.append(drawn_card)
 			
-	var card_nodes: Array[MeshInstance3D] = [card_1, card_2, card_3]
 	for j in range(cards_in_hand.size()):
 		var card: Card = cards_in_hand[j]
 		var card_node: MeshInstance3D = card_nodes[j]
