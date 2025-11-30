@@ -1,9 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://c3m7lgp4gxmbn"]
+[gd_scene load_steps=12 format=3 uid="uid://c3m7lgp4gxmbn"]
 
 [ext_resource type="Script" uid="uid://bq3w2mabv2hb5" path="res://scripts/Hand.gd" id="1_i6a42"]
 [ext_resource type="Script" uid="uid://chpu4iupivv7r" path="res://scripts/Deck.gd" id="2_0vyix"]
 [ext_resource type="Script" uid="uid://b2kauy5wcsssw" path="res://scripts/IntermittentLight.gd" id="2_47gtt"]
 [ext_resource type="Script" uid="uid://c56pmoeww7vlq" path="res://scripts/UI.gd" id="4_lvhdv"]
+[ext_resource type="AudioStream" uid="uid://c57pqlncckyxp" path="res://audio/sounds/card-place-1.ogg" id="4_yriev"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_0vyix"]
 size = Vector3(1.2, 0.05, 0.8)
@@ -41,6 +42,9 @@ mesh = SubResource("BoxMesh_0vyix")
 skeleton = NodePath("../Room")
 surface_material_override/0 = SubResource("StandardMaterial3D_47gtt")
 
+[node name="TableCenter" type="Marker3D" parent="Table"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025858521, 0)
+
 [node name="Room" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.37885, 0)
 mesh = SubResource("BoxMesh_i6a42")
@@ -64,13 +68,13 @@ smooth = false
 rise_time = 0.195
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0.8)
+transform = Transform3D(1, 0, 0, 0, 0.88617915, 0.46334273, 0, -0.46334273, 0.88617915, 0, 1.3062776, 0.79786175)
+fov = 50.0
 
-[node name="Hand" type="Marker3D" parent="." node_paths=PackedStringArray("deck", "ui")]
+[node name="Hand" type="Marker3D" parent="." node_paths=PackedStringArray("deck")]
 transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 1.0696, 0.570086)
 script = ExtResource("1_i6a42")
 deck = NodePath("../Deck")
-ui = NodePath("../UI")
 
 [node name="Card1" type="MeshInstance3D" parent="Hand"]
 transform = Transform3D(0.9966375, -0.08193849, 0, 0.021207253, 0.25794867, -0.96592605, 0.079146534, 0.9626775, 0.25881913, -0.061, -0.001, 0)
@@ -91,6 +95,9 @@ skeleton = NodePath("../..")
 transform = Transform3D(1, 0, 0, 0, 0.9999999, 0, 0, 0, 0.9999999, 0.0036427956, 0.017486572, 0.07671642)
 light_energy = 0.1
 
+[node name="CardSoundsPlayer" type="AudioStreamPlayer3D" parent="Hand"]
+stream = ExtResource("4_yriev")
+
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
@@ -98,6 +105,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("4_lvhdv")
 
 [node name="MarginContainer" type="MarginContainer" parent="UI"]
