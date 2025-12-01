@@ -55,6 +55,51 @@ func _ready() -> void:
 	
 	# Emit signals deferredly to ensure UI is ready and connected
 	call_deferred("_emit_initial_signals")
+	
+	# Connect to SignalBus
+	TrucoSignalBus.on_card_dealt.connect(_on_card_dealt)
+	TrucoSignalBus.on_hand_started.connect(_on_hand_started)
+	TrucoSignalBus.on_turn_started.connect(_on_turn_started)
+	TrucoSignalBus.on_card_played.connect(_on_card_played)
+
+func _on_turn_started(player_index: int) -> void:
+	if player_index == 0: # Human
+		enable_interaction()
+	else:
+		disable_interaction()
+
+func _on_card_played(player_index: int, card: Card) -> void:
+	if player_index == 0: # Human
+		disable_interaction()
+		
+		# Find the card node corresponding to this card
+		var card_idx = -1
+		for i in range(cards_in_hand.size()):
+			if cards_in_hand[i] == card: # Assuming Card resource equality works (same instance)
+				card_idx = i
+				break
+		
+		if card_idx != -1:
+			var card_nodes = [card_1, card_2, card_3]
+			if card_idx < card_nodes.size():
+				var node = card_nodes[card_idx]
+				play_card_throw_sound()
+				throw_card(node)
+		else:
+			printerr("Hand: Played card not found in hand!")
+
+func _on_hand_started(_hand_number: int) -> void:
+	deal_new_hand()
+
+func _on_card_dealt(player_index: int, card: Card) -> void:
+	# Assuming Human is always player 0 for now (or check is_human if we had access to player data)
+	if player_index == 0:
+		# Logic to add card to hand is handled in deal_new_hand currently by pulling from deck
+		# But with SignalBus, we should receive the card here.
+		# For now, let's keep deal_new_hand logic as is (pulling from deck) since TrucoManager deals to Player data
+		# and Hand.gd pulls from Deck.gd.
+		# Ideally, Hand.gd should just receive the card visual.
+		pass
 
 func _emit_initial_signals() -> void:
 	emit_signal("envido_calculated", get_envido_points())
@@ -96,7 +141,9 @@ func _on_card_input_event(_camera: Node, event: InputEvent, _position: Vector3, 
 		
 		if idx != -1 and idx < cards_in_hand.size():
 			var card = cards_in_hand[idx]
-			emit_signal("card_selected", card, card_node)
+			# Emit via SignalBus
+			TrucoSignalBus.emit_signal("on_user_input_card_selected", card)
+			emit_signal("card_selected", card, card_node) # Keep local for compatibility if needed
 			# We don't throw immediately, we wait for the controller to tell us (or we could do optimistic, but let's be strict for now)
 			# play_card_throw_sound()
 			# throw_card(card_node)

@@ -1,7 +1,7 @@
 class_name TrucoCPUPlayerController
 extends TrucoPlayerController
 
-@export var rival_hand_visual: RivalHand
+# @export var rival_hand_visual: RivalHand # Removed: Decoupled via SignalBus
 
 func start_turn() -> void:
 	super.start_turn()
@@ -13,15 +13,8 @@ func _make_decision() -> void:
 	if player.hand.size() > 0:
 		var card_to_play: Card = player.hand[0]
 		
-		# Emit signal first so TrucoManager adds card to table
+		# Emit signal first so TrucoManager adds card to table (and SignalBus notifies visuals)
 		emit_signal("card_played", card_to_play)
 		print("CPU played: " + str(card_to_play))
 		
-		# Defer visual throw to next frame so table is updated first
-		call_deferred("_do_visual_throw", card_to_play)
-
-func _do_visual_throw(card: Card) -> void:
-	if rival_hand_visual and rival_hand_visual.has_method("play_card"):
-		rival_hand_visual.play_card(card)
-	else:
-		printerr("Rival hand visual not assigned to TrucoCPUPlayerController!")
+		# Visual throw is now handled by RivalHand.gd listening to TrucoSignalBus.on_card_played

@@ -3,13 +3,13 @@ class_name TrucoManager
 
 @export var deck: Deck
 @export var player_nodes: Array[Node]
-@export var table: Table
 
 var current_state = TrucoState.WAITING_FOR_START
 var players: Array[Player] = []
 var dealer_index = 0
 var mano_index: int = 0
 var current_turn_index: int = 0
+var cards_played_current_vuelta: Array[Card] = []
 
 signal match_started
 signal new_hand_started(hand_number: int)
@@ -41,22 +41,22 @@ func start_match() -> void:
 func start_new_hand() -> void:
 	current_state = TrucoState.DEALING
 	
-	# Clear table from previous hand
-	if table:
-		table.clear()
+	cards_played_current_vuelta.clear()
 
 	dealer_index = (dealer_index + 1) % players.size()
 	mano_index = (dealer_index + 1) % players.size()
 	current_turn_index = mano_index
 
 	print("NewHand.Dealer: %s, Mano: %s, Turn: %s" % [players[dealer_index].name, players[mano_index].name, players[current_turn_index].name])
-	emit_signal("new_hand_started", 1)
+	
+	TrucoSignalBus.emit_signal("on_hand_started", 1)
+	emit_signal("new_hand_started", 1) # Keep local signal for now if needed by other logic
 
 	deal_cards()
 
 func deal_cards() -> void:
 	if not deck:
-		printerr("NodeckassignedtoTrucoManager!")
+		printerr("No deck assigned to TrucoManager!")
 		return
 
 	deck.reset()
@@ -70,6 +70,8 @@ func deal_cards() -> void:
 			var card = deck.draw_card()
 			if card:
 				players[player_index].receive_card(card)
+				# Emit via SignalBus
+				TrucoSignalBus.emit_signal("on_card_dealt", player_index, card)
 	
 	print("Cards dealt.")
 	start_turn_cycle()
@@ -81,6 +83,10 @@ func start_turn_cycle() -> void:
 		current_state = TrucoState.RIVAL_TURN
 
 	print("Turn: %s" % players[current_turn_index].name)
+	print("Turn: %s" % players[current_turn_index].name)
+	
+	# Emit via SignalBus
+	TrucoSignalBus.emit_signal("on_turn_started", current_turn_index)
 	emit_signal("turn_started", current_turn_index)
 
 	# Trigger the controller!
@@ -94,9 +100,13 @@ func _on_player_card_played(card: Card, player_index: int) -> void:
 		
 	print("Player %d played %s" % [player_index, card])
 	
-	# Add to logical table
-	if table:
-		table.add_card(card)
+	print("Player %d played %s" % [player_index, card])
+	
+	# Emit via SignalBus
+	TrucoSignalBus.emit_signal("on_card_played", player_index, card)
+	
+	# Track internally
+	cards_played_current_vuelta.append(card)
 		
 	# Remove from player hand (Logic)
 	players[player_index].play_specific_card(card)
@@ -106,7 +116,7 @@ func _on_player_card_played(card: Card, player_index: int) -> void:
 
 func advance_turn() -> void:
 	# Check if Baza is over (2 cards played for 2 players)
-	if table and table.cards_on_table.size() >= players.size():
+	if cards_played_current_vuelta.size() >= players.size():
 		# Wait a bit before resolving so players can see the cards
 		get_tree().create_timer(1.0).timeout.connect(resolve_baza)
 	else:
@@ -118,6 +128,9 @@ func resolve_baza() -> void:
 	# TODO: Determine winner properly
 	# Note: We DON'T clear the table here - cards accumulate across all 3 bazas
 	# The table will be cleared when starting a new hand
+	
+	# Reset for next baza
+	cards_played_current_vuelta.clear()
 	
 	# Winner of baza starts next one (TODO: Implement winner logic)
 	# For now, just keep rotating

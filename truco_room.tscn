@@ -38,19 +38,16 @@ expand_margin_bottom = 10.0
 
 [node name="TrucoRoom" type="Node3D"]
 
-[node name="TrucoManager" type="Node" parent="." node_paths=PackedStringArray("deck", "player_nodes", "table")]
+[node name="TrucoManager" type="Node" parent="." node_paths=PackedStringArray("deck", "player_nodes")]
 script = ExtResource("1_pspv1")
 deck = NodePath("../Deck")
 player_nodes = [NodePath("../HumanPlayer"), NodePath("../CPUPlayer")]
-table = NodePath("../Table")
 
-[node name="HumanPlayer" type="Node" parent="." node_paths=PackedStringArray("hand_visual")]
+[node name="HumanPlayer" type="Node" parent="."]
 script = ExtResource("2_sjdlu")
-hand_visual = NodePath("../HumanHand")
 
-[node name="CPUPlayer" type="Node" parent="." node_paths=PackedStringArray("rival_hand_visual")]
+[node name="CPUPlayer" type="Node" parent="."]
 script = ExtResource("3_drbld")
-rival_hand_visual = NodePath("../CPUHand")
 
 [node name="Deck" type="Node" parent="."]
 script = ExtResource("2_0vyix")

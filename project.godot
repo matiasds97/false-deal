@@ -14,6 +14,15 @@ config/name="Truco"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="uid://bsuyd84u5ditc"
 
+[autoload]
+
+TrucoSignalBus="*res://scripts/TrucoSignalBus.gd"
+
+[display]
+
+window/size/viewport_width=640
+window/size/viewport_height=480
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

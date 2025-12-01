@@ -23,7 +23,22 @@ func _ready() -> void:
 	for c in cards:
 		initial_transforms.append(c.transform)
 	
+	for c in cards:
+		initial_transforms.append(c.transform)
+	
 	reset_hand()
+	
+	# Connect to SignalBus
+	TrucoSignalBus.on_card_played.connect(_on_card_played)
+	TrucoSignalBus.on_hand_started.connect(_on_hand_started)
+
+func _on_hand_started(_hand_number: int) -> void:
+	reset_hand()
+
+func _on_card_played(player_index: int, card: Card) -> void:
+	# Assuming CPU is player 1
+	if player_index == 1:
+		play_card(card)
 
 func reset_hand() -> void:
 	for i in range(cards.size()):

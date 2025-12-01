@@ -1,6 +1,16 @@
 class_name Table
 extends Node
 
+func _ready() -> void:
+	TrucoSignalBus.on_card_played.connect(_on_card_played)
+	TrucoSignalBus.on_hand_started.connect(_on_hand_started)
+
+func _on_card_played(_player_index: int, card: Card) -> void:
+	add_card(card)
+
+func _on_hand_started(_hand_number: int) -> void:
+	clear()
+
 var cards_on_table: Array[Card] = []
 
 # Returns 1 if card1 wins, -1 if card2 wins, 0 if tie
