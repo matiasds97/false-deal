@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Card" load_steps=3 format=3 uid="uid://x7ws1ipkvane"]
+
+[ext_resource type="Script" uid="uid://dlnqp8plkee5b" path="res://scripts/entities/Card.gd" id="1_n620r"]
+[ext_resource type="Texture2D" uid="uid://b6cegc44uws1s" path="res://assets/textures/cards/1_gold.png" id="1_y8lnp"]
+
+[resource]
+script = ExtResource("1_n620r")
+suit = 2
+image = ExtResource("1_y8lnp")
+metadata/_custom_type_script = "uid://dlnqp8plkee5b"
