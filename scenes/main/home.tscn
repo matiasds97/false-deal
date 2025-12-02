@@ -1,0 +1,119 @@
+[gd_scene load_steps=6 format=3 uid="uid://bgwdtlnqvhqxs"]
+
+[ext_resource type="Script" uid="uid://gp30t37i7tki" path="res://scripts/entities/Door.gd" id="1_1k6ep"]
+
+[sub_resource type="Environment" id="Environment_cptgo"]
+background_mode = 1
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0, 0, 0, 1)
+fog_density = 0.8
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_cptgo"]
+size = Vector2(8, 4)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_1k6ep"]
+size = Vector2(4, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1k6ep"]
+
+[node name="Home" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_cptgo")
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 2)
+mesh = SubResource("PlaneMesh_cptgo")
+
+[node name="RoomFloor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 6)
+mesh = SubResource("PlaneMesh_1k6ep")
+
+[node name="DiningRoomLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8120043, 2.319605, 1.7699428)
+light_color = Color(0.43453783, 0.62364274, 1, 1)
+
+[node name="DiningRoomLight2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5760403, 2.0139992, 1.0339622)
+light_color = Color(0.43453783, 0.62364274, 1, 1)
+
+[node name="BedroomLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8560567, 2.0139992, 5.779567)
+light_color = Color(0.43453783, 0.62364274, 1, 1)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.84019774, 0, -0.5422802, 0, 1, 0, 0.5422802, 0, -0.84019774, 2.1154513, 0.8912246, 0.17177248)
+fov = 90.0
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2502778, 2)
+size = Vector3(0.1, 2.5, 4)
+
+[node name="LargeDoor" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45591253, 0.7731174, 3.9896116)
+script = ExtResource("1_1k6ep")
+
+[node name="DoorCSGBox3D" type="CSGBox3D" parent="LargeDoor"]
+transform = Transform3D(-4.3711385e-08, 0, -0.9999999, 0, 1, 0, 0.9999999, 0, -4.3711385e-08, 0.5077722, 0.22035003, -0.028938532)
+size = Vector3(0.1, 2, 1)
+material = SubResource("StandardMaterial3D_1k6ep")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, 4.0315385, 2.555999, 3.3188477)
+size = Vector3(0.1, 8.134888, 6.6376953)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1.25, 1.7095337)
+size = Vector3(0.1, 2.5, 3.4190674)
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1.25, 4.9835925)
+size = Vector3(0.1, 2.5, 3.14)
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9051294, 1.25, 4.9497886)
+size = Vector3(0.1, 2.5, 3.2076075)
+
+[node name="CSGBox3D7" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.4228, 1.25, 6.6083536)
+size = Vector3(0.1, 2.5, 3.14)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.8961563, 1.25, 1.9993253)
+size = Vector3(0.1, 2.5, 2.14)
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.8961563, 1.25, 3.3887496)
+size = Vector3(0.1, 2.5, 2.14)
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
+operation = 2
+use_collision = true
+
+[node name="BathWall" type="CSGBox3D" parent="CSGCombiner3D"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 5.876262, 1.25, 2.6512463)
+size = Vector3(0.1, 2.5, 1.4)
+
+[node name="DiningRoomWall" type="CSGBox3D" parent="CSGCombiner3D"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2.401844, 1.25, 3.9540687)
+size = Vector3(0.1, 2.5, 4.8932424)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="CSGCombiner3D"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 4, 1.25, 0)
+size = Vector3(0.1, 2.5, 8)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.4987154, 1.5149316, 0)
+operation = 2
+size = Vector3(1.2549438, 0.82470703, 1)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95759904, 1.0021174, 3.9736676)
+operation = 2
+size = Vector3(1, 2, 0.16894531)
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="CSGCombiner3D"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5.8830185, 1.0021174, 2.8866801)
+operation = 2
+size = Vector3(0.7, 2, 0.169)
