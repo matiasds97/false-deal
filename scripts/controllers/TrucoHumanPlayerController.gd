@@ -12,9 +12,7 @@ func _on_card_selected_input(card: Card) -> void:
 
 func start_turn() -> void:
 	super.start_turn()
-	print("Waiting for Human Input...")
 	pass
 
 func _on_card_selected(card: Card, _card_node: MeshInstance3D) -> void:
-	print("Human selected card: %s" % card)
 	emit_signal("card_played", card)

@@ -6,6 +6,7 @@ extends Control
 @onready var hand: Marker3D = $"../HumanHand"
 @onready var cpu_hand: Node3D = $"../CPUHand"
 @onready var truco_manager: TrucoManager = $"../TrucoManager"
+@onready var score_label: Label = $ScoreContainer/VBoxContainer/ScoreContainer/HBoxContainer/ScoreLabel
 
 func _ready() -> void:
 	# Connect to Hand signals
@@ -15,6 +16,13 @@ func _ready() -> void:
 		
 	# Connect Deal Button to deal new hand
 	deal_button.pressed.connect(_on_deal_button_pressed)
+	
+	# Connect to SignalBus for score updates
+	TrucoSignalBus.on_score_updated.connect(_on_score_updated)
+
+func _on_score_updated(human_score: int, cpu_score: int) -> void:
+	if score_label:
+		score_label.text = "Human: %d | CPU: %d" % [human_score, cpu_score]
 
 func _on_deal_button_pressed() -> void:
 	# Reset visual hands

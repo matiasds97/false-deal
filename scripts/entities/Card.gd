@@ -28,7 +28,9 @@ enum CardValue {
 @export var suit: Suit
 
 ## Defines the truco value of the card.
-var truco_value: int
+var truco_value: int:
+	get:
+		return _calculate_truco_value()
 
 ## Defines the illustration that corresponds to this card.
 @export var image: Texture2D
@@ -36,7 +38,6 @@ var truco_value: int
 var material: BaseMaterial3D = StandardMaterial3D.new()
 
 func _init() -> void:
-	truco_value = _calculate_truco_value()
 	material.albedo_texture = image
 
 func _calculate_truco_value() -> int:

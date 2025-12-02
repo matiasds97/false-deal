@@ -85,11 +85,11 @@ smooth = false
 rise_time = 0.195
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.88617915, 0.46334273, 0, -0.46334273, 0.88617915, 0, 1.3062776, 0.79786175)
+transform = Transform3D(1, 0, 0, 0, 0.88617915, 0.46334273, 0, -0.46334273, 0.88617915, 0, 1.0802062, 0.5246976)
 fov = 50.0
 
 [node name="HumanHand" type="Marker3D" parent="." node_paths=PackedStringArray("deck")]
-transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 1.0696, 0.570086)
+transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.8435285, 0.29692185)
 script = ExtResource("7_ja30i")
 deck = NodePath("../Deck")
 
@@ -216,3 +216,32 @@ layout_mode = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Deal Cards"
+
+[node name="ScoreContainer" type="MarginContainer" parent="TrucoUI"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -133.0
+offset_bottom = 133.0
+grow_horizontal = 0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TrucoUI/ScoreContainer"]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="ScoreContainer" type="PanelContainer" parent="TrucoUI/ScoreContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0vyix")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TrucoUI/ScoreContainer/VBoxContainer/ScoreContainer"]
+layout_mode = 2
+
+[node name="ScoreLabel" type="Label" parent="TrucoUI/ScoreContainer/VBoxContainer/ScoreContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Human: 0 | CPU: 0"

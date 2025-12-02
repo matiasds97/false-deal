@@ -26,3 +26,8 @@ signal on_user_input_card_selected(card: Card)
 # target_position: Global position where cards should be placed
 # stack_height: Y offset for stacking cards
 signal card_placement_info(target_position: Vector3, stack_height: float)
+
+# Emitted when the score is updated
+# human_score: The current score of the human player
+# cpu_score: The current score of the CPU player
+signal on_score_updated(human_score: int, cpu_score: int)

@@ -26,7 +26,6 @@ func add_card(card: Card) -> void:
 	TrucoSignalBus.emit_signal("card_placement_info", target_pos, stack_height)
 	
 	cards_on_table.append(card)
-	print("[Table] Card added. Total cards on table: %d" % cards_on_table.size())
 
 
 func clear() -> void:
@@ -36,5 +35,4 @@ func clear() -> void:
 func get_stack_height() -> float:
 	# Base height to avoid z-fighting with table + stacking offset per card
 	var height = 0.01 + (cards_on_table.size() * 0.0005) # Increased from 0.001 to 0.005
-	print("[Table] get_stack_height called, cards_on_table.size=%d, returning %.4f" % [cards_on_table.size(), height])
 	return height

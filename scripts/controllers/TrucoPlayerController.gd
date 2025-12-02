@@ -17,7 +17,7 @@ func initialize(p_player: Player) -> void:
 	player = p_player
 
 func start_turn() -> void:
-	print("%s start_turn (Base)" % player.name)
+	pass
 
 func end_turn() -> void:
 	pass
