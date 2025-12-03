@@ -47,8 +47,7 @@ func _ready() -> void:
 		if j < initial_transforms.size():
 			card_node.transform = initial_transforms[j]
 		
-		card_node.set_surface_override_material(0, card.material)
-		card_node.get_surface_override_material(0).albedo_texture = card.image
+		_update_card_visuals(card_node, card)
 		card_node.visible = true
 		
 		# Add collision to make it clickable
@@ -292,8 +291,8 @@ func deal_new_hand() -> void:
 		if j < initial_transforms.size():
 			card_node.transform = initial_transforms[j]
 		
-		card_node.set_surface_override_material(0, card.material)
-		card_node.get_surface_override_material(0).albedo_texture = card.image
+		_update_card_visuals(card_node, card)
+		
 		card_node.visible = true
 		
 		# Ensure collision exists (it might have been removed if thrown)
@@ -301,6 +300,28 @@ func deal_new_hand() -> void:
 		
 	emit_signal("envido_calculated", get_envido_points())
 	emit_signal("flor_detected", has_flor())
+
+func _update_card_visuals(card_node: MeshInstance3D, card: Card) -> void:
+	# Check if we already have a unique override that is a ShaderMaterial
+	var override_mat = card_node.get_surface_override_material(0)
+	
+	if override_mat is ShaderMaterial:
+		override_mat.set_shader_parameter("main_tex", card.image)
+		return
+
+	# If no override, check the active material (from mesh or material_override)
+	var active_mat = card_node.get_active_material(0)
+	
+	if active_mat is ShaderMaterial:
+		# We found a shader material. Duplicate it to create a unique instance for this card
+		# so we can set a unique texture without affecting others.
+		var new_mat = active_mat.duplicate()
+		new_mat.set_shader_parameter("main_tex", card.image)
+		card_node.set_surface_override_material(0, new_mat)
+	else:
+		# Fallback: use the card's default material logic
+		card_node.set_surface_override_material(0, card.material)
+		card_node.get_surface_override_material(0).albedo_texture = card.image
 
 ## If there are at least two cards of the same suit, envido = 20 + sum of the two
 ## highest envido values in that suit (cards 10/11/12 count as 0).
