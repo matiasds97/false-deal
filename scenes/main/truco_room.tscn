@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://c3m7lgp4gxmbn"]
+[gd_scene load_steps=20 format=3 uid="uid://c3m7lgp4gxmbn"]
 
 [ext_resource type="Script" uid="uid://f5t5okbpxgcg" path="res://scripts/core/TrucoManager.gd" id="1_vyrup"]
 [ext_resource type="Script" uid="uid://c5l4c5yo26h5n" path="res://scripts/controllers/TrucoHumanPlayerController.gd" id="2_y2xxy"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://bast0hh7ibgn5" path="res://scripts/entities/Table.gd" id="5_uee4n"]
 [ext_resource type="Script" uid="uid://b2kauy5wcsssw" path="res://scripts/IntermittentLight.gd" id="6_x2plq"]
 [ext_resource type="Script" uid="uid://bq3w2mabv2hb5" path="res://scripts/entities/Hand.gd" id="7_ja30i"]
+[ext_resource type="Shader" uid="uid://bityksus0srie" path="res://shaders/psx_camera_shader.gdshader" id="7_y2xxy"]
 [ext_resource type="AudioStream" uid="uid://c57pqlncckyxp" path="res://assets/audio/sounds/card-place-1.ogg" id="8_bkcf0"]
 [ext_resource type="Script" uid="uid://dhyfhi6fa8mta" path="res://scripts/entities/RivalHand.gd" id="9_32kxe"]
 [ext_resource type="Script" uid="uid://c56pmoeww7vlq" path="res://scripts/ui/TrucoUI.gd" id="10_jide4"]
@@ -23,6 +24,26 @@ albedo_color = Color(0.325441, 0.325441, 0.325441, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_i6a42"]
 material = SubResource("StandardMaterial3D_txkv6")
 size = Vector3(8, 2.8, 8)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_confp"]
+render_priority = 0
+shader = ExtResource("7_y2xxy")
+shader_parameter/enable_fog = true
+shader_parameter/fog_color = Color(0, 0, 0, 1)
+shader_parameter/noise_color = Color(0, 0, 0, 1)
+shader_parameter/fog_distance = 100.0
+shader_parameter/fog_fade_range = 50.0
+shader_parameter/enable_noise = true
+shader_parameter/noise_time_fac = 4.0
+shader_parameter/enable_color_limitation = true
+shader_parameter/color_levels = 32
+shader_parameter/enable_dithering = true
+shader_parameter/dither_strength = 0.050000002375
+
+[sub_resource type="QuadMesh" id="QuadMesh_pu42s"]
+material = SubResource("ShaderMaterial_confp")
+flip_faces = true
+size = Vector2(2, 2)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_txkv6"]
 size = Vector2(0.06, 0.1)
@@ -87,6 +108,10 @@ rise_time = 0.195
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.88617915, 0.46334273, 0, -0.46334273, 0.88617915, 0, 1.0802062, 0.5246976)
 fov = 50.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045387387, 0, -0.070322394)
+mesh = SubResource("QuadMesh_pu42s")
 
 [node name="HumanHand" type="Marker3D" parent="." node_paths=PackedStringArray("deck")]
 transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.8435285, 0.29692185)

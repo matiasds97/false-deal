@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3 uid="uid://bt2hr10ksuqav"]
+
+[ext_resource type="Script" uid="uid://bl8b856f4t1qt" path="res://scripts/controllers/FirstPersonController.gd" id="1_script"]
+[ext_resource type="Shader" uid="uid://bityksus0srie" path="res://shaders/psx_camera_shader.gdshader" id="2_0qlhm"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
+height = 1.8
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0qlhm"]
+render_priority = 0
+shader = ExtResource("2_0qlhm")
+shader_parameter/enable_fog = true
+shader_parameter/fog_color = Color(0, 0, 0, 1)
+shader_parameter/noise_color = Color(0, 0, 0, 1)
+shader_parameter/fog_distance = 2.50000007125
+shader_parameter/fog_fade_range = 3.50000011875
+shader_parameter/enable_noise = true
+shader_parameter/noise_time_fac = 4.0
+shader_parameter/enable_color_limitation = true
+shader_parameter/color_levels = 64
+shader_parameter/enable_dithering = true
+shader_parameter/dither_strength = 0.250000011875
+
+[sub_resource type="QuadMesh" id="QuadMesh_os7wr"]
+material = SubResource("ShaderMaterial_0qlhm")
+flip_faces = true
+size = Vector2(2, 2)
+
+[node name="FirstPersonPlayer" type="CharacterBody3D"]
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_1")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045387387, 0, -0.070322394)
+mesh = SubResource("QuadMesh_os7wr")

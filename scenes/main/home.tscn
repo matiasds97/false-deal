@@ -1,40 +1,21 @@
-[gd_scene load_steps=10 format=3 uid="uid://bgwdtlnqvhqxs"]
+[gd_scene load_steps=8 format=3 uid="uid://bgwdtlnqvhqxs"]
 
 [ext_resource type="Script" uid="uid://gp30t37i7tki" path="res://scripts/entities/Door.gd" id="1_1k6ep"]
-[ext_resource type="Shader" uid="uid://bityksus0srie" path="res://shaders/psx_camera_shader.gdshader" id="1_75q67"]
 [ext_resource type="PackedScene" uid="uid://57g0g2qjsfbr" path="res://assets/models/characters/Harry Mason/Harry.dae" id="3_75q67"]
+[ext_resource type="PackedScene" uid="uid://bt2hr10ksuqav" path="res://scenes/player/FirstPersonPlayer.tscn" id="4_player"]
 
 [sub_resource type="Environment" id="Environment_cptgo"]
 background_mode = 1
 tonemap_mode = 2
+fog_enabled = true
 fog_light_color = Color(0, 0, 0, 1)
-fog_density = 0.8
+fog_density = 0.05
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_cptgo"]
 size = Vector2(8, 4)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_1k6ep"]
 size = Vector2(4, 4)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_confp"]
-render_priority = 0
-shader = ExtResource("1_75q67")
-shader_parameter/enable_fog = true
-shader_parameter/fog_color = Color(0, 0, 0, 1)
-shader_parameter/noise_color = Color(0, 0, 0, 1)
-shader_parameter/fog_distance = 3.000000095
-shader_parameter/fog_fade_range = 3.50000011875
-shader_parameter/enable_noise = true
-shader_parameter/noise_time_fac = 4.0
-shader_parameter/enable_color_limitation = true
-shader_parameter/color_levels = 32
-shader_parameter/enable_dithering = true
-shader_parameter/dither_strength = 0.50000002375
-
-[sub_resource type="QuadMesh" id="QuadMesh_2lkpu"]
-material = SubResource("ShaderMaterial_confp")
-flip_faces = true
-size = Vector2(2, 2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1k6ep"]
 
@@ -70,13 +51,6 @@ light_energy = 0.5
 [node name="BedroomLight" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8560567, 2.0139992, 5.779567)
 light_color = Color(0.43453783, 0.62364274, 1, 1)
-
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(-0.84019774, 0, -0.5422802, 0, 1, 0, 0.5422802, 0, -0.84019774, 2.1154513, 0.8912246, 0.17177248)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045387387, 0, -0.070322394)
-mesh = SubResource("QuadMesh_2lkpu")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2502778, 2)
@@ -152,3 +126,7 @@ size = Vector3(0.7, 2, 0.169)
 
 [node name="Harry" parent="." instance=ExtResource("3_75q67")]
 transform = Transform3D(-1.1934766, 0, 0.33927283, 0, 1.2407627, 0, -0.33927283, 0, -1.1934766, 0.5838734, 0, 5.175649)
+
+[node name="FirstPersonPlayer" parent="." instance=ExtResource("4_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.790059, -0.05868137, 1.828513)
+speed = 2.0
