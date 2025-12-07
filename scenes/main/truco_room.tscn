@@ -1,11 +1,11 @@
-[gd_scene load_steps=20 format=3 uid="uid://c3m7lgp4gxmbn"]
+[gd_scene load_steps=19 format=3 uid="uid://c3m7lgp4gxmbn"]
 
 [ext_resource type="Script" uid="uid://f5t5okbpxgcg" path="res://scripts/core/TrucoManager.gd" id="1_vyrup"]
 [ext_resource type="Script" uid="uid://c5l4c5yo26h5n" path="res://scripts/controllers/TrucoHumanPlayerController.gd" id="2_y2xxy"]
 [ext_resource type="Script" uid="uid://bb30jga5fr8vr" path="res://scripts/controllers/TrucoCPUPlayerController.gd" id="3_pu42s"]
 [ext_resource type="Script" uid="uid://chpu4iupivv7r" path="res://scripts/entities/Deck.gd" id="4_e57oh"]
 [ext_resource type="Script" uid="uid://bast0hh7ibgn5" path="res://scripts/entities/Table.gd" id="5_uee4n"]
-[ext_resource type="Script" uid="uid://b2kauy5wcsssw" path="res://scripts/IntermittentLight.gd" id="6_x2plq"]
+[ext_resource type="Script" path="res://scripts/IntermittentLight.gd" id="6_x2plq"]
 [ext_resource type="Script" uid="uid://bq3w2mabv2hb5" path="res://scripts/entities/Hand.gd" id="7_ja30i"]
 [ext_resource type="Shader" uid="uid://bityksus0srie" path="res://shaders/psx_camera_shader.gdshader" id="7_y2xxy"]
 [ext_resource type="AudioStream" uid="uid://c57pqlncckyxp" path="res://assets/audio/sounds/card-place-1.ogg" id="8_bkcf0"]
@@ -17,13 +17,9 @@ size = Vector3(1.2, 0.05, 0.8)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_47gtt"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_txkv6"]
-cull_mode = 2
-albedo_color = Color(0.325441, 0.325441, 0.325441, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_i6a42"]
-material = SubResource("StandardMaterial3D_txkv6")
-size = Vector3(8, 2.8, 8)
+[sub_resource type="BoxMesh" id="BoxMesh_y2xxy"]
+flip_faces = true
+size = Vector3(8, 2.8, 3)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_confp"]
 render_priority = 0
@@ -85,10 +81,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025858521, 0)
 
 [node name="Room" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.37885, 0)
-mesh = SubResource("BoxMesh_i6a42")
+mesh = SubResource("BoxMesh_y2xxy")
 
 [node name="Light" type="OmniLight3D" parent="Room"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.76586, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1039495, 0.97731686, 0)
+light_color = Color(0.21808967, 0.23633862, 0.21974209, 1)
+light_energy = 3.664
+light_indirect_energy = 1.795
+light_size = 5.0
+
+[node name="Light2" type="OmniLight3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7554445, 0.97731686, 0)
 light_color = Color(0.21808967, 0.23633862, 0.21974209, 1)
 light_energy = 3.664
 light_indirect_energy = 1.795

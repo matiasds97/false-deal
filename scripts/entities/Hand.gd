@@ -19,8 +19,6 @@ var hover_tweens: Dictionary = {}
 var cached_target_position: Vector3 = Vector3.ZERO
 var cached_stack_height: float = 0.0
 
-@export var deck: Deck
-
 signal envido_calculated(score: int)
 signal flor_detected(has_flor: bool)
 signal card_selected(card: Card, card_node: MeshInstance3D)
@@ -33,25 +31,6 @@ func _ready() -> void:
 	initial_transforms.append(card_1.transform)
 	initial_transforms.append(card_2.transform)
 	initial_transforms.append(card_3.transform)
-
-	for i in range(3):
-		var drawn_card: Card = deck.draw_card()
-		if drawn_card:
-			cards_in_hand.append(drawn_card)
-	var card_nodes: Array[MeshInstance3D] = [card_1, card_2, card_3]
-	for j in range(cards_in_hand.size()):
-		var card: Card = cards_in_hand[j]
-		var card_node: MeshInstance3D = card_nodes[j]
-		
-		# Reset transform
-		if j < initial_transforms.size():
-			card_node.transform = initial_transforms[j]
-		
-		_update_card_visuals(card_node, card)
-		card_node.visible = true
-		
-		# Add collision to make it clickable
-		_add_collision_to_card(card_node)
 	
 	# Emit signals deferredly to ensure UI is ready and connected
 	call_deferred("_emit_initial_signals")
@@ -93,14 +72,32 @@ func _on_hand_started(_hand_number: int) -> void:
 	deal_new_hand()
 
 func _on_card_dealt(player_index: int, card: Card) -> void:
-	# Assuming Human is always player 0 for now (or check is_human if we had access to player data)
-	if player_index == 0:
-		# Logic to add card to hand is handled in deal_new_hand currently by pulling from deck
-		# But with SignalBus, we should receive the card here.
-		# For now, let's keep deal_new_hand logic as is (pulling from deck) since TrucoManager deals to Player data
-		# and Hand.gd pulls from Deck.gd.
-		# Ideally, Hand.gd should just receive the card visual.
-		pass
+	if player_index == 0: # Human
+		cards_in_hand.append(card)
+		var idx = cards_in_hand.size() - 1
+		var card_nodes = [card_1, card_2, card_3]
+		
+		if idx < card_nodes.size():
+			var card_node = card_nodes[idx]
+			
+			# Ensure it's back in hand (just in case)
+			if card_node.get_parent() != self:
+				card_node.reparent(self, false)
+			
+			# Reset transform
+			if idx < initial_transforms.size():
+				card_node.transform = initial_transforms[idx]
+			
+			_update_card_visuals(card_node, card)
+			card_node.visible = true
+			
+			# Add collision
+			_add_collision_to_card(card_node)
+			
+			# If this is the 3rd card, we can emit signals
+			if cards_in_hand.size() == 3:
+				emit_signal("envido_calculated", get_envido_points())
+				emit_signal("flor_detected", has_flor())
 
 func _on_card_placement_info(target_position: Vector3, stack_height: float) -> void:
 	cached_target_position = target_position
@@ -262,7 +259,6 @@ func play_card_throw_sound() -> void:
 	card_sounds_player.play()
 
 func deal_new_hand() -> void:
-	deck.reset()
 	cards_in_hand.clear()
 	
 	# Clean up any thrown cards still in the scene
@@ -271,35 +267,11 @@ func deal_new_hand() -> void:
 		# If card was thrown (reparented), bring it back
 		if card_node.get_parent() != self:
 			card_node.reparent(self, false)
-	
-	for i in range(3):
-		var drawn_card: Card = deck.draw_card()
-		if drawn_card:
-			cards_in_hand.append(drawn_card)
-			
-	for j in range(cards_in_hand.size()):
-		var card: Card = cards_in_hand[j]
-		var card_node: MeshInstance3D = card_nodes[j]
 		
-		# Reparent back to Hand if it was thrown
-		if card_node.get_parent() != self:
-			card_node.reparent(self, false) # false = reset transform to local? No, we set it manually below.
-			# Actually reparent(self, false) keeps global transform but we want to reset it.
-			# So it doesn't matter much if we overwrite transform immediately.
-		
-		# Reset transform
-		if j < initial_transforms.size():
-			card_node.transform = initial_transforms[j]
-		
-		_update_card_visuals(card_node, card)
-		
-		card_node.visible = true
-		
-		# Ensure collision exists (it might have been removed if thrown)
-		_add_collision_to_card(card_node)
-		
-	emit_signal("envido_calculated", get_envido_points())
-	emit_signal("flor_detected", has_flor())
+		# Hide until dealt
+		card_node.visible = false
+
+	# Signals will be emitted when cards are received in _on_card_dealt
 
 func _update_card_visuals(card_node: MeshInstance3D, card: Card) -> void:
 	# Check if we already have a unique override that is a ShaderMaterial

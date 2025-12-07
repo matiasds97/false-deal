@@ -20,9 +20,9 @@ TrucoSignalBus="*res://scripts/core/TrucoSignalBus.gd"
 
 [display]
 
-window/size/viewport_width=854
-window/size/viewport_height=480
-window/stretch/mode="viewport"
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
 
 [input]
 
