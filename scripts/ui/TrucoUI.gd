@@ -7,6 +7,8 @@ extends Control
 @onready var cpu_hand: Node3D = $"../CPUHand"
 @onready var truco_manager: TrucoManager = $"../TrucoManager"
 @onready var score_label: Label = $ScoreContainer/VBoxContainer/ScoreContainer/HBoxContainer/ScoreLabel
+@onready var rival_calls_label: Label = %RivalCallsLabel
+@onready var rival_decision_state_label: Label = %RivalDecisionStateLabel
 
 # Calls UI
 @onready var envido_button: Button = $CallsContainer/VBoxContainer/EnvidoButton
@@ -107,6 +109,8 @@ func _on_envido_called(player_index: int) -> void:
 	# If CPU (1) called, show response options to Human
 	if player_index == 1:
 		response_container.visible = true
+		rival_calls_label.visible = true
+		rival_calls_label.text = "Envido!"
 	else:
 		# Human called, waiting for CPU
 		response_container.visible = false
@@ -119,6 +123,8 @@ func _on_truco_called(player_index: int) -> void:
 	# If CPU (1) called, show response options to Human
 	if player_index == 1:
 		response_container.visible = true
+		rival_calls_label.visible = true
+		rival_calls_label.text = "Truco!"
 	else:
 		# Human called, waiting for CPU
 		response_container.visible = false
@@ -127,12 +133,50 @@ func _on_truco_called(player_index: int) -> void:
 			truco_manager.resolve_truco(cpu_wants, 1)
 		)
 
-func _on_envido_resolved(_accepted: bool, winner_index: int, points: int) -> void:
+func _on_envido_resolved(accepted: bool, winner_index: int, points: int) -> void:
 	response_container.visible = false
+	rival_calls_label.visible = false
 	print("UI: Envido resolved. Points: %d to Player %d" % [points, winner_index])
+	
+	if accepted:
+		var human_points = truco_manager.players[0].get_envido_points()
+		var cpu_points = truco_manager.players[1].get_envido_points()
+		
+		if winner_index == 0:
+			rival_decision_state_label.add_theme_color_override("font_color", Color(0, 255, 0))
+			rival_decision_state_label.text = "You won the envido! (Yours: %d vs CPU: %d)" % [human_points, cpu_points]
+		else:
+			rival_decision_state_label.add_theme_color_override("font_color", Color(255, 0, 0))
+			rival_decision_state_label.text = "CPU won the envido. (CPU: %d vs Yours: %d)" % [cpu_points, human_points]
+	else:
+		# If winner is Human (0), it means CPU rejected. If winner is CPU (1), Human rejected.
+		if winner_index == 0:
+			rival_decision_state_label.text = "CPU rejected the envido"
+		else:
+			rival_decision_state_label.text = "You rejected the envido"
+		
 
-func _on_truco_resolved(_accepted: bool, player_index: int) -> void:
+func _on_truco_resolved(accepted: bool, player_index: int) -> void:
 	response_container.visible = false
+	rival_calls_label.visible = false
+
+	# Reset color
+	rival_decision_state_label.remove_theme_color_override("font_color")
+	
+	if accepted:
+		if player_index == 1:
+			rival_decision_state_label.text = "CPU accepted the truco"
+		else:
+			rival_decision_state_label.text = "You accepted the truco"
+	else:
+		# player_index is who answered.
+		if player_index == 1:
+			rival_decision_state_label.text = "CPU rejected the truco"
+		else:
+			rival_decision_state_label.text = "You rejected the truco"
 
 func _on_hand_started(_hand_num: int) -> void:
 	response_container.visible = false
+	rival_calls_label.visible = false
+	rival_decision_state_label.text = ""
+	rival_decision_state_label.remove_theme_color_override("font_color")

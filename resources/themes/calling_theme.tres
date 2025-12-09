@@ -1,0 +1,9 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://c6pjgoign3l3k"]
+
+[ext_resource type="FontFile" uid="uid://coivjjlpstwdo" path="res://assets/fonts/MetalMania-Regular.ttf" id="1_5d54h"]
+
+[resource]
+default_font = ExtResource("1_5d54h")
+default_font_size = 64
+Label/colors/font_outline_color = Color(0.5377825, 0.5382968, 0.5257822, 1)
+Label/constants/outline_size = 7

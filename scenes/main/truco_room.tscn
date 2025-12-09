@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://c3m7lgp4gxmbn"]
+[gd_scene load_steps=23 format=3 uid="uid://c3m7lgp4gxmbn"]
 
 [ext_resource type="Script" uid="uid://f5t5okbpxgcg" path="res://scripts/core/TrucoManager.gd" id="1_vyrup"]
 [ext_resource type="Script" uid="uid://c5l4c5yo26h5n" path="res://scripts/controllers/TrucoHumanPlayerController.gd" id="2_y2xxy"]
@@ -11,6 +11,8 @@
 [ext_resource type="AudioStream" uid="uid://c57pqlncckyxp" path="res://assets/audio/sounds/card-place-1.ogg" id="8_bkcf0"]
 [ext_resource type="Script" uid="uid://dhyfhi6fa8mta" path="res://scripts/entities/RivalHand.gd" id="9_32kxe"]
 [ext_resource type="Script" uid="uid://c56pmoeww7vlq" path="res://scripts/ui/TrucoUI.gd" id="10_jide4"]
+[ext_resource type="FontFile" uid="uid://r4cakheuj4n" path="res://assets/fonts/PirataOne-Regular.ttf" id="11_pu42s"]
+[ext_resource type="Theme" uid="uid://c6pjgoign3l3k" path="res://resources/themes/calling_theme.tres" id="13_e57oh"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_0vyix"]
 size = Vector3(1.2, 0.05, 0.8)
@@ -43,6 +45,18 @@ size = Vector2(2, 2)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_txkv6"]
 size = Vector2(0.06, 0.1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e57oh"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="Theme" id="Theme_e57oh"]
+default_font = ExtResource("11_pu42s")
+default_font_size = 32
+Button/styles/normal = SubResource("StyleBoxFlat_e57oh")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0vyix"]
 bg_color = Color(0, 0, 0, 1)
@@ -173,6 +187,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme = SubResource("Theme_e57oh")
 script = ExtResource("10_jide4")
 
 [node name="MarginContainer" type="MarginContainer" parent="TrucoUI"]
@@ -197,13 +212,11 @@ layout_mode = 2
 
 [node name="EnvidoLabel" type="Label" parent="TrucoUI/MarginContainer/VBoxContainer/EnvidoContainer/HBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Envido: "
 
 [node name="EnvidoValueLabel" type="Label" parent="TrucoUI/MarginContainer/VBoxContainer/EnvidoContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "0"
 
 [node name="FlorContainer" type="PanelContainer" parent="TrucoUI/MarginContainer/VBoxContainer"]
@@ -216,7 +229,6 @@ layout_mode = 2
 
 [node name="FlorLabel" type="Label" parent="TrucoUI/MarginContainer/VBoxContainer/FlorContainer/HBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "FLOR"
 
 [node name="MarginContainer2" type="MarginContainer" parent="TrucoUI"]
@@ -241,7 +253,6 @@ layout_mode = 2
 
 [node name="DealButton" type="Button" parent="TrucoUI/MarginContainer2/PanelContainer/HBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Deal Cards"
 
 [node name="ScoreContainer" type="MarginContainer" parent="TrucoUI"]
@@ -270,7 +281,6 @@ layout_mode = 2
 
 [node name="ScoreLabel" type="Label" parent="TrucoUI/ScoreContainer/VBoxContainer/ScoreContainer/HBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
 text = "Human: 0 | CPU: 0"
 
 [node name="CallsContainer" type="MarginContainer" parent="TrucoUI"]
@@ -291,12 +301,10 @@ theme_override_constants/separation = 4
 
 [node name="EnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Envido"
 
 [node name="TrucoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Truco"
 
 [node name="ResponseContainer" type="MarginContainer" parent="TrucoUI"]
@@ -318,10 +326,35 @@ theme_override_constants/separation = 4
 
 [node name="QuieroButton" type="Button" parent="TrucoUI/ResponseContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Quiero"
 
 [node name="NoQuieroButton" type="Button" parent="TrucoUI/ResponseContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "No quiero"
+
+[node name="RivalDecisionContainer" type="MarginContainer" parent="TrucoUI"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_override_constants/margin_top = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TrucoUI/RivalDecisionContainer"]
+layout_mode = 2
+
+[node name="RivalDecisionStateLabel" type="Label" parent="TrucoUI/RivalDecisionContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "CPU accepted the envido with"
+horizontal_alignment = 1
+
+[node name="RivalCallsLabel" type="Label" parent="TrucoUI/RivalDecisionContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("13_e57oh")
+text = "Truco!"
+horizontal_alignment = 1
