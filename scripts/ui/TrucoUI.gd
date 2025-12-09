@@ -8,6 +8,12 @@ extends Control
 @onready var truco_manager: TrucoManager = $"../TrucoManager"
 @onready var score_label: Label = $ScoreContainer/VBoxContainer/ScoreContainer/HBoxContainer/ScoreLabel
 
+# Calls UI
+@onready var envido_button: Button = $CallsContainer/VBoxContainer/EnvidoButton
+@onready var response_container: MarginContainer = $ResponseContainer
+@onready var quiero_button: Button = $ResponseContainer/VBoxContainer/QuieroButton
+@onready var no_quiero_button: Button = $ResponseContainer/VBoxContainer/NoQuieroButton
+
 func _ready() -> void:
 	# Connect to Hand signals
 	if hand:
@@ -17,8 +23,31 @@ func _ready() -> void:
 	# Connect Deal Button to deal new hand
 	deal_button.pressed.connect(_on_deal_button_pressed)
 	
-	# Connect to SignalBus for score updates
+	# Connect to SignalBus
 	TrucoSignalBus.on_score_updated.connect(_on_score_updated)
+	TrucoSignalBus.on_envido_called.connect(_on_envido_called)
+	TrucoSignalBus.on_envido_resolved.connect(_on_envido_resolved)
+	TrucoSignalBus.on_hand_started.connect(_on_hand_started)
+	
+	# Connect Buttons
+	if envido_button:
+		envido_button.pressed.connect(_on_envido_button_pressed)
+	if quiero_button:
+		quiero_button.pressed.connect(_on_response_pressed.bind(true))
+	if no_quiero_button:
+		no_quiero_button.pressed.connect(_on_response_pressed.bind(false))
+		
+	# Initial State
+	response_container.visible = false
+
+func _process(_delta: float) -> void:
+	# Keep Envido button available only if valid
+	if truco_manager and envido_button:
+		# We check if we are in valid state to call it
+		# Optimization: Don't check every frame if performance bad, but for UI button validity it's fine for now
+		if envido_button.disabled != (not truco_manager.can_call_envido(0)):
+			# Update disabled state
+			envido_button.disabled = not truco_manager.can_call_envido(0)
 
 func _on_score_updated(human_score: int, cpu_score: int) -> void:
 	if score_label:
@@ -44,3 +73,35 @@ func _on_envido_calculated(score: int) -> void:
 func _on_flor_detected(has_flor: bool) -> void:
 	if flor_container:
 		flor_container.visible = has_flor
+
+# --- Envido Logic ---
+
+func _on_envido_button_pressed() -> void:
+	if truco_manager:
+		truco_manager.call_envido(0) # 0 is Human
+
+func _on_response_pressed(accepted: bool) -> void:
+	if truco_manager:
+		# Human (0) is answering
+		truco_manager.resolve_envido(accepted, 0)
+
+func _on_envido_called(player_index: int) -> void:
+	# If CPU (1) called, show response options to Human
+	if player_index == 1:
+		response_container.visible = true
+	else:
+		# Human called, waiting for CPU (Simulated response for now or disable UI)
+		response_container.visible = false
+		# Simulate CPU response immediately for testing (later this goes to CPU Controller)
+		get_tree().create_timer(1.0).timeout.connect(func():
+			# Quick hack: CPU always wants for now, or random
+			var cpu_wants = randf() > 0.3
+			truco_manager.resolve_envido(cpu_wants, 1)
+		)
+
+func _on_envido_resolved(_accepted: bool, winner_index: int, points: int) -> void:
+	response_container.visible = false
+	print("UI: Envido resolved. Points: %d to Player %d" % [points, winner_index])
+
+func _on_hand_started(_hand_num: int) -> void:
+	response_container.visible = false

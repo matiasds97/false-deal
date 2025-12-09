@@ -1,5 +1,6 @@
 class_name TrucoPlayerController
 extends Node
+@warning_ignore_start("UNUSED_SIGNAL")
 
 ##  This class is the base class for all player controllers.
 ##  It handles the logic for the player's turn. This class is used

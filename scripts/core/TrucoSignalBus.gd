@@ -1,5 +1,5 @@
 extends Node
-
+@warning_ignore_start("UNUSED_SIGNAL")
 # Emitted when a card is dealt to a player
 # player_index: 0 for Human, 1 for CPU
 # card: The card data (Resource)
@@ -31,3 +31,13 @@ signal card_placement_info(target_position: Vector3, stack_height: float)
 # human_score: The current score of the human player
 # cpu_score: The current score of the CPU player
 signal on_score_updated(human_score: int, cpu_score: int)
+
+# Emitted when Envido is called
+# player_index: Who called it
+signal on_envido_called(player_index: int)
+
+# Emitted when Envido is resolved (accepted/rejected)
+# accepted: true if "Quiero", false if "No Quiero"
+# points: points awarded (for now just for the winner, logic might need refinement later for who won)
+# winner_index: who takes the points (or who showed the best points)
+signal on_envido_resolved(accepted: bool, winner_index: int, points: int)

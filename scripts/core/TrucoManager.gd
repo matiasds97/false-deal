@@ -14,6 +14,13 @@ var vuelta_results: Array[int] = [] # Stores winner of each vuelta (-1 for tie)
 var player_scores: Dictionary = {0: 0, 1: 0}
 var mano_player_index: int = 0
 
+# Envido / Truco States
+enum EnvidoCallState {NONE, CALLED, PLAYED}
+enum TrucoCallState {NONE, CALLED, PLAYED}
+
+var envido_state: EnvidoCallState = EnvidoCallState.NONE
+var truco_state: TrucoCallState = TrucoCallState.NONE
+
 
 signal match_started
 signal new_hand_started(hand_number: int)
@@ -24,15 +31,33 @@ func _ready() -> void:
 	var p2 = Player.new("CPU", false, 1)
 	players = [p1, p2]
 
+	# Auto-fill player_nodes if empty (Fallback)
+	if player_nodes.is_empty():
+		var human_node = get_node_or_null("../HumanPlayer")
+		var cpu_node = get_node_or_null("../CPUPlayer")
+		if human_node and cpu_node:
+			print("TrucoManager: Auto-found Player Nodes.")
+			player_nodes = [human_node, cpu_node]
+		else:
+			printerr("TrucoManager: Player Nodes not assigned and could not be auto-found!")
+
 	# Initialize controllers
 	if player_nodes.size() == players.size():
 		for i in range(players.size()):
 			if player_nodes[i].has_method("initialize"):
 				player_nodes[i].initialize(players[i])
+				
+				# Connect signals
 				if player_nodes[i].has_signal("card_played"):
-					player_nodes[i].card_played.connect(_on_player_card_played.bind(i))
+					if not player_nodes[i].card_played.is_connected(_on_player_card_played):
+						player_nodes[i].card_played.connect(_on_player_card_played.bind(i))
+				
+				if player_nodes[i].has_signal("envido_called"):
+					if not player_nodes[i].envido_called.is_connected(_on_player_envido_called):
+						player_nodes[i].envido_called.connect(_on_player_envido_called.bind(i))
+
 	else:
-		printerr("Mismatch between Players count and Player Nodes count!")
+		printerr("Mismatch between Players count and Player Nodes count! Players: %d, Nodes: %d" % [players.size(), player_nodes.size()])
 
 	call_deferred("start_match")
 
@@ -56,6 +81,10 @@ func start_new_hand() -> void:
 	mano_index = (dealer_index + 1) % players.size()
 	mano_player_index = mano_index
 	current_turn_index = mano_index
+
+	# Reset states for new hand
+	envido_state = EnvidoCallState.NONE
+	truco_state = TrucoCallState.NONE
 
 	print("NewHand.Dealer: %s, Mano: %s, Turn: %s" % [players[dealer_index].name, players[mano_index].name, players[current_turn_index].name])
 	
@@ -120,6 +149,9 @@ func _on_player_card_played(card: Card, player_index: int) -> void:
 	
 	# Advance turn
 	advance_turn()
+
+func _on_player_envido_called(player_index: int) -> void:
+	call_envido(player_index)
 
 func advance_turn() -> void:
 	# Check if Baza is over (2 cards played for 2 players)
@@ -233,3 +265,85 @@ func check_round_winner() -> bool:
 		return true
 		
 	return false
+
+# --- ENVIDO IMPLEMENTATION ---
+
+func can_call_envido(_player_index: int) -> bool:
+	# Constraints:
+	# 1. First Hand (Mano 1 / First Vuelta) - vuelta_results is empty before first resolution
+	# Actually, players can play cards, so we check if result of 1st vuelta is not yet decided? 
+	# Or strictly before playing response card?
+	# Convention: Envido is allowed as long as "baza" hasn't closed OR it's the first player interaction.
+	# Simplest check for now: Only in first Vuelta (vuelta_results.size() == 0).
+	if vuelta_results.size() > 0:
+		return false
+		
+	# 2. Envido not already played/called
+	if envido_state != EnvidoCallState.NONE:
+		return false
+		
+	# 3. Truco not called (Truco blocks Envido calls)
+	if truco_state != TrucoCallState.NONE:
+		return false
+		
+	return true
+
+func call_envido(player_index: int) -> void:
+	if not can_call_envido(player_index):
+		printerr("Player %d tried to call Envido but it is not allowed!" % player_index)
+		return
+		
+	print("Player %d called Envido!" % player_index)
+	envido_state = EnvidoCallState.CALLED
+	
+	# Emit signal so UI shows ResponseContainer (if opponent called)
+	TrucoSignalBus.emit_signal("on_envido_called", player_index)
+
+func resolve_envido(accepted: bool, answering_player_index: int) -> void:
+	print("Envido Resolved. Accepted: %s" % accepted)
+	envido_state = EnvidoCallState.PLAYED
+	
+	var points = 0
+	var winner = -1
+	
+	if not accepted:
+		points = 1
+		# Winner is the one who called (the opponent of the one answering)
+		# Assuming simple 1v1:
+		winner = (answering_player_index + 1) % 2
+		print("Envido Rejected. 1 Point to Player %d" % winner)
+	else:
+		points = 2
+		# Compare points
+		var p0_score = players[0].get_envido_points()
+		var p1_score = players[1].get_envido_points()
+		
+		print("Envido Showdown! P0: %d vs P1: %d" % [p0_score, p1_score])
+		
+		if p0_score > p1_score:
+			winner = 0
+		elif p1_score > p0_score:
+			winner = 1
+		else:
+			# Tie: Mano wins
+			print("Envido Tie! Mano wins.")
+			if mano_player_index == 0:
+				winner = 0
+			else:
+				winner = 1
+				
+		print("Envido Accepted. %d Points to Player %d" % [points, winner])
+		
+	# Award points
+	player_scores[winner] += points
+	TrucoSignalBus.emit_signal("on_score_updated", player_scores[0], player_scores[1])
+	TrucoSignalBus.emit_signal("on_envido_resolved", accepted, winner, points)
+	
+func debug_cpu_call_envido() -> void:
+	if can_call_envido(1):
+		call_envido(1)
+
+func _input(event: InputEvent) -> void:
+	# DEBUG: Press E to make CPU call Envido
+	if event is InputEventKey and event.pressed and event.keycode == KEY_E:
+		debug_cpu_call_envido()

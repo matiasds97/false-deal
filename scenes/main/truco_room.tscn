@@ -116,10 +116,9 @@ fov = 50.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045387387, 0, -0.070322394)
 mesh = SubResource("QuadMesh_pu42s")
 
-[node name="HumanHand" type="Marker3D" parent="." node_paths=PackedStringArray("deck")]
+[node name="HumanHand" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.8435285, 0.29692185)
 script = ExtResource("7_ja30i")
-deck = NodePath("../Deck")
 
 [node name="Card1" type="MeshInstance3D" parent="HumanHand"]
 transform = Transform3D(0.9966375, -0.08193849, 0, 0.021207253, 0.25794867, -0.96592605, 0.079146534, 0.9626775, 0.25881913, -0.061, -0.001, 0)
@@ -273,3 +272,56 @@ layout_mode = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Human: 0 | CPU: 0"
+
+[node name="CallsContainer" type="MarginContainer" parent="TrucoUI"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -184.0
+offset_top = -98.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TrucoUI/CallsContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="EnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Envido"
+
+[node name="TrucoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Truco"
+
+[node name="ResponseContainer" type="MarginContainer" parent="TrucoUI"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -184.0
+offset_top = -49.0
+offset_bottom = 49.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TrucoUI/ResponseContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="QuieroButton" type="Button" parent="TrucoUI/ResponseContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Quiero"
+
+[node name="NoQuieroButton" type="Button" parent="TrucoUI/ResponseContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "No quiero"
