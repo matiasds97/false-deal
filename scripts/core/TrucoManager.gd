@@ -14,6 +14,14 @@ var vuelta_results: Array[int] = [] # Stores winner of each vuelta (-1 for tie)
 var player_scores: Dictionary = {0: 0, 1: 0}
 var mano_player_index: int = 0
 
+# Truco Stakes
+var current_stakes: int = 1
+var truco_caller_index: int = -1 # Who called the CURRENT level of Truco (for no-quiero point attribution)
+
+# Response Context
+enum ResponseAction {NONE, ENVIDO, TRUCO}
+var pending_response_action: ResponseAction = ResponseAction.NONE
+
 # Envido / Truco States
 enum EnvidoCallState {NONE, CALLED, PLAYED}
 enum TrucoCallState {NONE, CALLED, PLAYED}
@@ -56,6 +64,10 @@ func _ready() -> void:
 					if not player_nodes[i].envido_called.is_connected(_on_player_envido_called):
 						player_nodes[i].envido_called.connect(_on_player_envido_called.bind(i))
 
+				if player_nodes[i].has_signal("truco_called"):
+					if not player_nodes[i].truco_called.is_connected(_on_player_truco_called):
+						player_nodes[i].truco_called.connect(_on_player_truco_called.bind(i))
+
 	else:
 		printerr("Mismatch between Players count and Player Nodes count! Players: %d, Nodes: %d" % [players.size(), player_nodes.size()])
 
@@ -85,6 +97,9 @@ func start_new_hand() -> void:
 	# Reset states for new hand
 	envido_state = EnvidoCallState.NONE
 	truco_state = TrucoCallState.NONE
+	current_stakes = 1
+	truco_caller_index = -1
+	pending_response_action = ResponseAction.NONE
 
 	print("NewHand.Dealer: %s, Mano: %s, Turn: %s" % [players[dealer_index].name, players[mano_index].name, players[current_turn_index].name])
 	
@@ -254,17 +269,21 @@ func check_round_winner() -> bool:
 	
 	if round_winner != -1:
 		print("Round Ended! Winner: Player %d (%s)" % [round_winner, reason])
-		player_scores[round_winner] += 1
-		print("Score: Player 0: %d - Player 1: %d" % [player_scores[0], player_scores[1]])
 		
-		# Emit score update
-		TrucoSignalBus.emit_signal("on_score_updated", player_scores[0], player_scores[1])
+		# Award points based on current stakes (unless it was a special early win, but Parda logic implies full play)
+		# Actually, standard round win awards current_stakes.
+		add_score(round_winner, current_stakes)
 		
 		# Wait a bit then start new hand
 		get_tree().create_timer(2.0).timeout.connect(start_new_hand)
 		return true
 		
 	return false
+
+func add_score(player_index: int, points: int) -> void:
+	player_scores[player_index] += points
+	print("Score Update: Player %d gets %d points. Total: P0:%d - P1:%d" % [player_index, points, player_scores[0], player_scores[1]])
+	TrucoSignalBus.emit_signal("on_score_updated", player_scores[0], player_scores[1])
 
 # --- ENVIDO IMPLEMENTATION ---
 
@@ -295,6 +314,7 @@ func call_envido(player_index: int) -> void:
 		
 	print("Player %d called Envido!" % player_index)
 	envido_state = EnvidoCallState.CALLED
+	pending_response_action = ResponseAction.ENVIDO
 	
 	# Emit signal so UI shows ResponseContainer (if opponent called)
 	TrucoSignalBus.emit_signal("on_envido_called", player_index)
@@ -302,6 +322,7 @@ func call_envido(player_index: int) -> void:
 func resolve_envido(accepted: bool, answering_player_index: int) -> void:
 	print("Envido Resolved. Accepted: %s" % accepted)
 	envido_state = EnvidoCallState.PLAYED
+	pending_response_action = ResponseAction.NONE
 	
 	var points = 0
 	var winner = -1
@@ -335,15 +356,69 @@ func resolve_envido(accepted: bool, answering_player_index: int) -> void:
 		print("Envido Accepted. %d Points to Player %d" % [points, winner])
 		
 	# Award points
-	player_scores[winner] += points
-	TrucoSignalBus.emit_signal("on_score_updated", player_scores[0], player_scores[1])
+	add_score(winner, points)
 	TrucoSignalBus.emit_signal("on_envido_resolved", accepted, winner, points)
 	
 func debug_cpu_call_envido() -> void:
 	if can_call_envido(1):
 		call_envido(1)
 
+# --- TRUCO IMPLEMENTATION ---
+
+func can_call_truco(player_index: int) -> bool:
+	# 1. Truco not already accepted (for now only basic Truco, so if state is NONE, we can call)
+	# Future: Logic for Retruco etc.
+	if truco_state != TrucoCallState.NONE:
+		return false
+	
+	# 2. Cannot call if a response is pending
+	if pending_response_action != ResponseAction.NONE:
+		return false
+		
+	return true
+
+func call_truco(player_index: int) -> void:
+	if not can_call_truco(player_index):
+		return
+		
+	print("Player %d called Truco!" % player_index)
+	truco_state = TrucoCallState.CALLED
+	truco_caller_index = player_index
+	pending_response_action = ResponseAction.TRUCO
+	
+	TrucoSignalBus.emit_signal("on_truco_called", player_index)
+
+func resolve_truco(accepted: bool, answering_player_index: int) -> void:
+	print("Truco Resolved. Accepted: %s" % accepted)
+	pending_response_action = ResponseAction.NONE
+	
+	if accepted:
+		truco_state = TrucoCallState.PLAYED # Accepted logic
+		current_stakes = 2
+		print("Truco Accepted! Sticks: %d" % current_stakes)
+		TrucoSignalBus.emit_signal("on_truco_resolved", true, answering_player_index)
+	else:
+		print("Truco Rejected! Round Ends.")
+		# Winner is the one who called (caller_index)
+		# Points awarded is the PREVIOUS stakes (1 in this case of basic Truco)
+		var winner = truco_caller_index
+		add_score(winner, 1) # Standard rule: 1 point if Truco denied
+		TrucoSignalBus.emit_signal("on_truco_resolved", false, answering_player_index)
+		
+		# End Round
+		get_tree().create_timer(1.0).timeout.connect(start_new_hand)
+
+func debug_cpu_call_truco() -> void:
+	if can_call_truco(1):
+		call_truco(1)
+
+func _on_player_truco_called(player_index: int) -> void:
+	call_truco(player_index)
+
 func _input(event: InputEvent) -> void:
 	# DEBUG: Press E to make CPU call Envido
 	if event is InputEventKey and event.pressed and event.keycode == KEY_E:
 		debug_cpu_call_envido()
+	# DEBUG: Press T to make CPU call Truco
+	if event is InputEventKey and event.pressed and event.keycode == KEY_T:
+		debug_cpu_call_truco()

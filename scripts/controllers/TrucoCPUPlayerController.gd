@@ -9,6 +9,7 @@ var _waiting_for_response: bool = false
 
 func _ready() -> void:
 	TrucoSignalBus.on_envido_resolved.connect(_on_envido_resolved)
+	TrucoSignalBus.on_truco_resolved.connect(_on_truco_resolved)
 
 func start_turn() -> void:
 	super.start_turn()
@@ -37,7 +38,20 @@ func _make_decision() -> void:
 			_waiting_for_response = true
 			return # Stop here, wait for resolution
 
-	# 2. Play Card
+	# 2. Check for Truco Chance
+	if truco_manager and truco_manager.can_call_truco(my_index):
+		# Simple logic: random chance to call Truco if having high card or bluff
+		# Real logic would check hand strength
+		var has_ace_swords = false # Placeholder logic
+		var should_call_truco = (randf() < 0.15)
+		
+		if should_call_truco:
+			print("CPU Decided to call Truco!")
+			emit_signal("truco_called")
+			_waiting_for_response = true
+			return
+
+	# 3. Play Card
 	if player.hand.size() > 0:
 		var card_to_play: Card = player.hand[0]
 		
@@ -49,5 +63,11 @@ func _on_envido_resolved(_accepted: bool, _winner_index: int, _points: int) -> v
 	# If we were waiting (meaning we called it, or maybe we answered it?)
 	# Use a small delay to resume so it doesn't look instant
 	if _waiting_for_response:
+		_waiting_for_response = false
+		get_tree().create_timer(1.5).timeout.connect(_make_decision)
+
+func _on_truco_resolved(accepted: bool, _player_index: int) -> void:
+	# If accepted, we continue playing. If rejected, round ends so this logic matters less but good to reset.
+	if _waiting_for_response and accepted:
 		_waiting_for_response = false
 		get_tree().create_timer(1.5).timeout.connect(_make_decision)

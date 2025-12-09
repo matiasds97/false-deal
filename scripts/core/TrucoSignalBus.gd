@@ -41,3 +41,12 @@ signal on_envido_called(player_index: int)
 # points: points awarded (for now just for the winner, logic might need refinement later for who won)
 # winner_index: who takes the points (or who showed the best points)
 signal on_envido_resolved(accepted: bool, winner_index: int, points: int)
+
+# Emitted when Truco is called
+# player_index: Who called it
+signal on_truco_called(player_index: int)
+
+# Emitted when Truco is resolved
+# accepted: true if accepted (stakes increase), false if rejected (round ends)
+# player_index: Who responded (useful for logging)
+signal on_truco_resolved(accepted: bool, player_index: int)
