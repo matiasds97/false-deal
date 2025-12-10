@@ -1,4 +1,7 @@
+class_name TrucoUI
 extends Control
+## Main UI Controller for the Truco match.
+## Handles visibility of buttons, labels, and updates interactions based on game state.
 
 @onready var envido_value_label: Label = %EnvidoValueLabel
 @onready var flor_container: PanelContainer = %FlorContainer
@@ -11,11 +14,21 @@ extends Control
 @onready var rival_decision_state_label: Label = %RivalDecisionStateLabel
 
 # Calls UI
+@onready var calls_vbox: VBoxContainer = $CallsContainer/VBoxContainer
 @onready var envido_button: Button = $CallsContainer/VBoxContainer/EnvidoButton
+@onready var real_envido_button: Button = $CallsContainer/VBoxContainer/RealEnvidoButton
+@onready var falta_envido_button: Button = $CallsContainer/VBoxContainer/FaltaEnvidoButton
+
 @onready var truco_button: Button = $CallsContainer/VBoxContainer/TrucoButton
 @onready var response_container: MarginContainer = $ResponseContainer
+@onready var response_vbox: VBoxContainer = $ResponseContainer/VBoxContainer
 @onready var quiero_button: Button = $ResponseContainer/VBoxContainer/QuieroButton
 @onready var no_quiero_button: Button = $ResponseContainer/VBoxContainer/NoQuieroButton
+
+# Dynamic Buttons
+var response_envido_button: Button
+var response_real_envido_button: Button
+var response_falta_envido_button: Button
 
 func _ready() -> void:
 	# Connect to Hand signals
@@ -37,26 +50,60 @@ func _ready() -> void:
 	# Connect Buttons
 	if envido_button:
 		envido_button.pressed.connect(_on_envido_button_pressed)
+	if real_envido_button:
+		real_envido_button.pressed.connect(_on_real_envido_button_pressed)
+	if falta_envido_button:
+		falta_envido_button.pressed.connect(_on_falta_envido_button_pressed)
 	if truco_button:
 		truco_button.pressed.connect(_on_truco_button_pressed)
 	if quiero_button:
 		quiero_button.pressed.connect(_on_response_pressed.bind(true))
 	if no_quiero_button:
 		no_quiero_button.pressed.connect(_on_response_pressed.bind(false))
-		
+	
+	# Move Truco button to bottom of calls (optional, but good for order)
+	calls_vbox.move_child(truco_button, -1)
+	
+	# Response Buttons (Raise)
+	response_envido_button = create_button("Envido", response_vbox, _on_envido_button_pressed) # Same handler, calls logic checks
+	response_real_envido_button = create_button("Real Envido", response_vbox, _on_real_envido_button_pressed)
+	response_falta_envido_button = create_button("Falta Envido", response_vbox, _on_falta_envido_button_pressed)
+	
 	# Initial State
 	response_container.visible = false
 
+## Helper to create a standard button with local style.
+func create_button(text: String, parent: Node, callback: Callable) -> Button:
+	var btn = Button.new()
+	btn.text = text
+	parent.add_child(btn)
+	btn.pressed.connect(callback)
+	return btn
+
 func _process(_delta: float) -> void:
-	# Keep Envido button available only if valid
-	if truco_manager and envido_button:
-		# We check if we are in valid state to call it
-		# Optimization: Don't check every frame if performance bad, but for UI button validity it's fine for now
-		if envido_button.disabled != (not truco_manager.can_call_envido(0)):
-			# Update disabled state
-			envido_button.disabled = not truco_manager.can_call_envido(0)
-			
-	if truco_manager and truco_button:
+	if not truco_manager: return
+	_update_call_buttons_state()
+
+## Updates the enabled/visible state of call and response buttons based on game rules.
+func _update_call_buttons_state() -> void:
+	# CALLS Container (Initial Calls)
+	if envido_button:
+		envido_button.disabled = not (truco_manager.can_call_envido(TrucoManager.EnvidoType.ENVIDO, 0) and truco_manager.envido_chain.is_empty())
+	if real_envido_button:
+		real_envido_button.disabled = not (truco_manager.can_call_envido(TrucoManager.EnvidoType.REAL_ENVIDO, 0) and truco_manager.envido_chain.is_empty())
+	if falta_envido_button:
+		falta_envido_button.disabled = not (truco_manager.can_call_envido(TrucoManager.EnvidoType.FALTA_ENVIDO, 0) and truco_manager.envido_chain.is_empty())
+
+	# RESPONSE Container (Raising)
+	if response_container.visible:
+		if response_envido_button:
+			response_envido_button.visible = truco_manager.can_call_envido(TrucoManager.EnvidoType.ENVIDO, 0)
+		if response_real_envido_button:
+			response_real_envido_button.visible = truco_manager.can_call_envido(TrucoManager.EnvidoType.REAL_ENVIDO, 0)
+		if response_falta_envido_button:
+			response_falta_envido_button.visible = truco_manager.can_call_envido(TrucoManager.EnvidoType.FALTA_ENVIDO, 0)
+
+	if truco_button:
 		if truco_button.disabled != (not truco_manager.can_call_truco(0)):
 			truco_button.disabled = not truco_manager.can_call_truco(0)
 
@@ -90,7 +137,15 @@ func _on_flor_detected(has_flor: bool) -> void:
 ## Handles Envido Button Press.
 func _on_envido_button_pressed() -> void:
 	if truco_manager:
-		truco_manager.call_envido(0) # 0 is Human
+		truco_manager.call_envido(TrucoManager.EnvidoType.ENVIDO, 0)
+
+func _on_real_envido_button_pressed() -> void:
+	if truco_manager:
+		truco_manager.call_envido(TrucoManager.EnvidoType.REAL_ENVIDO, 0)
+
+func _on_falta_envido_button_pressed() -> void:
+	if truco_manager:
+		truco_manager.call_envido(TrucoManager.EnvidoType.FALTA_ENVIDO, 0)
 
 ## Handles Truco Button Press.
 func _on_truco_button_pressed() -> void:
@@ -110,14 +165,16 @@ func _on_envido_called(player_index: int) -> void:
 	if player_index == 1:
 		response_container.visible = true
 		rival_calls_label.visible = true
-		rival_calls_label.text = "Envido!"
+		# Logic to determine WHAT was called (for display) could be improved by checking chain
+		var last_call = truco_manager.envido_chain.back()
+
+		# Replace "_" for " ", and make every first letter capital.
+		var envido_text: String = TrucoManager.EnvidoType.keys()[last_call].replace("_", " ")
+		var envido_text_capitalized: String = envido_text.capitalize()
+		rival_calls_label.text = envido_text_capitalized + "!"
 	else:
-		# Human called, waiting for CPU
+		# Human called, waiting for CPU (handled by TrucoCPUPlayerController)
 		response_container.visible = false
-		get_tree().create_timer(1.0).timeout.connect(func():
-			var cpu_wants = randf() > 0.3
-			truco_manager.resolve_envido(cpu_wants, 1)
-		)
 
 func _on_truco_called(player_index: int) -> void:
 	# If CPU (1) called, show response options to Human
@@ -126,17 +183,13 @@ func _on_truco_called(player_index: int) -> void:
 		rival_calls_label.visible = true
 		rival_calls_label.text = "Truco!"
 	else:
-		# Human called, waiting for CPU
+		# Human called, waiting for CPU (handled by TrucoCPUPlayerController)
 		response_container.visible = false
-		get_tree().create_timer(1.0).timeout.connect(func():
-			var cpu_wants = randf() > 0.3
-			truco_manager.resolve_truco(cpu_wants, 1)
-		)
 
 func _on_envido_resolved(accepted: bool, winner_index: int, points: int) -> void:
 	response_container.visible = false
 	rival_calls_label.visible = false
-	print("UI: Envido resolved. Points: %d to Player %d" % [points, winner_index])
+	print_debug("UI: Envido resolved. Points: %d to Player %d" % [points, winner_index])
 	
 	if accepted:
 		var human_points = truco_manager.players[0].get_envido_points()

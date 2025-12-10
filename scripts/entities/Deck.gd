@@ -12,7 +12,7 @@ func _ready() -> void:
 		printerr("Card resources directory does not exist!")
 		return
 	var dir: DirAccess = DirAccess.open(CARD_PATH)
-	print(dir)
+	print_debug(dir)
 	if dir:
 		dir.list_dir_begin()
 		var file_name: String = dir.get_next()

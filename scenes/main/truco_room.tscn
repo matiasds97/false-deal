@@ -303,6 +303,14 @@ theme_override_constants/separation = 4
 layout_mode = 2
 text = "Envido"
 
+[node name="RealEnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer"]
+layout_mode = 2
+text = "Real Envido"
+
+[node name="FaltaEnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer"]
+layout_mode = 2
+text = "Falta Envido"
+
 [node name="TrucoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer"]
 layout_mode = 2
 text = "Truco"
