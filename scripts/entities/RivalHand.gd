@@ -48,7 +48,7 @@ func _on_card_placement_info(target_position: Vector3, stack_height: float) -> v
 
 func reset_hand() -> void:
 	for i in range(cards.size()):
-		var c = cards[i]
+		var c: MeshInstance3D = cards[i]
 		
 		# Reparent if it was thrown
 		if c.get_parent() != self:
@@ -76,16 +76,16 @@ func play_card(card_data: Card) -> void:
 	card_node.get_surface_override_material(0).albedo_texture = card_data.image
 	
 	# Reparent to scene root
-	var new_parent = get_parent()
+	var new_parent: Node = get_parent()
 	if new_parent:
 		card_node.reparent(new_parent, true)
 	
 	# Use cached placement info from Table (via SignalBus)
-	var target_pos = cached_target_position
+	var target_pos: Vector3 = cached_target_position
 	# Add randomness
-	var rng = RandomNumberGenerator.new()
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
-	var random_offset = Vector3(rng.randf_range(-0.009, 0.009), 0, rng.randf_range(-0.009, 0.009))
+	var random_offset: Vector3 = Vector3(rng.randf_range(-0.009, 0.009), 0, rng.randf_range(-0.009, 0.009))
 	target_pos += random_offset
 	
 	# Apply stack height from cached info
@@ -94,7 +94,7 @@ func play_card(card_data: Card) -> void:
 	play_card_throw_sound()
 	
 	# Animate
-	var tween = create_tween()
+	var tween: Tween = create_tween()
 	tween.set_parallel(true)
 	tween.set_ease(Tween.EASE_OUT)
 	tween.set_trans(Tween.TRANS_CUBIC)
@@ -103,12 +103,12 @@ func play_card(card_data: Card) -> void:
 	
 	# Rotate to face up (assuming Y rotation is yaw, and X/Z is flip)
 	# We want it flat on table, face up.
-	var random_rot_y = rng.randf_range(0, 360)
-	var final_rotation = Vector3(0, deg_to_rad(random_rot_y), 0)
+	var random_rot_y: float = rng.randf_range(0, 360)
+	var final_rotation: Vector3 = Vector3(0, deg_to_rad(random_rot_y), 0)
 	tween.tween_property(card_node, "global_rotation", final_rotation, 0.6)
 
 func play_card_throw_sound() -> void:
-	var rng = RandomNumberGenerator.new()
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
 	card_sounds_player.stream = card_sounds[rng.randi_range(0, card_sounds.size() - 1)]
 	card_sounds_player.play()

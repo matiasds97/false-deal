@@ -53,14 +53,14 @@ func _on_card_played(player_index: int, card: Card) -> void:
 		disable_interaction()
 		
 		# Find the card node corresponding to this card
-		var card_idx = -1
+		var card_idx: int = -1
 		for i in range(cards_in_hand.size()):
 			if cards_in_hand[i] == card: # Assuming Card resource equality works (same instance)
 				card_idx = i
 				break
 		
 		if card_idx != -1:
-			var card_nodes = [card_1, card_2, card_3]
+			var card_nodes: Array[Variant] = [card_1, card_2, card_3]
 			if card_idx < card_nodes.size():
 				var node = card_nodes[card_idx]
 				play_card_throw_sound()
@@ -74,8 +74,8 @@ func _on_hand_started(_hand_number: int) -> void:
 func _on_card_dealt(player_index: int, card: Card) -> void:
 	if player_index == 0: # Human
 		cards_in_hand.append(card)
-		var idx = cards_in_hand.size() - 1
-		var card_nodes = [card_1, card_2, card_3]
+		var idx: int = cards_in_hand.size() - 1
+		var card_nodes: Array[Variant] = [card_1, card_2, card_3]
 		
 		if idx < card_nodes.size():
 			var card_node = card_nodes[idx]
@@ -112,13 +112,13 @@ func _add_collision_to_card(card_node: MeshInstance3D) -> void:
 		return
 
 	# Create StaticBody3D
-	var static_body = StaticBody3D.new()
+	var static_body: StaticBody3D = StaticBody3D.new()
 	static_body.name = "StaticBody3D"
 	card_node.add_child(static_body)
 	
 	# Create CollisionShape3D
-	var collision_shape = CollisionShape3D.new()
-	var box_shape = BoxShape3D.new()
+	var collision_shape: CollisionShape3D = CollisionShape3D.new()
+	var box_shape: BoxShape3D = BoxShape3D.new()
 	# Card mesh size is approx 0.06 x 0.1 based on PlaneMesh in scene
 	box_shape.size = Vector3(0.06, 0.01, 0.1)
 	collision_shape.shape = box_shape
@@ -136,13 +136,13 @@ func _on_card_input_event(_camera: Node, event: InputEvent, _position: Vector3, 
 
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		# Find the Card resource associated with this node
-		var idx = -1
+		var idx: int = -1
 		if card_node == card_1: idx = 0
 		elif card_node == card_2: idx = 1
 		elif card_node == card_3: idx = 2
 		
 		if idx != -1 and idx < cards_in_hand.size():
-			var card = cards_in_hand[idx]
+			var card: Card = cards_in_hand[idx]
 			# Emit via SignalBus
 			TrucoSignalBus.emit_signal("on_user_input_card_selected", card)
 			emit_signal("card_selected", card, card_node) # Keep local for compatibility if needed
@@ -162,7 +162,7 @@ func _on_card_mouse_entered(card_node: MeshInstance3D) -> void:
 	# Only apply effect if card is still in hand
 	if card_node.get_parent() != self: return
 	
-	var idx = -1
+	var idx: int = -1
 	if card_node == card_1: idx = 0
 	elif card_node == card_2: idx = 1
 	elif card_node == card_3: idx = 2
@@ -173,8 +173,8 @@ func _on_card_mouse_entered(card_node: MeshInstance3D) -> void:
 			hover_tweens[card_node].kill()
 			
 		# Pop up slightly (local Y)
-		var target_y = initial_transforms[idx].origin.y + 0.025
-		var tween = create_tween()
+		var target_y: float = initial_transforms[idx].origin.y + 0.025
+		var tween: Tween = create_tween()
 		hover_tweens[card_node] = tween
 		tween.set_ease(Tween.EASE_OUT)
 		tween.set_trans(Tween.TRANS_CUBIC)
@@ -184,7 +184,7 @@ func _on_card_mouse_exited(card_node: MeshInstance3D) -> void:
 	# Only apply effect if card is still in hand
 	if card_node.get_parent() != self: return
 	
-	var idx = -1
+	var idx: int = -1
 	if card_node == card_1: idx = 0
 	elif card_node == card_2: idx = 1
 	elif card_node == card_3: idx = 2
@@ -195,8 +195,8 @@ func _on_card_mouse_exited(card_node: MeshInstance3D) -> void:
 			hover_tweens[card_node].kill()
 			
 		# Return to original position
-		var target_y = initial_transforms[idx].origin.y
-		var tween = create_tween()
+		var target_y: float = initial_transforms[idx].origin.y
+		var tween: Tween = create_tween()
 		hover_tweens[card_node] = tween
 		tween.set_ease(Tween.EASE_OUT)
 		tween.set_trans(Tween.TRANS_CUBIC)
@@ -209,13 +209,13 @@ func throw_card(card_node: MeshInstance3D) -> void:
 	if hover_tweens.has(card_node) and hover_tweens[card_node]:
 		hover_tweens[card_node].kill()
 	
-	var static_body = card_node.get_node_or_null("StaticBody3D")
+	var static_body: Node = card_node.get_node_or_null("StaticBody3D")
 	if static_body:
 		static_body.queue_free() # Remove collision so it can't be clicked again
 	
 	# Reparent to scene root (Hand's parent) to avoid inheriting Hand transforms
 	# Using get_parent() (TrucoRoom) is safer than current_scene in case of nested instantiation
-	var new_parent = get_parent()
+	var new_parent: Node = get_parent()
 	if new_parent:
 		card_node.reparent(new_parent, true)
 		
@@ -225,35 +225,35 @@ func throw_card(card_node: MeshInstance3D) -> void:
 		printerr("Hand has no parent!")
 	
 	# Use cached placement info from Table (via SignalBus)
-	var target_pos = cached_target_position
+	var target_pos: Vector3 = cached_target_position
 	# Add some randomness to the target position ("messy" pile)
-	var rng = RandomNumberGenerator.new()
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
-	var random_offset = Vector3(rng.randf_range(-0.009, 0.009), 0, rng.randf_range(-0.009, 0.009))
+	var random_offset: Vector3 = Vector3(rng.randf_range(-0.009, 0.009), 0, rng.randf_range(-0.009, 0.009))
 	target_pos += random_offset
 	
 	# Apply stack height from cached info
 	target_pos.y += cached_stack_height
 	
 	# Animation
-	var tween = create_tween()
+	var tween: Tween = create_tween()
 	tween.set_parallel(true)
 	tween.set_ease(Tween.EASE_OUT)
 	tween.set_trans(Tween.TRANS_CUBIC)
 	
 	# Move to target (global position)
-	var flight_time = 0.7
+	var flight_time: float = 0.7
 	tween.tween_property(card_node, "global_position", target_pos, flight_time)
 	
 	# Random rotation only on Y axis (yaw) so it lands flat on the table
-	var random_rot_y = rng.randf_range(0, 360)
+	var random_rot_y: float = rng.randf_range(0, 360)
 	
-	var final_rotation = Vector3(0, deg_to_rad(random_rot_y), 0)
+	var final_rotation: Vector3 = Vector3(0, deg_to_rad(random_rot_y), 0)
 	
 	tween.tween_property(card_node, "global_rotation", final_rotation, flight_time * 0.8)
 
 func play_card_throw_sound() -> void:
-	var rng = RandomNumberGenerator.new()
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
 	card_sounds_player.stream = card_sounds[rng.randi_range(0, card_sounds.size() - 1)]
 	card_sounds_player.play()
@@ -275,19 +275,19 @@ func deal_new_hand() -> void:
 
 func _update_card_visuals(card_node: MeshInstance3D, card: Card) -> void:
 	# Check if we already have a unique override that is a ShaderMaterial
-	var override_mat = card_node.get_surface_override_material(0)
+	var override_mat: Material = card_node.get_surface_override_material(0)
 	
 	if override_mat is ShaderMaterial:
 		override_mat.set_shader_parameter("main_tex", card.image)
 		return
 
 	# If no override, check the active material (from mesh or material_override)
-	var active_mat = card_node.get_active_material(0)
+	var active_mat: Material = card_node.get_active_material(0)
 	
 	if active_mat is ShaderMaterial:
 		# We found a shader material. Duplicate it to create a unique instance for this card
 		# so we can set a unique texture without affecting others.
-		var new_mat = active_mat.duplicate()
+		var new_mat: Resource = active_mat.duplicate()
 		new_mat.set_shader_parameter("main_tex", card.image)
 		card_node.set_surface_override_material(0, new_mat)
 	else:
@@ -299,19 +299,19 @@ func _update_card_visuals(card_node: MeshInstance3D, card: Card) -> void:
 ## highest envido values in that suit (cards 10/11/12 count as 0).
 ## Otherwise return the highest single envido card value.
 func get_envido_points() -> int:
-	var suits_cards = {}
+	var suits_cards: Dictionary[Variant, Variant] = {}
 	for card in cards_in_hand:
 		if not suits_cards.has(card.suit):
 			suits_cards[card.suit] = []
 		suits_cards[card.suit].append(card)
 
-	var best_pair_envido = 0
+	var best_pair_envido: int = 0
 	for suit in suits_cards.keys():
 		var cards_of_suit = suits_cards[suit]
 		if cards_of_suit.size() < 2:
 			continue
 
-		var vals = []
+		var vals: Array[Variant] = []
 		for c in cards_of_suit:
 			vals.append(c.get_envido_value())
 		vals.sort_custom(func(a, b): return a > b)
@@ -324,7 +324,7 @@ func get_envido_points() -> int:
 		return best_pair_envido
 
 	# Fallback: highest single envido card value
-	var best_single = 0
+	var best_single: int = 0
 	for c in cards_in_hand:
 		best_single = max(best_single, c.get_envido_value())
 	return best_single
@@ -334,7 +334,7 @@ func get_envido_points() -> int:
 func has_flor() -> bool:
 	if cards_in_hand.size() < 3:
 		return false
-	var first_suit = cards_in_hand[0].suit
+	var first_suit: Card.Suit = cards_in_hand[0].suit
 	for i in range(1, cards_in_hand.size()):
 		if cards_in_hand[i].suit != first_suit:
 			return false

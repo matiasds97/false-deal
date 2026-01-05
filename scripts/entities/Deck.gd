@@ -4,7 +4,7 @@ class_name Deck
 var cards: Array[Card] = []
 var all_cards: Array[Card] = []
 
-const CARD_PATH = "res://resources/cards/"
+const CARD_PATH: String = "res://resources/cards/"
 
 func _ready() -> void:
 	var card_resources: Array[Card] = []

@@ -15,11 +15,11 @@ func _process(_delta: float) -> void:
 			_open()
 
 func _open() -> void:
-	var tween = create_tween()
+	var tween: Tween = create_tween()
 	tween.tween_property(self, "rotation_degrees", Vector3(0, -120, 0), 3.0)
 	open = true
 
 func _close() -> void:
-	var tween = create_tween()
+	var tween: Tween = create_tween()
 	tween.tween_property(self, "rotation_degrees", Vector3.ZERO, 3.0)
 	open = false

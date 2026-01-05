@@ -1,11 +1,10 @@
-[gd_scene load_steps=23 format=3 uid="uid://c3m7lgp4gxmbn"]
+[gd_scene load_steps=22 format=3 uid="uid://c3m7lgp4gxmbn"]
 
 [ext_resource type="Script" uid="uid://f5t5okbpxgcg" path="res://scripts/core/TrucoManager.gd" id="1_vyrup"]
 [ext_resource type="Script" uid="uid://c5l4c5yo26h5n" path="res://scripts/controllers/TrucoHumanPlayerController.gd" id="2_y2xxy"]
 [ext_resource type="Script" uid="uid://bb30jga5fr8vr" path="res://scripts/controllers/TrucoCPUPlayerController.gd" id="3_pu42s"]
 [ext_resource type="Script" uid="uid://chpu4iupivv7r" path="res://scripts/entities/Deck.gd" id="4_e57oh"]
 [ext_resource type="Script" uid="uid://bast0hh7ibgn5" path="res://scripts/entities/Table.gd" id="5_uee4n"]
-[ext_resource type="Script" path="res://scripts/IntermittentLight.gd" id="6_x2plq"]
 [ext_resource type="Script" uid="uid://bq3w2mabv2hb5" path="res://scripts/entities/Hand.gd" id="7_ja30i"]
 [ext_resource type="Shader" uid="uid://bityksus0srie" path="res://shaders/psx_camera_shader.gdshader" id="7_y2xxy"]
 [ext_resource type="AudioStream" uid="uid://c57pqlncckyxp" path="res://assets/audio/sounds/card-place-1.ogg" id="8_bkcf0"]
@@ -115,12 +114,6 @@ light_size = 5.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3890164, 0)
 light_energy = 0.2
 light_size = 5.0
-script = ExtResource("6_x2plq")
-frequency = 0.5
-min_energy = 0.2
-max_energy = 0.4
-smooth = false
-rise_time = 0.195
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.88617915, 0.46334273, 0, -0.46334273, 0.88617915, 0, 1.0802062, 0.5246976)

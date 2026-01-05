@@ -33,7 +33,7 @@ func start_turn() -> void:
 ## [delay]: The delay in seconds before the decision is made.
 func _schedule_decision(delay: float) -> void:
 	_decision_token += 1
-	var current_token = _decision_token
+	var current_token: int = _decision_token
 	get_tree().create_timer(delay).timeout.connect(_make_decision.bind(current_token))
 
 func _make_decision(token: int) -> void:
@@ -59,9 +59,9 @@ func _try_call_envido(my_index: int) -> bool:
 	if not truco_manager.can_call_envido(TrucoManager.EnvidoType.ENVIDO, my_index):
 		return false
 		
-	var points = player.get_envido_points()
+	var points: int = player.get_envido_points()
 	# Simple logic: Call if points > 27 or small chance of bluff
-	var should_call = points >= 26 or (_bluff_factor < 0.15)
+	var should_call: bool = points >= 26 or (_bluff_factor < 0.15)
 	
 	if should_call:
 		print_debug("CPU Decided to call Envido with %d points" % points)
@@ -84,7 +84,7 @@ func _try_call_truco(my_index: int) -> bool:
 		
 	# Simple logic: random chance to call Truco if having high card or bluff
 	# Real logic would check hand strength
-	var should_call_truco = (randf() < 0.15)
+	var should_call_truco: bool = (randf() < 0.15)
 	
 	if should_call_truco:
 		print_debug("CPU Decided to call Truco!")
@@ -117,8 +117,8 @@ func _caller_was_CPU(caller_index: int) -> bool:
 
 ## Decides how to respond to an opponent's Envido call.
 func _decide_envido_response() -> void:
-	var my_index = 1
-	var points = player.get_envido_points()
+	var my_index: int = 1
+	var points: int = player.get_envido_points()
 	
 	print_debug("CPU considering Envido response. Points: %d" % points)
 	
@@ -176,14 +176,14 @@ func _on_truco_called_by_opponent(caller_index: int) -> void:
 
 ## Decides how to respond to an opponent's Truco call.
 func _decide_truco_response() -> void:
-	var my_index = 1
+	var my_index: int = 1
 	print_debug("CPU considering Truco response.")
 	
 	# Simple strategy based on bluff factor or random for now
 	# In a real implementation we would evaluate hand strength (Ancho de espatas, etc)
 	# For now: 15% Reject, 85% Accept/Raise
 	
-	var roll = randf()
+	var roll: float = randf()
 	
 	if roll < 0.15 and _bluff_factor < 0.5:
 		print_debug("CPU Rejected Truco")

@@ -17,7 +17,7 @@ func receive_card(card: Card) -> void:
 
 func play_card(card_index: int) -> Card:
 	if card_index >= 0 and card_index < hand.size():
-		var card = hand[card_index]
+		var card: Card = hand[card_index]
 		hand.remove_at(card_index)
 		return card
 	else:
@@ -25,7 +25,7 @@ func play_card(card_index: int) -> Card:
 		return null
 
 func play_specific_card(card: Card) -> bool:
-	var index = hand.find(card)
+	var index: int = hand.find(card)
 	if index != -1:
 		hand.remove_at(index)
 		return true
@@ -48,7 +48,7 @@ func get_highest_card() -> Card:
 	if hand.is_empty():
 		return null
 	
-	var highest_card = hand[0]
+	var highest_card: Card = hand[0]
 	for card in hand:
 		if card.compare(highest_card) > 0:
 			highest_card = card
@@ -65,13 +65,13 @@ func get_envido_points() -> int:
 	# and return 20 + sum_of_those_two. If no two-cards same suit exist,
 	# return the highest single envido card value (or 0).
 
-	var suits_cards = {}
+	var suits_cards: Dictionary[Variant, Variant] = {}
 	for card in hand:
 		if not suits_cards.has(card.suit):
 			suits_cards[card.suit] = []
 		suits_cards[card.suit].append(card)
 
-	var max_envido = 0
+	var max_envido: int = 0
 	# Check each suit for at least two cards and compute best pair
 	for suit in suits_cards.keys():
 		var cards_of_suit = suits_cards[suit]
@@ -79,7 +79,7 @@ func get_envido_points() -> int:
 			continue
 
 		# compute envido values for cards in this suit (10/11/12 -> 0)
-		var vals = []
+		var vals: Array[Variant] = []
 		for c in cards_of_suit:
 			vals.append(c.get_envido_value())
 		# sort descending
@@ -93,13 +93,13 @@ func get_envido_points() -> int:
 		return max_envido
 
 	# Fallback: no pair of same suit -> best single envido card (0..7)
-	var best_single = 0
+	var best_single: int = 0
 	for c in hand:
 		best_single = max(best_single, c.get_envido_value())
 	return best_single
 
 func _to_string() -> String:
-	var result = "Player: %s\n" % name
+	var result: String = "Player: %s\n" % name
 	result += "Hand:\n"
 	for i in range(hand.size()):
 		result += "  %d: %s\n" % [i, hand[i]]

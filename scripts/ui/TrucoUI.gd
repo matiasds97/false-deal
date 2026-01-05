@@ -74,7 +74,7 @@ func _ready() -> void:
 
 ## Helper to create a standard button with local style.
 func create_button(text: String, parent: Node, callback: Callable) -> Button:
-	var btn = Button.new()
+	var btn: Button = Button.new()
 	btn.text = text
 	parent.add_child(btn)
 	btn.pressed.connect(callback)
@@ -192,8 +192,8 @@ func _on_envido_resolved(accepted: bool, winner_index: int, points: int) -> void
 	print_debug("UI: Envido resolved. Points: %d to Player %d" % [points, winner_index])
 	
 	if accepted:
-		var human_points = truco_manager.players[0].get_envido_points()
-		var cpu_points = truco_manager.players[1].get_envido_points()
+		var human_points: int = truco_manager.players[0].get_envido_points()
+		var cpu_points: int = truco_manager.players[1].get_envido_points()
 		
 		if winner_index == 0:
 			rival_decision_state_label.add_theme_color_override("font_color", Color(0, 255, 0))

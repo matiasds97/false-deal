@@ -3,70 +3,144 @@ extends Node
 ## Manager class that handles the core game loop, rules, and state of a Truco match.
 ## It manages players, turns, scoring, and the state of complex calls like Envido and Truco.
 
+
+## ------- SIGNALS -------
+
+## Signal emitted when the match starts.
+signal match_started
+
+## Signal emitted when a new hand starts.
+signal new_hand_started(hand_number: int)
+
+## Signal emitted when a player's turn starts.
+signal turn_started(player_index: int)
+
+## ------- EXPORT VARIABLES -------
+
+## The deck used for the game.
 @export var deck: Deck
+
+## The nodes of the players.
 @export var player_nodes: Array[Node]
 
-## Different states of the game flow.
-enum TrucoState {
-	WAITING_FOR_START,
-	DEALING,
-	PLAYER_TURN,
-	RIVAL_TURN,
-	RESOLVING_HAND,
-	MATCH_ENDED
-}
+## ------- PUBLIC VARIABLES -------
 
-var current_state = TrucoState.WAITING_FOR_START
+## Current state of the game.
+var current_state: int = TrucoState.WAITING_FOR_START
+
+## Array of players in the game.
 var players: Array[Player] = []
 
-# Game State Variables
+## Inidicates which player must deal the cards.
 var dealer_index: int = 0
+
+## Inidicates which player must play the cards in the first turn.
 var mano_index: int = 0
+
+## Inidicates which player must play the cards in the current turn.
 var current_turn_index: int = 0
+
+## Inidicates which player must play the cards in the mano.
 var mano_player_index: int = 0
+
+## Inidicates the current stakes of the game.
 var current_stakes: int = 1
 
 ## Stores { "card": Card, "player_index": int } for the current "baza" (vuelta).
 var cards_played_current_vuelta: Array[Dictionary] = []
+
 ## Stores winner of each vuelta (-1 for tie).
 var vuelta_results: Array[int] = []
+
+## Stores the scores of each player. 
+## Key is the player index and value is the score.
 var player_scores: Dictionary = {0: 0, 1: 0}
 
 ## Who called the CURRENT level of Truco (used for determining points on rejection).
+## -1 indicates no player has called a Truco level.
 var truco_caller_index: int = -1
 
-## Enum for defining which call is pending a response.
-enum ResponseAction {NONE, ENVIDO, TRUCO}
 var pending_response_action: ResponseAction = ResponseAction.NONE
 
-## State of the Envido call (e.g., if it was already played this hand).
-enum EnvidoCallState {NONE, CALLED, PLAYED}
-
-## State of the Truco call.
-enum TrucoCallState {NONE, CALLED, PLAYED}
 
 var envido_state: EnvidoCallState = EnvidoCallState.NONE
 var truco_state: TrucoCallState = TrucoCallState.NONE
 
-## Types of Envido calls available.
-enum EnvidoType {ENVIDO, REAL_ENVIDO, FALTA_ENVIDO}
 
 ## History of Envido calls in the current exchange (e.g. [ENVIDO, REAL_ENVIDO]).
 var envido_chain: Array[EnvidoType] = []
 
-signal match_started
-signal new_hand_started(hand_number: int)
-signal turn_started(player_index: int)
+## ------- ENUMS -------
+
+## Different states of the game flow.
+enum TrucoState {
+
+	## Represents the state in which the truco game has not yet started.
+	WAITING_FOR_START,
+
+	## Represents the state in which the cards are being dealed.
+	DEALING,
+
+	## Represents the state in which the player's turn is active.
+	PLAYER_TURN,
+
+	## Represents the state in which the rival's turn is active.
+	RIVAL_TURN,
+
+	## Represents the state in which the hand is being resolved.
+	RESOLVING_HAND,
+
+	## Represents the state in which the match has ended.
+	MATCH_ENDED
+}
+
+## Types of Envido calls available.
+enum EnvidoType {
+
+	## The normal Envido call.
+	ENVIDO,
+	
+	## The Real Envido call.
+	REAL_ENVIDO,
+	
+	## The Falta Envido call.
+	FALTA_ENVIDO
+}
+
+
+## Enum for defining which call is pending a response.
+enum ResponseAction {
+	NONE,
+	ENVIDO,
+	TRUCO
+}
+
+## State of the Envido call (e.g., if it was already played this hand).
+enum EnvidoCallState {
+	NONE,
+	CALLED,
+	PLAYED
+}
+
+## State of the Truco call.
+enum TrucoCallState {
+	NONE,
+	CALLED,
+	PLAYED
+}
+
+## ------- FUNCTIONS -------
 
 func _ready() -> void:
-	var p1 = Player.new("Human", true, 0)
-	var p2 = Player.new("CPU", false, 1)
-	players = [p1, p2]
+	var _p1: Player = Player.new("Human", true, 0)
+	var _p2: Player = Player.new("CPU", false, 1)
+	players = [_p1, _p2]
 
 	# Auto-fill player_nodes if empty (Fallback)
 	if player_nodes.is_empty():
-		var human_node = get_node_or_null("../HumanPlayer")
-		var cpu_node = get_node_or_null("../CPUPlayer")
+		push_warning("TrucoManager: Player Nodes not assigned. Auto-finding...")
+		var human_node: Node = get_node_or_null("../HumanPlayer")
+		var cpu_node: Node = get_node_or_null("../CPUPlayer")
 		if human_node and cpu_node:
 			print_debug("TrucoManager: Auto-found Player Nodes.")
 			player_nodes = [human_node, cpu_node]
@@ -78,24 +152,28 @@ func _ready() -> void:
 		for i in range(players.size()):
 			if player_nodes[i].has_method("initialize"):
 				player_nodes[i].initialize(players[i])
-				
-				# Connect signals
-				if player_nodes[i].has_signal("card_played"):
-					if not player_nodes[i].card_played.is_connected(_on_player_card_played):
-						player_nodes[i].card_played.connect(_on_player_card_played.bind(i))
-				
-				if player_nodes[i].has_signal("envido_called"):
-					if not player_nodes[i].envido_called.is_connected(_on_player_envido_called):
-						player_nodes[i].envido_called.connect(_on_player_envido_called.bind(i))
-
-				if player_nodes[i].has_signal("truco_called"):
-					if not player_nodes[i].truco_called.is_connected(_on_player_truco_called):
-						player_nodes[i].truco_called.connect(_on_player_truco_called.bind(i))
-
+				_connect_signals()
 	else:
-		printerr("Mismatch between Players count and Player Nodes count! Players: %d, Nodes: %d" % [players.size(), player_nodes.size()])
+		printerr("Mismatch between Players count and Player Nodes count! \
+		Players: %d, Nodes: %d" % [players.size(), player_nodes.size()])
 
 	call_deferred("start_match")
+
+## Connects signals from player nodes to the manager. The signals connected
+## are for when a player plays a card, calls Envido, or calls Truco.
+func _connect_signals() -> void:
+	for i in range(players.size()):
+		if player_nodes[i].has_signal("card_played"):
+			if not player_nodes[i].card_played.is_connected(_on_player_card_played):
+				player_nodes[i].card_played.connect(_on_player_card_played.bind(i))
+		
+		if player_nodes[i].has_signal("envido_called"):
+			if not player_nodes[i].envido_called.is_connected(_on_player_envido_called):
+				player_nodes[i].envido_called.connect(_on_player_envido_called.bind(i))
+
+		if player_nodes[i].has_signal("truco_called"):
+			if not player_nodes[i].truco_called.is_connected(_on_player_truco_called):
+				player_nodes[i].truco_called.connect(_on_player_truco_called.bind(i))
 
 ## Starts the match, initializes scores and calls the first hand.
 func start_match() -> void:
@@ -149,7 +227,7 @@ func deal_cards() -> void:
 		for j in range(players.size()):
 			# Start dealing to the player AFTER the dealer (mano)
 			var player_index = (mano_index + j) % players.size()
-			var card = deck.draw_card()
+			var card: Card = deck.draw_card()
 			if card:
 				players[player_index].receive_card(card)
 				# Emit via SignalBus
@@ -215,14 +293,14 @@ func resolve_vuelta() -> void:
 		printerr("Error: resolve_vuelta called with %d cards!" % cards_played_current_vuelta.size())
 		return
 
-	var c1_data = cards_played_current_vuelta[0]
-	var c2_data = cards_played_current_vuelta[1]
+	var c1_data: Dictionary = cards_played_current_vuelta[0]
+	var c2_data: Dictionary = cards_played_current_vuelta[1]
 	
-	var c1 = c1_data["card"] as Card
-	var c2 = c2_data["card"] as Card
+	var c1: Card = c1_data["card"] as Card
+	var c2: Card = c2_data["card"] as Card
 	
-	var comparison = c1.compare(c2)
-	var winner_index = -1
+	var comparison: int = c1.compare(c2)
+	var winner_index: int = -1
 	
 	if comparison > 0:
 		winner_index = c1_data["player_index"]
@@ -255,8 +333,8 @@ func resolve_vuelta() -> void:
 ## Checks if the round has a winner based on the results of the vueltas (best of 3).
 ## Returns true if the round ended, false otherwise.
 func check_round_winner() -> bool:
-	var round_winner = -1
-	var reason = ""
+	var round_winner: int = -1
+	var reason: String = ""
 	
 	# Parda Rules Logic
 	# 1. Parda in 1st Vuelta: The winner of the 2nd Vuelta wins the round.
@@ -266,8 +344,8 @@ func check_round_winner() -> bool:
 	# 5. Parda in 3rd Vuelta (after split wins in 1st and 2nd): The winner of the 1st Vuelta wins the round.
 	
 	if vuelta_results.size() == 2:
-		var v1 = vuelta_results[0]
-		var v2 = vuelta_results[1]
+		var v1: int = vuelta_results[0]
+		var v2: int = vuelta_results[1]
 		
 		if v1 != -1 and v2 != -1 and v1 == v2:
 			round_winner = v1
@@ -280,9 +358,9 @@ func check_round_winner() -> bool:
 			reason = "Won 1st, Parda in 2nd"
 			
 	elif vuelta_results.size() == 3:
-		var v1 = vuelta_results[0]
-		var v2 = vuelta_results[1]
-		var v3 = vuelta_results[2]
+		var v1: int = vuelta_results[0]
+		var v2: int = vuelta_results[1]
+		var v3: int = vuelta_results[2]
 		
 		if v1 != -1 and v2 != -1 and v1 != v2:
 			# Split 1st and 2nd
@@ -385,8 +463,8 @@ func resolve_envido(accepted: bool, answering_player_index: int) -> void:
 	envido_state = EnvidoCallState.PLAYED
 	pending_response_action = ResponseAction.NONE
 	
-	var points = 0
-	var winner = -1
+	var points: int = 0
+	var winner: int = -1
 	
 	if not accepted:
 		points = _calculate_rejected_envido_points()
@@ -396,8 +474,8 @@ func resolve_envido(accepted: bool, answering_player_index: int) -> void:
 	else:
 		points = _calculate_accepted_envido_points()
 		# Compare points
-		var p0_score = players[0].get_envido_points()
-		var p1_score = players[1].get_envido_points()
+		var p0_score: int = players[0].get_envido_points()
+		var p1_score: int = players[1].get_envido_points()
 		
 		print_debug("Envido Showdown! P0: %d vs P1: %d" % [p0_score, p1_score])
 		
@@ -437,7 +515,7 @@ func _calculate_rejected_envido_points() -> int:
 	# [ENVIDO, ENVIDO, REAL] -> Reject -> 4
 	# [ENVIDO, REAL, FALTA] -> Reject -> 5
 	# [ENVIDO, ENVIDO, REAL, FALTA] -> Reject -> 7
-	var length = envido_chain.size()
+	var length: int = envido_chain.size()
 	if length == 0: return 0 # Should not happen
 	
 	var _last = envido_chain.back()
@@ -447,7 +525,7 @@ func _calculate_rejected_envido_points() -> int:
 		return 1
 	
 	# If rejecting a raise
-	var chain_keys = []
+	var chain_keys: Array[Variant] = []
 	for item in envido_chain:
 		chain_keys.append(item)
 		
@@ -476,7 +554,7 @@ func _calculate_rejected_envido_points() -> int:
 	return 1
 
 func _calculate_accepted_envido_points() -> int:
-	var chain_keys = []
+	var chain_keys: Array[Variant] = []
 	for item in envido_chain:
 		chain_keys.append(item)
 		
@@ -503,8 +581,8 @@ func calculate_falta_envido_value() -> int:
 	var p0 = player_scores[0]
 	var p1 = player_scores[1]
 	
-	var max_points = 30
-	var threshold_buenas = 16
+	var max_points: int = 30
+	var threshold_buenas: int = 16
 	
 	var p0_buenas = p0 >= threshold_buenas
 	var p1_buenas = p1 >= threshold_buenas
@@ -569,7 +647,7 @@ func resolve_truco(accepted: bool, answering_player_index: int) -> void:
 		print_debug("Truco Rejected! Round Ends.")
 		# Winner is the one who called (caller_index)
 		# Points awarded is the PREVIOUS stakes (1 in this case of basic Truco)
-		var winner = truco_caller_index
+		var winner: int = truco_caller_index
 		add_score(winner, 1) # Standard rule: 1 point if Truco denied
 		TrucoSignalBus.emit_signal("on_truco_resolved", false, answering_player_index)
 		
