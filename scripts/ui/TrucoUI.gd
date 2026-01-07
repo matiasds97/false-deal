@@ -29,6 +29,7 @@ extends Control
 var response_envido_button: Button
 var response_real_envido_button: Button
 var response_falta_envido_button: Button
+var response_raise_truco_button: Button
 
 func _ready() -> void:
 	# Connect to Hand signals
@@ -68,6 +69,7 @@ func _ready() -> void:
 	response_envido_button = create_button("Envido", response_vbox, _on_envido_button_pressed) # Same handler, calls logic checks
 	response_real_envido_button = create_button("Real Envido", response_vbox, _on_real_envido_button_pressed)
 	response_falta_envido_button = create_button("Falta Envido", response_vbox, _on_falta_envido_button_pressed)
+	response_raise_truco_button = create_button("Retruco", response_vbox, _on_truco_button_pressed)
 	
 	# Initial State
 	response_container.visible = false
@@ -104,8 +106,33 @@ func _update_call_buttons_state() -> void:
 			response_falta_envido_button.visible = truco_manager.can_call_envido(TrucoManager.EnvidoType.FALTA_ENVIDO, 0)
 
 	if truco_button:
-		if truco_button.disabled != (not truco_manager.can_call_truco(0)):
-			truco_button.disabled = not truco_manager.can_call_truco(0)
+		# Update text based on level
+		var next_level_name = "Truco"
+		if truco_manager.current_truco_level == 1:
+			next_level_name = "Retruco"
+		elif truco_manager.current_truco_level == 2:
+			next_level_name = "Vale 4"
+			
+		truco_button.text = next_level_name
+		
+		# Disable if cannot call
+		var can_call = truco_manager.can_call_truco(0)
+		if truco_button.disabled != (not can_call):
+			truco_button.disabled = not can_call
+
+	# RESPONSE Container (Raising Truco)
+	if response_container.visible:
+		if response_raise_truco_button:
+			# Only show if responding to Truco/Retruco (and not already Vale 4)
+			var is_truco_response = (truco_manager.pending_response_action == TrucoManager.ResponseAction.TRUCO)
+			var can_raise = is_truco_response and (truco_manager.proposed_truco_level < 3)
+			response_raise_truco_button.visible = can_raise
+			
+			if can_raise:
+				if truco_manager.proposed_truco_level == 1:
+					response_raise_truco_button.text = "Retruco"
+				elif truco_manager.proposed_truco_level == 2:
+					response_raise_truco_button.text = "Vale 4"
 
 func _on_score_updated(human_score: int, cpu_score: int) -> void:
 	if score_label:
@@ -176,12 +203,19 @@ func _on_envido_called(player_index: int) -> void:
 		# Human called, waiting for CPU (handled by TrucoCPUPlayerController)
 		response_container.visible = false
 
-func _on_truco_called(player_index: int) -> void:
+func _on_truco_called(player_index: int, level: int) -> void:
 	# If CPU (1) called, show response options to Human
 	if player_index == 1:
 		response_container.visible = true
 		rival_calls_label.visible = true
-		rival_calls_label.text = "Truco!"
+		
+		var call_text = "Truco!"
+		match level:
+			1: call_text = "Truco!"
+			2: call_text = "Retruco!"
+			3: call_text = "Vale 4!"
+		
+		rival_calls_label.text = call_text
 	else:
 		# Human called, waiting for CPU (handled by TrucoCPUPlayerController)
 		response_container.visible = false
@@ -209,24 +243,38 @@ func _on_envido_resolved(accepted: bool, winner_index: int, points: int) -> void
 			rival_decision_state_label.text = "You rejected the envido"
 		
 
-func _on_truco_resolved(accepted: bool, player_index: int) -> void:
+func _on_truco_resolved(accepted: bool, player_index: int, current_level: int) -> void:
 	response_container.visible = false
 	rival_calls_label.visible = false
 
 	# Reset color
 	rival_decision_state_label.remove_theme_color_override("font_color")
 	
+	var level_name = "truco"
+	match current_level:
+		1: level_name = "truco"
+		2: level_name = "retruco"
+		3: level_name = "vale 4"
+	
 	if accepted:
 		if player_index == 1:
-			rival_decision_state_label.text = "CPU accepted the truco"
+			rival_decision_state_label.text = "CPU accepted the %s" % level_name
 		else:
-			rival_decision_state_label.text = "You accepted the truco"
+			rival_decision_state_label.text = "You accepted the %s" % level_name
 	else:
 		# player_index is who answered.
+		# Note: current_level here is the APPROVED level if accepted, OR the PROPOSED level if rejected.
+		# In resolve_truco logic I passed current_truco_level for both.
+		# But wait, if rejected, current_truco_level reverts to previous? 
+		# No, resolve_truco implementation: 
+		# if accepted: passes current_truco_level (new)
+		# if rejected: passes current_truco_level (old/unchanged).
+		# BUT I want to say "CPU rejected the Retruco".
+		# The signal was modified to pass `current_level`. Use that.
 		if player_index == 1:
-			rival_decision_state_label.text = "CPU rejected the truco"
+			rival_decision_state_label.text = "CPU rejected the %s" % level_name
 		else:
-			rival_decision_state_label.text = "You rejected the truco"
+			rival_decision_state_label.text = "You rejected the %s" % level_name
 
 func _on_hand_started(_hand_num: int) -> void:
 	response_container.visible = false

@@ -44,9 +44,11 @@ signal on_envido_resolved(accepted: bool, winner_index: int, points: int)
 
 # Emitted when Truco is called
 # player_index: Who called it
-signal on_truco_called(player_index: int)
+# level: The level called (1=Truco, 2=Retruco, 3=Vale 4)
+signal on_truco_called(player_index: int, level: int)
 
 # Emitted when Truco is resolved
 # accepted: true if accepted (stakes increase), false if rejected (round ends)
 # player_index: Who responded (useful for logging)
-signal on_truco_resolved(accepted: bool, player_index: int)
+# current_level: The new current level if accepted, or the level that was proposed if rejected (context dependent but useful)
+signal on_truco_resolved(accepted: bool, player_index: int, current_level: int)

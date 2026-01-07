@@ -70,6 +70,9 @@ var truco_state: TrucoCallState = TrucoCallState.NONE
 ## History of Envido calls in the current exchange (e.g. [ENVIDO, REAL_ENVIDO]).
 var envido_chain: Array[EnvidoType] = []
 
+## Flag to indicate if a Truco call was put on hold to play Envido.
+var truco_pending_during_envido: bool = false
+
 ## ------- ENUMS -------
 
 ## Different states of the game flow.
@@ -126,8 +129,17 @@ enum EnvidoCallState {
 enum TrucoCallState {
 	NONE,
 	CALLED,
-	PLAYED
+	PLAYED,
+	TRUCO,
+	RETRUCO,
+	VALE_4
 }
+
+## Level of Truco currently active (0=None, 1=Truco, 2=Retruco, 3=Vale 4)
+## This represents the "Accepted" level.
+var current_truco_level: int = 0
+## The level being PROPOSED (waiting for response).
+var proposed_truco_level: int = 0
 
 ## ------- FUNCTIONS -------
 
@@ -202,9 +214,12 @@ func start_new_hand() -> void:
 	envido_state = EnvidoCallState.NONE
 	envido_chain.clear()
 	truco_state = TrucoCallState.NONE
+	current_truco_level = 0
+	proposed_truco_level = 0
 	current_stakes = 1
 	truco_caller_index = -1
 	pending_response_action = ResponseAction.NONE
+	truco_pending_during_envido = false
 
 	print_debug("NewHand.Dealer: %s, Mano: %s, Turn: %s" % [players[dealer_index].name, players[mano_index].name, players[current_turn_index].name])
 	
@@ -256,6 +271,10 @@ func start_turn_cycle() -> void:
 func _on_player_card_played(card: Card, player_index: int) -> void:
 	if player_index != current_turn_index:
 		printerr("Player %d played out of turn!" % player_index)
+		return
+		
+	if pending_response_action != ResponseAction.NONE:
+		printerr("Player %d tried to play a card while a call is pending!" % player_index)
 		return
 		
 	print_debug("Player %d played %s" % [player_index, card])
@@ -401,7 +420,12 @@ func add_score(player_index: int, points: int) -> void:
 ## Checks if a player can call the specified Envido type based on game rules and current chain.
 func can_call_envido(type: EnvidoType, _player_index: int) -> bool:
 	# 1. Truco not called (Truco blocks Envido calls)
-	if truco_state != TrucoCallState.NONE:
+	# EXCEPTION: If Truco IS called (pending response), and it is the first vuelta, 
+	# and Envido hasn't been played, we CAN call Envido ("El envido esta primero").
+	# BUT only on the first call (Truco), not on Retruco/Vale 4.
+	var is_truco_pending_response = (truco_state == TrucoCallState.CALLED and pending_response_action == ResponseAction.TRUCO and proposed_truco_level == 1)
+	
+	if truco_state != TrucoCallState.NONE and not is_truco_pending_response:
 		return false
 		
 	# 1.5 Envido not already played
@@ -411,6 +435,8 @@ func can_call_envido(type: EnvidoType, _player_index: int) -> bool:
 	# 2. Constraints based on current chain
 	if envido_chain.is_empty():
 		# Only allowed in first Vuelta (before played cards or responding pending actions)
+		# NOTE: If reacting to Truco, we are effectively "before played cards" in terms of phase, 
+		# even if cards are on table, it must be the FIRST vuelta's play.
 		if vuelta_results.size() > 0:
 			return false
 		# Can start with any call types logically, usually Envido or Real or Falta directly
@@ -450,6 +476,11 @@ func call_envido(type: EnvidoType, player_index: int) -> void:
 		
 	print_debug("Player %d called %s!" % [player_index, EnvidoType.keys()[type]])
 	
+	# Check if we are interrupting a Truco call
+	if pending_response_action == ResponseAction.TRUCO:
+		print_debug("Envido called in response to Truco! Pausing Truco...")
+		truco_pending_during_envido = true
+
 	envido_chain.append(type)
 	envido_state = EnvidoCallState.CALLED
 	pending_response_action = ResponseAction.ENVIDO
@@ -503,6 +534,17 @@ func resolve_envido(accepted: bool, answering_player_index: int) -> void:
 	# Award points
 	add_score(winner, points)
 	TrucoSignalBus.emit_signal("on_envido_resolved", accepted, winner, points)
+
+	# Check if we need to restore a pending Truco call
+	if truco_pending_during_envido:
+		print_debug("Resuming pending Truco call...")
+		truco_pending_during_envido = false
+		pending_response_action = ResponseAction.TRUCO
+		
+		# We need to re-notify the UI/Players that Truco is pending.
+		# The caller is still `truco_caller_index`.
+		# Current level is `proposed_truco_level`.
+		TrucoSignalBus.emit_signal("on_truco_called", truco_caller_index, proposed_truco_level)
 
 func _calculate_rejected_envido_points() -> int:
 	# Calculate points for NO QUIERO based on chain
@@ -609,50 +651,101 @@ func debug_cpu_call_envido() -> void:
 # --- TRUCO IMPLEMENTATION ---
 
 ## Checks if a player can call Truco based on current state.
-func can_call_truco(_player_index: int) -> bool:
-	# 1. Truco not already accepted (for now only basic Truco, so if state is NONE, we can call)
-	# Future: Logic for Retruco etc.
-	if truco_state != TrucoCallState.NONE:
-		return false
-	
-	# 2. Cannot call if a response is pending
-	if pending_response_action != ResponseAction.NONE:
-		return false
+## Checks if a player can call Truco/Retruco/Vale 4 based on current state.
+func can_call_truco(player_index: int) -> bool:
+	# Cannot call if a response is pending (unless it's a counter-call, handled separately or implicitly)
+	# Actually, if response is pending, only the responder can call (raise).
+	# Case 1: No Truco called yet (Level 0) -> Any player can call Truco
+	if current_truco_level == 0 and pending_response_action == ResponseAction.NONE:
+		return true
 		
-	return true
+	# Case 2: Truco/Retruco called and ACCEPTED. 
+	# Only the player who DID NOT call the last level can raise.
+	# We need to track who called the last level. `truco_caller_index` stores the LAST caller.
+	if pending_response_action == ResponseAction.NONE and current_truco_level > 0 and current_truco_level < 3:
+		if truco_caller_index != player_index:
+			return true
+		return false
+
+	# Case 3: Truco/Retruco just called (Pending Response).
+	# The responder can raise (Retruco/Vale 4).
+	if pending_response_action == ResponseAction.TRUCO:
+		# The player attempting to call MUST be the one who needs to respond.
+		# We don't store "responder_index" specifically but we know `truco_caller_index` is the one who called.
+		# So player_index must be != truco_caller_index.
+		if player_index != truco_caller_index:
+			if proposed_truco_level < 3: # Can raise if proposed is less than Vale 4
+				return true
+				
+	return false
 
 ## Executes the Truco call, updates state, and notifies UI.
+## Executes the Truco/Retruco/Vale 4 call, updates state, and notifies UI.
 func call_truco(player_index: int) -> void:
 	if not can_call_truco(player_index):
 		return
 		
-	print_debug("Player %d called Truco!" % player_index)
-	truco_state = TrucoCallState.CALLED
-	truco_caller_index = player_index
+	# Determine level
+	var next_level = 1
+	if pending_response_action == ResponseAction.TRUCO:
+		# Raising a pending call
+		next_level = proposed_truco_level + 1
+	else:
+		# Creating a new call (raising accepted state)
+		next_level = current_truco_level + 1
+		
+	var call_name = ""
+	match next_level:
+		1: call_name = "Truco"
+		2: call_name = "Retruco"
+		3: call_name = "Vale 4"
+		
+	print_debug("Player %d called %s!" % [player_index, call_name])
+	
+	truco_state = TrucoCallState.CALLED # General state
+	proposed_truco_level = next_level
+	truco_caller_index = player_index # Update caller to this new raiser
 	pending_response_action = ResponseAction.TRUCO
 	
-	TrucoSignalBus.emit_signal("on_truco_called", player_index)
+	TrucoSignalBus.emit_signal("on_truco_called", player_index, next_level)
 
 ## Resolves the Truco call after a player accepts or rejects.
 func resolve_truco(accepted: bool, answering_player_index: int) -> void:
-	print_debug("Truco Resolved. Accepted: %s" % accepted)
+	print_debug("Truco Level %d Resolved. Accepted: %s" % [proposed_truco_level, accepted])
 	pending_response_action = ResponseAction.NONE
 	
 	if accepted:
-		truco_state = TrucoCallState.PLAYED # Accepted logic
-		current_stakes = 2
-		print_debug("Truco Accepted! Sticks: %d" % current_stakes)
-		TrucoSignalBus.emit_signal("on_truco_resolved", true, answering_player_index)
+		truco_state = TrucoCallState.PLAYED
+		current_truco_level = proposed_truco_level
+		
+		# Update Stakes
+		# Truco = 2, Retruco = 3, Vale 4 = 4
+		current_stakes = current_truco_level + 1
+		
+		print_debug("%s Accepted! Sticks: %d" % [_get_truco_name(current_truco_level), current_stakes])
+		TrucoSignalBus.emit_signal("on_truco_resolved", true, answering_player_index, current_truco_level)
 	else:
-		print_debug("Truco Rejected! Round Ends.")
+		print_debug("%s Rejected! Round Ends." % _get_truco_name(proposed_truco_level))
 		# Winner is the one who called (caller_index)
-		# Points awarded is the PREVIOUS stakes (1 in this case of basic Truco)
+		# Points awarded is dependent on the rejected level
+		# Truco rejected -> 1
+		# Retruco rejected -> 2
+		# Vale 4 rejected -> 3
+		var points = proposed_truco_level # Conveniently maps 1->1, 2->2, 3->3
+		
 		var winner: int = truco_caller_index
-		add_score(winner, 1) # Standard rule: 1 point if Truco denied
-		TrucoSignalBus.emit_signal("on_truco_resolved", false, answering_player_index)
+		add_score(winner, points)
+		TrucoSignalBus.emit_signal("on_truco_resolved", false, answering_player_index, proposed_truco_level)
 		
 		# End Round
 		get_tree().create_timer(1.0).timeout.connect(start_new_hand)
+
+func _get_truco_name(level: int) -> String:
+	match level:
+		1: return "Truco"
+		2: return "Retruco"
+		3: return "Vale 4"
+	return "None"
 
 func debug_cpu_call_truco() -> void:
 	if can_call_truco(1):
