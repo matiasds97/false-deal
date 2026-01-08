@@ -43,6 +43,12 @@ func _make_decision(token: int) -> void:
 	
 	if truco_manager and truco_manager.current_turn_index != 1:
 		return
+		
+	# Check if Manager is busy (e.g. waiting for Human to respond to a resumed Truco)
+	if truco_manager.pending_response_action != TrucoManager.ResponseAction.NONE:
+		print_debug("CPU tried to decide but Manager is waiting for response. Rescheduling...")
+		_schedule_decision(1.0)
+		return
 
 	# 1. Try to call Envido
 	if _try_call_envido(1): return
@@ -228,6 +234,7 @@ func _on_envido_resolved(_accepted: bool, _winner_index: int, _points: int) -> v
 
 func _on_truco_resolved(accepted: bool, _player_index: int, _current_level: int) -> void:
 	# If accepted, we continue playing. If rejected, round ends so this logic matters less but good to reset.
-	if _waiting_for_response and accepted:
+	# FIX: Always resume decision making if accepted, regardless of previous waiting state.
+	if accepted:
 		_waiting_for_response = false
 		_schedule_decision(1.5)

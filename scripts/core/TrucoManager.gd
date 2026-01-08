@@ -25,6 +25,9 @@ signal turn_started(player_index: int)
 
 ## ------- PUBLIC VARIABLES -------
 
+## Duration of the card throw animation in seconds.
+const CARD_THROW_DURATION: float = 0.5
+
 ## Current state of the game.
 var current_state: int = TrucoState.WAITING_FOR_START
 

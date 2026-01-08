@@ -242,7 +242,7 @@ func throw_card(card_node: MeshInstance3D) -> void:
 	tween.set_trans(Tween.TRANS_CUBIC)
 	
 	# Move to target (global position)
-	var flight_time: float = 0.7
+	var flight_time: float = TrucoManager.CARD_THROW_DURATION
 	tween.tween_property(card_node, "global_position", target_pos, flight_time)
 	
 	# Random rotation only on Y axis (yaw) so it lands flat on the table

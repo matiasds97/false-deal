@@ -99,7 +99,7 @@ func play_card(card_data: Card) -> void:
 	tween.set_ease(Tween.EASE_OUT)
 	tween.set_trans(Tween.TRANS_CUBIC)
 	
-	tween.tween_property(card_node, "global_position", target_pos, 0.7)
+	tween.tween_property(card_node, "global_position", target_pos, TrucoManager.CARD_THROW_DURATION)
 	
 	# Rotate to face up (assuming Y rotation is yaw, and X/Z is flip)
 	# We want it flat on table, face up.
