@@ -754,6 +754,40 @@ func debug_cpu_call_truco() -> void:
 func _on_player_truco_called(player_index: int) -> void:
 	call_truco(player_index)
 
+## Player gives up the round ("Irse al mazo").
+func player_fold(player_index: int) -> void:
+	print_debug("Player %d folded (Se fue al mazo)." % player_index)
+	var opponent_index = (player_index + 1) % 2
+	var points_to_award = 0
+	
+	# 1. Envido Penalty
+	# If Envido turn hasn't finished (meaning it wasn't played yet, and we are in a state where it COULD be played or is being played),
+	# the folder loses 1 point for Envido.
+	# "Si aun no finalizo el turno del Envido"
+	# We consider it "not finished" if state is not PLAYED. 
+	# BUT, technically if we are in 2nd round, Envido time is over.
+	# Logic: If we are in 1st vuelta (or dealing) and envido not played -> +1.
+	var is_envido_time = (vuelta_results.size() == 0) # Only in first vuelta
+	if is_envido_time and envido_state != EnvidoCallState.PLAYED:
+		print_debug("Fold: Envido not finished. +1 extra point.")
+		points_to_award += 1
+		
+	# 2. Truco Points (No Querido)
+	if pending_response_action == ResponseAction.TRUCO:
+		# Rejecting a proposal
+		points_to_award += proposed_truco_level
+	else:
+		# Just giving up current stakes
+		points_to_award += current_stakes
+		
+	print_debug("Fold Result: Opponent wins %d points." % points_to_award)
+	add_score(opponent_index, points_to_award)
+	
+	# End Hand
+	# We use a short timer to allow UI to maybe show "Folded" message if we wanted, 
+	# but for now immediate reset cycle.
+	get_tree().create_timer(1.0).timeout.connect(start_new_hand)
+
 func _input(event: InputEvent) -> void:
 	# DEBUG: Press E to make CPU call Envido
 	if event is InputEventKey and event.pressed and event.keycode == KEY_E:
