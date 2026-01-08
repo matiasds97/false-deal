@@ -91,20 +91,20 @@ func _process(_delta: float) -> void:
 func _update_call_buttons_state() -> void:
 	# CALLS Container (Initial Calls)
 	if envido_button:
-		envido_button.disabled = not (truco_manager.can_call_envido(TrucoManager.EnvidoType.ENVIDO, 0) and truco_manager.envido_chain.is_empty())
+		envido_button.disabled = not (truco_manager.can_call_envido(TrucoGame.EnvidoType.ENVIDO, 0) and truco_manager.envido_chain.is_empty())
 	if real_envido_button:
-		real_envido_button.disabled = not (truco_manager.can_call_envido(TrucoManager.EnvidoType.REAL_ENVIDO, 0) and truco_manager.envido_chain.is_empty())
+		real_envido_button.disabled = not (truco_manager.can_call_envido(TrucoGame.EnvidoType.REAL_ENVIDO, 0) and truco_manager.envido_chain.is_empty())
 	if falta_envido_button:
-		falta_envido_button.disabled = not (truco_manager.can_call_envido(TrucoManager.EnvidoType.FALTA_ENVIDO, 0) and truco_manager.envido_chain.is_empty())
+		falta_envido_button.disabled = not (truco_manager.can_call_envido(TrucoGame.EnvidoType.FALTA_ENVIDO, 0) and truco_manager.envido_chain.is_empty())
 
 	# RESPONSE Container (Raising)
 	if response_container.visible:
 		if response_envido_button:
-			response_envido_button.visible = truco_manager.can_call_envido(TrucoManager.EnvidoType.ENVIDO, 0)
+			response_envido_button.visible = truco_manager.can_call_envido(TrucoGame.EnvidoType.ENVIDO, 0)
 		if response_real_envido_button:
-			response_real_envido_button.visible = truco_manager.can_call_envido(TrucoManager.EnvidoType.REAL_ENVIDO, 0)
+			response_real_envido_button.visible = truco_manager.can_call_envido(TrucoGame.EnvidoType.REAL_ENVIDO, 0)
 		if response_falta_envido_button:
-			response_falta_envido_button.visible = truco_manager.can_call_envido(TrucoManager.EnvidoType.FALTA_ENVIDO, 0)
+			response_falta_envido_button.visible = truco_manager.can_call_envido(TrucoGame.EnvidoType.FALTA_ENVIDO, 0)
 
 	if truco_button:
 		# Update text based on level
@@ -125,7 +125,7 @@ func _update_call_buttons_state() -> void:
 	if response_container.visible:
 		if response_raise_truco_button:
 			# Only show if responding to Truco/Retruco (and not already Vale 4)
-			var is_truco_response = (truco_manager.pending_response_action == TrucoManager.ResponseAction.TRUCO)
+			var is_truco_response = (truco_manager.pending_response_action == TrucoGame.ResponseAction.TRUCO)
 			var can_raise = is_truco_response and (truco_manager.proposed_truco_level < 3)
 			response_raise_truco_button.visible = can_raise
 			
@@ -157,15 +157,15 @@ func _on_flor_detected(has_flor: bool) -> void:
 ## Handles Envido Button Press.
 func _on_envido_button_pressed() -> void:
 	if truco_manager:
-		truco_manager.call_envido(TrucoManager.EnvidoType.ENVIDO, 0)
+		truco_manager.call_envido(TrucoGame.EnvidoType.ENVIDO, 0)
 
 func _on_real_envido_button_pressed() -> void:
 	if truco_manager:
-		truco_manager.call_envido(TrucoManager.EnvidoType.REAL_ENVIDO, 0)
+		truco_manager.call_envido(TrucoGame.EnvidoType.REAL_ENVIDO, 0)
 
 func _on_falta_envido_button_pressed() -> void:
 	if truco_manager:
-		truco_manager.call_envido(TrucoManager.EnvidoType.FALTA_ENVIDO, 0)
+		truco_manager.call_envido(TrucoGame.EnvidoType.FALTA_ENVIDO, 0)
 
 ## Handles Truco Button Press.
 func _on_truco_button_pressed() -> void:
@@ -175,9 +175,9 @@ func _on_truco_button_pressed() -> void:
 ## Handles Response Button Press.
 func _on_response_pressed(accepted: bool) -> void:
 	if truco_manager:
-		if truco_manager.pending_response_action == TrucoManager.ResponseAction.ENVIDO:
+		if truco_manager.pending_response_action == TrucoGame.ResponseAction.ENVIDO:
 			truco_manager.resolve_envido(accepted, 0)
-		elif truco_manager.pending_response_action == TrucoManager.ResponseAction.TRUCO:
+		elif truco_manager.pending_response_action == TrucoGame.ResponseAction.TRUCO:
 			truco_manager.resolve_truco(accepted, 0)
 
 func _on_envido_called(player_index: int) -> void:
@@ -189,7 +189,7 @@ func _on_envido_called(player_index: int) -> void:
 		var last_call = truco_manager.envido_chain.back()
 
 		# Replace "_" for " ", and make every first letter capital.
-		var envido_text: String = TrucoManager.EnvidoType.keys()[last_call].replace("_", " ")
+		var envido_text: String = TrucoGame.EnvidoType.keys()[last_call].replace("_", " ")
 		var envido_text_capitalized: String = envido_text.capitalize()
 		rival_calls_label.text = envido_text_capitalized + "!"
 	else:
