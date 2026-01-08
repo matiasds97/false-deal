@@ -462,7 +462,9 @@ func can_call_envido(type: EnvidoType, _player_index: int) -> bool:
 				# Cannot call Real Envido on top of Falta Envido or Real Envido (usually)
 				return false
 			EnvidoType.FALTA_ENVIDO:
-				# Can call Falta Envido on top of anything
+				# Can call Falta Envido on top of anything EXCEPT Falta Envido
+				if last_call == EnvidoType.FALTA_ENVIDO:
+					return false
 				return true
 				
 	return false
