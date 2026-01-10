@@ -95,6 +95,8 @@ func _init(_players: Array[Player], _deck: Deck):
 
 # --- GAME LOOP ---
 
+## Starts a new match of Truco. Sets the score to zero for both players.
+## It also determines the dealer and mano players, and starts a new hand.
 func start_match():
 	current_state = TrucoState.WAITING_FOR_START
 	player_scores = {0: 0, 1: 0}
@@ -105,18 +107,28 @@ func start_match():
 	
 	start_new_hand()
 
+## Starts a new hand of Truco by cleaning any info from any previous
+## hand, and setting up the new mano and dealer. It also resets the envido and
+## truco call states and other variables.
 func start_new_hand():
 	current_state = TrucoState.DEALING
-	
 	cards_played_current_vuelta.clear()
 	vuelta_results.clear()
-	
+	_set_new_hand_player_indices()
+	_reset_call_states()
+
+	emit_signal("hand_started", 1) # Hand number tracking could be added later
+	_deal_cards()
+
+## Sets the new mano and dealer indices for a new hand.
+func _set_new_hand_player_indices():
 	dealer_index = (dealer_index + 1) % players.size()
 	mano_index = (dealer_index + 1) % players.size()
 	mano_player_index = mano_index
 	current_turn_index = mano_index
-	
-	# Reset Call States
+
+## Resets the envido and truco call states and other variables.
+func _reset_call_states():
 	envido_state = EnvidoCallState.NONE
 	envido_chain.clear()
 	truco_state = TrucoCallState.NONE
@@ -126,11 +138,8 @@ func start_new_hand():
 	truco_caller_index = -1
 	pending_response_action = ResponseAction.NONE
 	truco_pending_during_envido = false
-	
-	emit_signal("hand_started", 1) # Hand number tracking could be added later
-	
-	_deal_cards()
 
+## Deals 3 cards to each player.
 func _deal_cards():
 	if not deck:
 		push_error("TrucoGame: No Deck assigned!")
@@ -148,6 +157,7 @@ func _deal_cards():
 				players[p_idx].receive_card(card)
 				emit_signal("card_dealt", p_idx, card)
 	
+	# I think that this method should not be called here.
 	_start_turn_cycle()
 
 func _start_turn_cycle():
@@ -295,6 +305,10 @@ func _is_match_over() -> bool:
 
 # --- ENVIDO LOGIC ---
 
+## Checks if a player can call envido. [br]
+## [param type]: The type of envido to call. [br]
+## [param _player_index]: The player index. [br][br]
+## [return] true if the player can call envido, false otherwise.
 func can_call_envido(type: int, _player_index: int) -> bool:
 	# 1. Blocked by Truco (unless pending response to First Truco)
 	var is_truco_pending_response = (truco_state == TrucoCallState.CALLED \

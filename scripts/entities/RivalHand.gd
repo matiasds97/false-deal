@@ -1,9 +1,7 @@
 class_name RivalHand
 extends Node3D
 
-@onready var card_1: MeshInstance3D = $Card1
-@onready var card_2: MeshInstance3D = $Card2
-@onready var card_3: MeshInstance3D = $Card3
+@export var card_prefab: PackedScene = preload("res://scenes/prefabs/card.tscn")
 @onready var card_sounds_player: AudioStreamPlayer3D = $CardSoundsPlayer
 
 var card_sounds: Array[AudioStream] = [
@@ -12,7 +10,7 @@ var card_sounds: Array[AudioStream] = [
 	load("res://assets/audio/sounds/card-place-3.ogg")
 ]
 
-var cards: Array[MeshInstance3D] = []
+var cards: Array[CardVisual] = []
 var initial_transforms: Array[Transform3D] = []
 
 # Cached placement info from Table via SignalBus
@@ -20,12 +18,21 @@ var cached_target_position: Vector3 = Vector3.ZERO
 var cached_stack_height: float = 0.0
 
 func _ready() -> void:
-	cards = [card_1, card_2, card_3]
-	for c in cards:
-		initial_transforms.append(c.transform)
+	var placeholders = [$Card1, $Card2, $Card3]
 	
-	for c in cards:
-		initial_transforms.append(c.transform)
+	for i in range(placeholders.size()):
+		var p = placeholders[i]
+		if p:
+			initial_transforms.append(p.transform)
+			p.visible = false
+			
+			var visual = card_prefab.instantiate() as CardVisual
+			add_child(visual)
+			visual.transform = p.transform
+			visual.visible = false # start hidden until dealt/reset
+			cards.append(visual)
+			
+			p.queue_free()
 	
 	reset_hand()
 	
@@ -48,7 +55,7 @@ func _on_card_placement_info(target_position: Vector3, stack_height: float) -> v
 
 func reset_hand() -> void:
 	for i in range(cards.size()):
-		var c: MeshInstance3D = cards[i]
+		var c: CardVisual = cards[i]
 		
 		# Reparent if it was thrown
 		if c.get_parent() != self:
@@ -61,7 +68,7 @@ func reset_hand() -> void:
 
 func play_card(card_data: Card) -> void:
 	# Find the first visible card to "throw"
-	var card_node: MeshInstance3D = null
+	var card_node: CardVisual = null
 	for c in cards:
 		if c.visible and c.get_parent() == self:
 			card_node = c
@@ -72,8 +79,8 @@ func play_card(card_data: Card) -> void:
 		return
 
 	# Apply texture so we see what card it is
-	card_node.set_surface_override_material(0, card_data.material)
-	card_node.get_surface_override_material(0).albedo_texture = card_data.image
+	card_node.set_front_texture(card_data.image)
+	# card_node.set_back_texture(...) # handled by CardVisual default
 	
 	# Reparent to scene root
 	var new_parent: Node = get_parent()

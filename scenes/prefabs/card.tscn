@@ -1,0 +1,18 @@
+[gd_scene load_steps=6 format=3 uid="uid://bf27dk2aoi6df"]
+
+[ext_resource type="PackedScene" uid="uid://tsjjknom1mye" path="res://assets/models/card/card.glb" id="1_lmvtu"]
+[ext_resource type="Script" uid="uid://db34xidmljo52" path="res://scripts/visuals/CardVisual.gd" id="2_ach1a"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ach1a"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_78v8t"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lmvtu"]
+
+[node name="Card" instance=ExtResource("1_lmvtu")]
+script = ExtResource("2_ach1a")
+
+[node name="Card" parent="." index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_ach1a")
+surface_material_override/1 = SubResource("StandardMaterial3D_78v8t")
+surface_material_override/2 = SubResource("StandardMaterial3D_lmvtu")

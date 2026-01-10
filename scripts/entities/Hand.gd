@@ -1,8 +1,6 @@
 extends Marker3D
 
-@onready var card_1: MeshInstance3D = $Card1
-@onready var card_2: MeshInstance3D = $Card2
-@onready var card_3: MeshInstance3D = $Card3
+@export var card_prefab: PackedScene = preload("res://scenes/prefabs/card.tscn")
 @onready var card_sounds_player: AudioStreamPlayer3D = $CardSoundsPlayer
 
 var card_sounds: Array[AudioStream] = [
@@ -12,6 +10,7 @@ var card_sounds: Array[AudioStream] = [
 ]
 
 var cards_in_hand: Array[Card] = []
+var card_nodes: Array[CardVisual] = [] # Stores current visual instances
 var initial_transforms: Array[Transform3D] = []
 var hover_tweens: Dictionary = {}
 
@@ -28,9 +27,28 @@ var can_interact: bool = false
 
 func _ready() -> void:
 	# Store initial transforms
-	initial_transforms.append(card_1.transform)
-	initial_transforms.append(card_2.transform)
-	initial_transforms.append(card_3.transform)
+	# Initialize card placeholders/positions and spawn real cards
+	var placeholders = [$Card1, $Card2, $Card3]
+	
+	for i in range(placeholders.size()):
+		var placeholder = placeholders[i]
+		if placeholder:
+			initial_transforms.append(placeholder.transform)
+			placeholder.visible = false
+			# We don't delete them immediately, or maybe we do. 
+			# Let's keep them as markers but hide them.
+			# Or better: spawn the visual immediately?
+			# No, we spawn them when dealing. 
+			# Actually, `deal_new_hand` logic needs nodes to exist to be hidden?
+			# Let's spawn 3 instances now and keep them ready.
+			
+			var visual = card_prefab.instantiate() as CardVisual
+			add_child(visual)
+			visual.transform = placeholder.transform
+			visual.visible = false
+			card_nodes.append(visual)
+			
+			placeholder.queue_free()
 	
 	# Emit signals deferredly to ensure UI is ready and connected
 	call_deferred("_emit_initial_signals")
@@ -60,7 +78,6 @@ func _on_card_played(player_index: int, card: Card) -> void:
 				break
 		
 		if card_idx != -1:
-			var card_nodes: Array[Variant] = [card_1, card_2, card_3]
 			if card_idx < card_nodes.size():
 				var node = card_nodes[card_idx]
 				play_card_throw_sound()
@@ -75,7 +92,6 @@ func _on_card_dealt(player_index: int, card: Card) -> void:
 	if player_index == 0: # Human
 		cards_in_hand.append(card)
 		var idx: int = cards_in_hand.size() - 1
-		var card_nodes: Array[Variant] = [card_1, card_2, card_3]
 		
 		if idx < card_nodes.size():
 			var card_node = card_nodes[idx]
@@ -107,7 +123,7 @@ func _emit_initial_signals() -> void:
 	emit_signal("envido_calculated", get_envido_points())
 	emit_signal("flor_detected", has_flor())
 
-func _add_collision_to_card(card_node: MeshInstance3D) -> void:
+func _add_collision_to_card(card_node: CardVisual) -> void:
 	if card_node.has_node("StaticBody3D"):
 		return
 
@@ -130,16 +146,13 @@ func _add_collision_to_card(card_node: MeshInstance3D) -> void:
 	static_body.mouse_entered.connect(_on_card_mouse_entered.bind(card_node))
 	static_body.mouse_exited.connect(_on_card_mouse_exited.bind(card_node))
 
-func _on_card_input_event(_camera: Node, event: InputEvent, _position: Vector3, _normal: Vector3, _shape_idx: int, card_node: MeshInstance3D) -> void:
+func _on_card_input_event(_camera: Node, event: InputEvent, _position: Vector3, _normal: Vector3, _shape_idx: int, card_node: CardVisual) -> void:
 	if not can_interact:
 		return
 
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		# Find the Card resource associated with this node
-		var idx: int = -1
-		if card_node == card_1: idx = 0
-		elif card_node == card_2: idx = 1
-		elif card_node == card_3: idx = 2
+		var idx: int = card_nodes.find(card_node)
 		
 		if idx != -1 and idx < cards_in_hand.size():
 			var card: Card = cards_in_hand[idx]
@@ -158,14 +171,11 @@ func disable_interaction() -> void:
 	can_interact = false
 
 
-func _on_card_mouse_entered(card_node: MeshInstance3D) -> void:
+func _on_card_mouse_entered(card_node: CardVisual) -> void:
 	# Only apply effect if card is still in hand
 	if card_node.get_parent() != self: return
 	
-	var idx: int = -1
-	if card_node == card_1: idx = 0
-	elif card_node == card_2: idx = 1
-	elif card_node == card_3: idx = 2
+	var idx: int = card_nodes.find(card_node)
 	
 	if idx != -1:
 		# Kill previous tween if exists
@@ -180,14 +190,11 @@ func _on_card_mouse_entered(card_node: MeshInstance3D) -> void:
 		tween.set_trans(Tween.TRANS_CUBIC)
 		tween.tween_property(card_node, "position:y", target_y, 0.2)
 
-func _on_card_mouse_exited(card_node: MeshInstance3D) -> void:
+func _on_card_mouse_exited(card_node: CardVisual) -> void:
 	# Only apply effect if card is still in hand
 	if card_node.get_parent() != self: return
 	
-	var idx: int = -1
-	if card_node == card_1: idx = 0
-	elif card_node == card_2: idx = 1
-	elif card_node == card_3: idx = 2
+	var idx: int = card_nodes.find(card_node)
 	
 	if idx != -1:
 		# Kill previous tween if exists
@@ -202,7 +209,7 @@ func _on_card_mouse_exited(card_node: MeshInstance3D) -> void:
 		tween.set_trans(Tween.TRANS_CUBIC)
 		tween.tween_property(card_node, "position:y", target_y, 0.2)
 
-func throw_card(card_node: MeshInstance3D) -> void:
+func throw_card(card_node: CardVisual) -> void:
 	if not card_node.visible: return
 	
 	# Kill any active hover tween to prevent it from messing with position after reparenting
@@ -262,7 +269,6 @@ func deal_new_hand() -> void:
 	cards_in_hand.clear()
 	
 	# Clean up any thrown cards still in the scene
-	var card_nodes: Array[MeshInstance3D] = [card_1, card_2, card_3]
 	for card_node in card_nodes:
 		# If card was thrown (reparented), bring it back
 		if card_node.get_parent() != self:
@@ -273,27 +279,10 @@ func deal_new_hand() -> void:
 
 	# Signals will be emitted when cards are received in _on_card_dealt
 
-func _update_card_visuals(card_node: MeshInstance3D, card: Card) -> void:
-	# Check if we already have a unique override that is a ShaderMaterial
-	var override_mat: Material = card_node.get_surface_override_material(0)
-	
-	if override_mat is ShaderMaterial:
-		override_mat.set_shader_parameter("main_tex", card.image)
-		return
-
-	# If no override, check the active material (from mesh or material_override)
-	var active_mat: Material = card_node.get_active_material(0)
-	
-	if active_mat is ShaderMaterial:
-		# We found a shader material. Duplicate it to create a unique instance for this card
-		# so we can set a unique texture without affecting others.
-		var new_mat: Resource = active_mat.duplicate()
-		new_mat.set_shader_parameter("main_tex", card.image)
-		card_node.set_surface_override_material(0, new_mat)
-	else:
-		# Fallback: use the card's default material logic
-		card_node.set_surface_override_material(0, card.material)
-		card_node.get_surface_override_material(0).albedo_texture = card.image
+func _update_card_visuals(card_node: CardVisual, card: Card) -> void:
+	if card_node:
+		card_node.set_front_texture(card.image)
+		# card_node.set_back_texture(back_texture) # TODO: Add back texture support
 
 ## If there are at least two cards of the same suit, envido = 20 + sum of the two
 ## highest envido values in that suit (cards 10/11/12 count as 0).
