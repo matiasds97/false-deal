@@ -15,6 +15,8 @@ signal envido_called(player_index: int, type: int) # type is EnvidoType
 signal envido_resolved(accepted: bool, winner_index: int, points: int)
 signal truco_called(player_index: int, level: int)
 signal truco_resolved(accepted: bool, winner_index: int, level: int)
+signal flor_called(player_index: int, type: int)
+signal flor_resolved(accepted: bool, winner_index: int, points: int)
 signal score_updated(score_p0: int, score_p1: int)
 signal round_ended(winner_index: int, reason: String)
 signal match_ended(winner_index: int)
@@ -34,10 +36,23 @@ enum EnvidoType {
 	FALTA_ENVIDO
 }
 
+enum FlorType {
+	FLOR,
+	CONTRA_FLOR,
+	CONTRA_FLOR_AL_RESTO
+}
+
+enum FlorState {
+	NONE,
+	CALLED,
+	PLAYED
+}
+
 enum ResponseAction {
 	NONE,
 	ENVIDO,
-	TRUCO
+	TRUCO,
+	FLOR
 }
 
 enum EnvidoCallState {
@@ -84,6 +99,12 @@ var current_truco_level: int = 0 # 0=None, 1=Truco, 2=Retruco, 3=Vale 4
 var proposed_truco_level: int = 0
 var truco_caller_index: int = -1 # Who called the CURRENT accepted level (or proposed)
 var pending_response_action: int = ResponseAction.NONE
+
+# Flor State
+var flor_state: int = FlorState.NONE
+var flor_chain: Array[int] = [] # Array of FlorType
+var flor_caller_index: int = -1
+var envido_pending_during_flor: bool = false # Not used usually as Flor cancels Envido, but let's keep consistent if needed. Actually Flor KILLS Envido.
 
 # --- CONFIG ---
 const MAX_SCORE: int = 30
@@ -138,6 +159,9 @@ func _reset_call_states():
 	truco_caller_index = -1
 	pending_response_action = ResponseAction.NONE
 	truco_pending_during_envido = false
+	flor_state = FlorState.NONE
+	flor_chain.clear()
+	flor_caller_index = -1
 
 ## Deals 3 cards to each player.
 func _deal_cards():
@@ -310,6 +334,14 @@ func _is_match_over() -> bool:
 ## [param _player_index]: The player index. [br][br]
 ## [return] true if the player can call envido, false otherwise.
 func can_call_envido(type: int, _player_index: int) -> bool:
+	# 0. Flor cancels Envido interactions if Flor is active
+	if flor_state != FlorState.NONE:
+		return false
+		
+	# If player HAS flor, they cannot call Envido (must call Flor)
+	if players[_player_index].has_flor():
+		return false
+
 	# 1. Blocked by Truco (unless pending response to First Truco)
 	var is_truco_pending_response = (truco_state == TrucoCallState.CALLED \
 		and pending_response_action == ResponseAction.TRUCO \
@@ -435,10 +467,210 @@ func _calculate_falta_envido_value() -> int:
 		var leader = max(p0, p1)
 		return MAX_SCORE - leader
 
+# --- FLOR LOGIC ---
+
+func can_call_flor(type: int, player_index: int) -> bool:
+	# Check if player has flor
+	if not players[player_index].has_flor():
+		return false
+		
+	# Blocked by Truco? Similar to Envido.
+	# If Truco is pending response, we can only call Flor if we are the one answering Truco (Interception)
+	var is_truco_pending_response = (truco_state == TrucoCallState.CALLED \
+		and pending_response_action == ResponseAction.TRUCO \
+		and proposed_truco_level == 1)
+		
+	if truco_state != TrucoCallState.NONE and not is_truco_pending_response:
+		# Can't call Flor after Truco is accepted? 
+		# Usually Flor must be properly declared in 1st vuelta.
+		return false
+		
+	if flor_state == FlorState.PLAYED:
+		return false
+		
+	# If Envido is pending, we CAN call Flor to cancel it and switch to Flor
+	if pending_response_action == ResponseAction.ENVIDO:
+		# We must be the one answering Envido
+		# Wait, anyone can declare flor? 
+		# If opponent called Envido, I can answer with Flor. This ignores turn?
+		# Logic usually routes "Envido" -> "Quiero/No/Envido/Flor".
+		# So this is handled in response options.
+		return true
+
+	if flor_chain.is_empty():
+		# Only in first vuelta
+		if vuelta_results.size() > 0:
+			return false
+		# Can start flor if nothing else is pending
+		if pending_response_action == ResponseAction.NONE:
+			return true
+		# Or if responding to Truco (first level)
+		if is_truco_pending_response:
+			return true
+			
+		return false
+	else:
+		# Responding to Flor
+		# Only opponent of last caller
+		if flor_caller_index == player_index:
+			return false
+			
+		var last_call = flor_chain.back()
+		match type:
+			FlorType.FLOR:
+				# Cannot call Flor on Flor (It's ContraFlor)
+				return false
+			FlorType.CONTRA_FLOR:
+				if last_call == FlorType.FLOR: return true
+				return false
+			FlorType.CONTRA_FLOR_AL_RESTO:
+				if last_call == FlorType.CONTRA_FLOR_AL_RESTO: return false
+				return true
+				
+	return false
+
+func call_flor(type: int, player_index: int) -> void:
+	if not can_call_flor(type, player_index):
+		return
+
+	# If this call is "Interception" of Envido or Truco
+	if pending_response_action == ResponseAction.ENVIDO:
+		# Cancel Envido state effectively. 
+		# We don't resolve envido points. Envido is void.
+		envido_state = EnvidoCallState.NONE
+		envido_chain.clear()
+		# But we might need to resume Truco if Envido interrupted Truco
+		# Actually if Envido interrupted Truco, and Flor interrupts Envido, 
+		# Flor becomes the active thing interrupting Truco.
+		# `truco_pending_during_envido` is true. We keep it true.
+		pass
+		
+	elif pending_response_action == ResponseAction.TRUCO:
+		truco_pending_during_envido = true # Hijack truco pending state logic
+		
+	flor_chain.append(type)
+	flor_state = FlorState.CALLED
+	pending_response_action = ResponseAction.FLOR
+	flor_caller_index = player_index
+	
+	emit_signal("flor_called", player_index, type)
+
+func resolve_flor(accepted: bool, answering_player_index: int) -> void:
+	if pending_response_action != ResponseAction.FLOR: return
+	
+	flor_state = FlorState.PLAYED
+	pending_response_action = ResponseAction.NONE
+	
+	var points = 0
+	var winner = -1
+	
+	if not accepted:
+		# Rejecting ContraFlor or Resto?
+		# Rejecting "Flor" call isn't really thing unless it's a "ContraFlor" challenge.
+		# If P1 says Flor, P2 says ContraFlor, P1 says No Quiero. P2 wins what?
+		# Standard rules:
+		# Flor vs Flor -> ContraFlor
+		# Reject ContraFlor -> Previous Flor points (3)
+		var length = flor_chain.size()
+		if length > 1:
+			winner = (answering_player_index + 1) % 2
+			points = _calculate_rejected_flor_points()
+		else:
+			# Should not happen to reject a base Flor declaration?
+			# Actually "Flor" is a declaration. The other player acknowledges it.
+			# If they don't challenge, points are awarded to the declarant.
+			# But if they don't challenge, is it "accepted"? Yes, implicitly.
+			# This method probably handles challenge resolution.
+			# If accepted=False, it means "No Quiero" to a raise.
+			winner = flor_caller_index # Caller wins
+			points = 3 # Is this right?
+			pass
+	else:
+		# Accepted challenge (Quiero) or simply acknowledging Flor (Quiero is weird for Flor).
+		# usually: P1 "Flor" -> P2 "Me too" (ContraFlor?) or P2 "Good" (3 pts for P1)
+		# If P2 sends "Good" (Accepted default Flor), P1 gets 3 points.
+		# If chain is just [FLOR], and it is "accepted" (acknowledged):
+		if flor_chain.size() == 1 and flor_chain[0] == FlorType.FLOR:
+			# If the answering player ALSO has Flor, and accepted (Quiero/Flor), it's a showdown!
+			if players[answering_player_index].has_flor():
+				# Both have Flor. Compare points. (Base Flor points = 3 each? No, winner takes 3)
+				var p0_envido = players[0].get_envido_points()
+				var p1_envido = players[1].get_envido_points()
+				
+				if p0_envido > p1_envido:
+					winner = 0
+				elif p1_envido > p0_envido:
+					winner = 1
+				else:
+					winner = mano_player_index
+				
+				points = 3 # Flor vs Flor is 3 points? Or 3 points for Flor + 3 points matching?
+				# Rules: Flor vs Flor -> Max score wins 3 points.
+				# Unless ContraFlor was called.
+			else:
+				# Answering player does NOT have Flor. They acknowledge it.
+				# Caller wins 3 points.
+				winner = flor_caller_index
+				points = 3
+		else:
+			# Comparison time (ContraFlor / Al Resto accepted)
+			var p0_envido = players[0].get_envido_points()
+			var p1_envido = players[1].get_envido_points()
+			
+			if p0_envido > p1_envido:
+				winner = 0
+			elif p1_envido > p0_envido:
+				winner = 1
+			else:
+				winner = mano_player_index
+				
+			points = _calculate_accepted_flor_points()
+
+			
+	emit_signal("flor_resolved", accepted, winner, points)
+	_add_score(winner, points)
+	
+	# Resume Truco if needed
+	if truco_pending_during_envido: # Reusing this flag
+		truco_pending_during_envido = false
+		pending_response_action = ResponseAction.TRUCO
+		emit_signal("truco_called", truco_caller_index, proposed_truco_level)
+
+func _calculate_rejected_flor_points() -> int:
+	var chain_keys = flor_chain
+	if chain_keys == [FlorType.FLOR, FlorType.CONTRA_FLOR]: return 4 # 3 for flor + 1 for refusal? No. Usually 3.
+	# Rules:
+	# Flor (3). ContraFlor (6). No Quiero -> 4 (User requested 4).
+	# Flor -> ContraFlor -> Al Resto -> No Quiero -> 6 (The ContraFlor).
+	
+	var length = flor_chain.size()
+	if length == 2: return 4 # Flor (3) vs ContraFlor -> Reject -> 4
+	if length == 3: return 6 # ... vs Al Resto -> Reject -> 6
+	return 3
+
+func _calculate_accepted_flor_points() -> int:
+	if flor_chain.has(FlorType.CONTRA_FLOR_AL_RESTO):
+		# Falta Envido logic but with Flor base?
+		# Usually "Al Resto" means points to win the game.
+		# Add Player Leader logic
+		var p0 = player_scores[0]
+		var p1 = player_scores[1]
+		var leader = max(p0, p1)
+		return MAX_SCORE - leader
+		
+	if flor_chain.has(FlorType.CONTRA_FLOR):
+		return 6
+		
+	return 3 # Base Flor
+
+
 # --- TRUCO LOGIC ---
 
 func can_call_truco(player_index: int) -> bool:
 	# No calling if waiting for response (except raise)
+	if flor_state != FlorState.NONE and flor_state != FlorState.PLAYED:
+		return false # Flor active block
+
 	if pending_response_action == ResponseAction.NONE:
 		if current_truco_level == 0: return true
 		if current_truco_level > 0 and current_truco_level < 3:

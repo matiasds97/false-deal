@@ -5,7 +5,7 @@ var name: String
 var hand: Array[Card] = []
 var is_human: bool = false
 var partner: Player = null
-var team: int = 0  # 0 or 1 for two teams in 2v2 game
+var team: int = 0 # 0 or 1 for two teams in 2v2 game
 
 func _init(p_name: String, p_is_human: bool = false, p_team: int = 0):
 	name = p_name
@@ -64,7 +64,6 @@ func get_envido_points() -> int:
 	# take the two cards with the highest envido values (10/11/12 count as 0)
 	# and return 20 + sum_of_those_two. If no two-cards same suit exist,
 	# return the highest single envido card value (or 0).
-
 	var suits_cards: Dictionary[Variant, Variant] = {}
 	for card in hand:
 		if not suits_cards.has(card.suit):
@@ -97,6 +96,28 @@ func get_envido_points() -> int:
 	for c in hand:
 		best_single = max(best_single, c.get_envido_value())
 	return best_single
+
+## If all three cards are of the same suit, return true.
+## Otherwise return false.
+func has_flor() -> bool:
+	if hand.size() < 3:
+		# Flor requires 3 cards. If called after playing a card, one might still 'have' flor 
+		# conceptually if the game remembers the hand, but usually Flor is declared at start.
+		# Ideally this checks the initial deal or we assume full hand check.
+		# Since Flor is declared in first vuelta, hand should normally be full or close to it.
+		# However, if we play a card, do we lose flor? 
+		# Rules say Flor is chanted in the first round.
+		# We'll assume strict check on current hand for now, but really we should check 
+		# if the *original* hand had flor. 
+		# Given `TrucoGame` manages turns, usually Flor is called before playing cards 
+		# or in response to Envido (which is also before playing cards or in 1st vuelta).
+		return false
+		
+	var first_suit: Card.Suit = hand[0].suit
+	for i in range(1, hand.size()):
+		if hand[i].suit != first_suit:
+			return false
+	return true
 
 func _to_string() -> String:
 	var result: String = "Player: %s\n" % name

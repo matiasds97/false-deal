@@ -35,6 +35,9 @@ var truco_value: int:
 ## Defines the illustration that corresponds to this card.
 @export var image: Texture2D
 
+## Optional custom material to override the default texturing (e.g. for foils/shiny cards)
+@export var custom_material: Material
+
 var material: BaseMaterial3D = StandardMaterial3D.new()
 
 func _init() -> void:

@@ -20,6 +20,9 @@ func _ready() -> void:
 	TrucoSignalBus.on_truco_resolved.connect(_on_truco_resolved)
 	TrucoSignalBus.on_envido_called.connect(_on_envido_called)
 	TrucoSignalBus.on_truco_called.connect(_on_truco_called_by_opponent)
+	TrucoSignalBus.on_flor_called.connect(_on_flor_called_by_opponent)
+	TrucoSignalBus.on_flor_resolved.connect(_on_flor_resolved)
+
 	
 	_bluff_factor = randf()
 
@@ -51,7 +54,11 @@ func _make_decision(token: int) -> void:
 		_schedule_decision(1.0)
 		return
 
+	# 0. Try to call Flor
+	if _try_call_flor(1): return
+
 	# 1. Try to call Envido
+
 	if _try_call_envido(1): return
 
 	# 2. Try to call Truco
@@ -101,6 +108,17 @@ func _try_call_truco(my_index: int) -> bool:
 		
 	return false
 
+## Attempts to call Flor if possible.
+func _try_call_flor(my_index: int) -> bool:
+	if not truco_manager.game.can_call_flor(TrucoGame.FlorType.FLOR, my_index):
+		return false
+	
+	print_debug("CPU Calling Flor!")
+	truco_manager.game.call_flor(TrucoGame.FlorType.FLOR, my_index)
+	_waiting_for_response = true
+	return true
+
+
 ## Plays the first available card (basic strategy).
 func _play_card() -> void:
 	if player.hand.size() > 0:
@@ -128,6 +146,16 @@ func _decide_envido_response() -> void:
 	var points: int = player.get_envido_points()
 	
 	print_debug("CPU considering Envido response. Points: %d" % points)
+	
+	# Check for Flor Override
+	if player.has_flor():
+		# If we have flor, we MUST call Flor in response to Envido
+		if truco_manager.game.can_call_flor(TrucoGame.FlorType.FLOR, my_index):
+			print_debug("CPU Responding to Envido with Flor!")
+			truco_manager.game.call_flor(TrucoGame.FlorType.FLOR, my_index)
+			return
+	
+	# High Points Strategy or Aggressive Bluff
 	
 	# High Points Strategy or Aggressive Bluff
 	if points >= 30 or _bluff_factor < 0.1:
@@ -226,6 +254,75 @@ func _decide_truco_response() -> void:
 			print_debug("CPU Accepted Truco")
 			truco_manager.game.resolve_truco(true, my_index)
 
+			truco_manager.game.resolve_truco(true, my_index)
+
+func _on_flor_called_by_opponent(caller_index: int, type: int) -> void:
+	if caller_index == 1: return
+	
+	_waiting_for_response = true
+	
+	# Simulate thought
+	get_tree().create_timer(1.0 + randf()).timeout.connect(func():
+		_decide_flor_response(type)
+	)
+
+func _decide_flor_response(type: int) -> void:
+	var my_index: int = 1
+	var has_flor: bool = player.has_flor()
+	
+	# If we don't have flor, we must "Achicarse" (Reject) -> Concede 3 points
+	# Wait, if opponent declared Flor (type=FLOR), and I don't have it, I usually acknowledge it.
+	# But my UI logic treats "False" resolution as "Winner gets points".
+	# If I accept? 
+	# TrucoGame logic: "Accepted" -> Winner is caller (3 points).
+	# "Rejected" -> "Caller wins" (3 points).
+	# So basically same result? 
+	# Except for "ContraFlor".
+	# If type == FLOR:
+	#   We assume "Quiero" means "I acknowledge/Good". Points go to caller.
+	#   So we can just resolve(true).
+	
+	if not has_flor:
+		print_debug("CPU does not have Flor. Acknowledging.")
+		truco_manager.game.resolve_flor(true, my_index) # Accept default flor
+		return
+		
+	# If we HAVE flor
+	print_debug("CPU Has Flor too!")
+	
+	# If opponent called ContraFlor (type=CONTRA_FLOR)
+	if type == TrucoGame.FlorType.CONTRA_FLOR:
+		# We can call Al Resto or Accept (Quiero = Showdown)
+		# Or Reject (No Quiero = they win ContraFlor points -> 6)
+		# Simple logic: Always "Quiero" ContraFlor if we have decent points?
+		# Or Al Resto if super good.
+		var p_envido = player.get_envido_points() # Flor points calculated same way + 20
+		# get_envido_points actually does the flor calculation if 3 same suit?
+		# Player.gd logic: adds 20 + sum of 2 best. 
+		# If Flor (3 cards same suit), it picks best pair.
+		# Flor points are basically Envido points.
+		
+		if p_envido >= 30:
+			if truco_manager.game.can_call_flor(TrucoGame.FlorType.CONTRA_FLOR_AL_RESTO, my_index):
+				print_debug("CPU Calling ContraFlor Al Resto!")
+				truco_manager.game.call_flor(TrucoGame.FlorType.CONTRA_FLOR_AL_RESTO, my_index)
+				return
+				
+		print_debug("CPU Accepting ContraFlor")
+		truco_manager.game.resolve_flor(true, my_index)
+		return
+		
+	# If opponent called simple FLOR
+	# We should call ContraFlor
+	if truco_manager.game.can_call_flor(TrucoGame.FlorType.CONTRA_FLOR, my_index):
+		print_debug("CPU Calling ContraFlor!")
+		truco_manager.game.call_flor(TrucoGame.FlorType.CONTRA_FLOR, my_index)
+		return
+
+	# Fallback
+	truco_manager.game.resolve_flor(true, my_index)
+
+
 func _on_envido_resolved(_accepted: bool, _winner_index: int, _points: int) -> void:
 	# If we were waiting (meaning we called it, or maybe we answered it?)
 	# Use a small delay to resume so it doesn't look instant
@@ -239,3 +336,8 @@ func _on_truco_resolved(accepted: bool, _player_index: int, _current_level: int)
 	if accepted:
 		_waiting_for_response = false
 		_schedule_decision(1.5)
+
+func _on_flor_resolved(accepted: bool, _winner_index: int, _points: int) -> void:
+	# Resume game
+	_waiting_for_response = false
+	_schedule_decision(1.5)

@@ -19,7 +19,6 @@ var cached_target_position: Vector3 = Vector3.ZERO
 var cached_stack_height: float = 0.0
 
 signal envido_calculated(score: int)
-signal flor_detected(has_flor: bool)
 signal card_selected(card: Card, card_node: MeshInstance3D)
 
 var can_interact: bool = false
@@ -113,7 +112,6 @@ func _on_card_dealt(player_index: int, card: Card) -> void:
 			# If this is the 3rd card, we can emit signals
 			if cards_in_hand.size() == 3:
 				emit_signal("envido_calculated", get_envido_points())
-				emit_signal("flor_detected", has_flor())
 
 func _on_card_placement_info(target_position: Vector3, stack_height: float) -> void:
 	cached_target_position = target_position
@@ -121,7 +119,6 @@ func _on_card_placement_info(target_position: Vector3, stack_height: float) -> v
 
 func _emit_initial_signals() -> void:
 	emit_signal("envido_calculated", get_envido_points())
-	emit_signal("flor_detected", has_flor())
 
 func _add_collision_to_card(card_node: CardVisual) -> void:
 	if card_node.has_node("StaticBody3D"):
@@ -281,7 +278,10 @@ func deal_new_hand() -> void:
 
 func _update_card_visuals(card_node: CardVisual, card: Card) -> void:
 	if card_node:
-		card_node.set_front_texture(card.image)
+		if card.custom_material:
+			card_node.set_front_material(card.custom_material)
+		else:
+			card_node.set_front_texture(card.image)
 		# card_node.set_back_texture(back_texture) # TODO: Add back texture support
 
 ## If there are at least two cards of the same suit, envido = 20 + sum of the two

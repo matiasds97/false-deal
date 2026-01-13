@@ -38,6 +38,9 @@ var proposed_truco_level: int:
 var pending_response_action: int:
 	get: return game.pending_response_action
 
+var flor_state: int:
+	get: return game.flor_state
+
 # --- LIFECYCLE ---
 
 func _ready() -> void:
@@ -80,6 +83,15 @@ func resolve_truco(accepted: bool, player_index: int) -> void:
 
 func player_fold(player_index: int) -> void:
 	game.player_fold(player_index)
+
+func can_call_flor(type: int, player_index: int) -> bool:
+	return game.can_call_flor(type, player_index)
+
+func call_flor(type: int, player_index: int) -> void:
+	game.call_flor(type, player_index)
+
+func resolve_flor(accepted: bool, player_index: int) -> void:
+	game.resolve_flor(accepted, player_index)
 
 # --- INPUT HANDLERS (From Controllers) ---
 
@@ -136,6 +148,18 @@ func _connect_game_signals() -> void:
 	
 	game.truco_resolved.connect(func(accepted, winner, level):
 		TrucoSignalBus.emit_signal("on_truco_resolved", accepted, winner, level)
+	)
+	
+	game.truco_resolved.connect(func(accepted, winner, level):
+		TrucoSignalBus.emit_signal("on_truco_resolved", accepted, winner, level)
+	)
+
+	game.flor_called.connect(func(p_idx, type):
+		TrucoSignalBus.emit_signal("on_flor_called", p_idx, type)
+	)
+	
+	game.flor_resolved.connect(func(accepted, winner, points):
+		TrucoSignalBus.emit_signal("on_flor_resolved", accepted, winner, points)
 	)
 	
 	game.score_updated.connect(func(s0, s1):

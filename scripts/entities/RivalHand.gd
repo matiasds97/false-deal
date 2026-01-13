@@ -78,8 +78,11 @@ func play_card(card_data: Card) -> void:
 		printerr("Rival has no cards to throw!")
 		return
 
-	# Apply texture so we see what card it is
-	card_node.set_front_texture(card_data.image)
+	# Apply texture/material
+	if card_data.custom_material:
+		card_node.set_front_material(card_data.custom_material)
+	else:
+		card_node.set_front_texture(card_data.image)
 	# card_node.set_back_texture(...) # handled by CardVisual default
 	
 	# Reparent to scene root

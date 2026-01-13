@@ -52,3 +52,12 @@ signal on_truco_called(player_index: int, level: int)
 # player_index: Who responded (useful for logging)
 # current_level: The new current level if accepted, or the level that was proposed if rejected (context dependent but useful)
 signal on_truco_resolved(accepted: bool, player_index: int, current_level: int)
+
+# Emitted when Flor is called
+# player_index: Who called it
+signal on_flor_called(player_index: int, type: int)
+
+# Emitted when Flor is resolved (usually just points awarded, as flor is rarely 'rejected' in the same way, but Contraflor can be)
+# accepted: if the contraflor was accepted or not? Actually Flor itself is declaration. 
+# But for ContraFlor interactions:
+signal on_flor_resolved(accepted: bool, winner_index: int, points: int)

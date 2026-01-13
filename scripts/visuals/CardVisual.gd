@@ -22,6 +22,10 @@ func set_front_texture(texture: Texture2D) -> void:
 func set_back_texture(texture: Texture2D) -> void:
 	_set_surface_texture(1, texture)
 
+func set_front_material(material: Material) -> void:
+	if not mesh: return
+	mesh.set_surface_override_material(0, material)
+
 func _set_surface_texture(surface_idx: int, texture: Texture2D) -> void:
 	if not mesh: return
 	
