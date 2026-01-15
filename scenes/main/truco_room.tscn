@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://c3m7lgp4gxmbn"]
+[gd_scene load_steps=22 format=3 uid="uid://c3m7lgp4gxmbn"]
 
 [ext_resource type="Script" uid="uid://f5t5okbpxgcg" path="res://scripts/core/TrucoManager.gd" id="1_vyrup"]
 [ext_resource type="Script" uid="uid://c5l4c5yo26h5n" path="res://scripts/controllers/TrucoHumanPlayerController.gd" id="2_y2xxy"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://dhyfhi6fa8mta" path="res://scripts/entities/RivalHand.gd" id="9_32kxe"]
 [ext_resource type="Script" uid="uid://c56pmoeww7vlq" path="res://scripts/ui/TrucoUI.gd" id="10_jide4"]
 [ext_resource type="Theme" uid="uid://dhi64wic7i7j0" path="res://resources/themes/truco_UI_theme.tres" id="10_pu42s"]
+[ext_resource type="PackedScene" uid="uid://eyq0ed8yub0k" path="res://scenes/ui/scoreboard.tscn" id="12_e57oh"]
 [ext_resource type="Theme" uid="uid://c6pjgoign3l3k" path="res://resources/themes/calling_theme.tres" id="13_e57oh"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_0vyix"]
@@ -226,20 +227,36 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Fold"
 
+[node name="Scoreboard" parent="TrucoUI" instance=ExtResource("12_e57oh")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(130.61, 128)
+layout_direction = 2
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_bottom = 0.0
+offset_left = -272.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 223.0
+grow_horizontal = 0
+grow_vertical = 1
+size_flags_vertical = 0
+
 [node name="ScoreContainer" type="MarginContainer" parent="TrucoUI"]
+visible = false
+custom_minimum_size = Vector2(128, 128)
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -133.0
-offset_bottom = 133.0
+offset_left = -275.0
+offset_right = -3.0
+offset_bottom = 274.0
 grow_horizontal = 0
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TrucoUI/ScoreContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 40
 
@@ -261,8 +278,8 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -184.0
-offset_top = -98.0
+offset_left = -185.0
+offset_top = -206.0
 grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/margin_right = 10
@@ -273,25 +290,55 @@ layout_mode = 2
 theme_override_constants/separation = 4
 alignment = 2
 
-[node name="EnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer"]
+[node name="Control" type="Control" parent="TrucoUI/CallsContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 2
+
+[node name="EnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer/Control"]
+layout_mode = 0
+offset_top = 99.0
+offset_right = 174.0
+offset_bottom = 142.0
 text = "Envido"
 
-[node name="RealEnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer"]
-layout_mode = 2
+[node name="FlorButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer/Control"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_top = 99.0
+offset_right = 174.0
+offset_bottom = 142.0
+text = "Flor"
+
+[node name="RealEnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer/Control"]
+visible = false
+layout_mode = 0
+offset_top = 51.0
+offset_right = 174.0
+offset_bottom = 94.0
 text = "Real Envido"
 
-[node name="FaltaEnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer"]
-layout_mode = 2
+[node name="FaltaEnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer/Control"]
+visible = false
+layout_mode = 0
+offset_top = 98.0
+offset_right = 174.0
+offset_bottom = 141.0
 text = "Falta Envido"
 
-[node name="HSeparator" type="HSeparator" parent="TrucoUI/CallsContainer/VBoxContainer"]
-layout_mode = 2
+[node name="HSeparator" type="HSeparator" parent="TrucoUI/CallsContainer/VBoxContainer/Control"]
+layout_mode = 0
+offset_top = 145.0
+offset_right = 174.0
+offset_bottom = 155.0
 theme_override_constants/separation = 10
 theme_override_styles/separator = SubResource("StyleBoxLine_pu42s")
 
-[node name="TrucoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer"]
-layout_mode = 2
+[node name="TrucoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer/Control"]
+layout_mode = 0
+offset_top = 159.0
+offset_right = 174.0
+offset_bottom = 202.0
 text = "Truco"
 
 [node name="ResponseContainer" type="MarginContainer" parent="TrucoUI"]

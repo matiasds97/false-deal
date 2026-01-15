@@ -8,19 +8,19 @@ extends Control
 @onready var hand: Marker3D = $"../HumanHand"
 @onready var cpu_hand: Node3D = $"../CPUHand"
 @onready var truco_manager: TrucoManager = $"../TrucoManager"
+@onready var scoreboard: Scoreboard = %Scoreboard
 @onready var score_label: Label = $ScoreContainer/VBoxContainer/ScoreContainer/HBoxContainer/ScoreLabel
 @onready var rival_calls_label: Label = %RivalCallsLabel
 @onready var rival_decision_state_label: Label = %RivalDecisionStateLabel
 
 # Calls UI
 @onready var calls_vbox: VBoxContainer = $CallsContainer/VBoxContainer
-@onready var envido_button: Button = $CallsContainer/VBoxContainer/EnvidoButton
-@onready var real_envido_button: Button = $CallsContainer/VBoxContainer/RealEnvidoButton
-@onready var falta_envido_button: Button = $CallsContainer/VBoxContainer/FaltaEnvidoButton
-@onready var flor_button: Button # Created dynamically or we can assume it doesn't exist in scene, so created in _ready
+@onready var envido_button: Button = $CallsContainer/VBoxContainer/Control/EnvidoButton
+@onready var real_envido_button: Button = $CallsContainer/VBoxContainer/Control/RealEnvidoButton
+@onready var falta_envido_button: Button = $CallsContainer/VBoxContainer/Control/FaltaEnvidoButton
+@onready var flor_button: Button = %FlorButton
 
-
-@onready var truco_button: Button = $CallsContainer/VBoxContainer/TrucoButton
+@onready var truco_button: Button = $CallsContainer/VBoxContainer/Control/TrucoButton
 @onready var response_container: MarginContainer = $ResponseContainer
 @onready var response_vbox: VBoxContainer = $ResponseContainer/VBoxContainer
 @onready var quiero_button: Button = $ResponseContainer/VBoxContainer/QuieroButton
@@ -35,6 +35,10 @@ var response_flor_button: Button
 var response_contra_flor_button: Button
 var response_contra_flor_resto_button: Button
 var response_con_flor_me_achico_button: Button
+
+# Animation control variables
+var envido_button_pressed: bool
+var envido_button_is_being_animated: bool
 
 func _ready() -> void:
 	# Connect to Hand signals
@@ -68,13 +72,11 @@ func _ready() -> void:
 		no_quiero_button.pressed.connect(_on_response_pressed.bind(false))
 	
 	# Move Truco button to bottom of calls (optional, but good for order)
-	calls_vbox.move_child(truco_button, -1)
+	#calls_vbox.move_child(truco_button, -1)
 	
 	# Create Flor Button
-	flor_button = create_button("Flor", calls_vbox, _on_flor_button_pressed)
-	calls_vbox.move_child(flor_button, 3) # After Falta Envido
-	
-	# Response Buttons (Raise)
+	flor_button.pressed.connect(_on_flor_button_pressed)
+#calls_vbox.move_child(flor_button, 3) # After Falta Envido
 	
 	# Response Buttons (Raise)
 	response_envido_button = create_button("Envido", response_vbox, _on_envido_button_pressed) # Same handler, calls logic checks
@@ -106,22 +108,19 @@ func _process(_delta: float) -> void:
 ## Updates the enabled/visible state of call and response buttons based on game rules.
 func _update_call_buttons_state() -> void:
 	# CALLS Container (Initial Calls)
-	# CALLS Container (Initial Calls)
 	if envido_button:
-		# If we have flor, envido shouldn't even appear.
-		# Disable/Hide logic:
 		var can_envido = truco_manager.can_call_envido(TrucoGame.EnvidoType.ENVIDO, 0) and truco_manager.envido_chain.is_empty()
 		envido_button.visible = can_envido # Hide completely if not allowed (e.g. has flor)
 		envido_button.disabled = not can_envido # Keep disabled just in case, but visibility handles "not appear"
 		
 	if real_envido_button:
 		var can_real = truco_manager.can_call_envido(TrucoGame.EnvidoType.REAL_ENVIDO, 0) and truco_manager.envido_chain.is_empty()
-		real_envido_button.visible = can_real
+		real_envido_button.visible = can_real and envido_button_pressed
 		real_envido_button.disabled = not can_real
 		
 	if falta_envido_button:
 		var can_falta = truco_manager.can_call_envido(TrucoGame.EnvidoType.FALTA_ENVIDO, 0) and truco_manager.envido_chain.is_empty()
-		falta_envido_button.visible = can_falta
+		falta_envido_button.visible = can_falta and envido_button_pressed
 		falta_envido_button.disabled = not can_falta
 
 	# RESPONSE Container (Raising)
@@ -282,14 +281,20 @@ func _update_call_buttons_state() -> void:
 				elif truco_manager.proposed_truco_level == 2:
 					response_raise_truco_button.text = "Vale 4"
 
+## Updates the score labels.
 func _on_score_updated(human_score: int, cpu_score: int) -> void:
-	if score_label:
-		score_label.text = "Human: %d | CPU: %d" % [human_score, cpu_score]
+	if scoreboard:
+		scoreboard.set_points(human_score, cpu_score)
+	
+	#if score_label:
+		#.text = "Human: %d | CPU: %d" % [human_score, cpu_score]
 
+## Communicates to the TrucoManager that the player folded.
 func _on_fold_button_pressed() -> void:
 	if truco_manager:
 		truco_manager.player_fold(0)
 
+## Updates the envido value label.
 func _on_envido_calculated(score: int) -> void:
 	if envido_value_label:
 		envido_value_label.text = str(score)
@@ -298,8 +303,11 @@ func _on_envido_calculated(score: int) -> void:
 
 ## Handles Envido Button Press.
 func _on_envido_button_pressed() -> void:
-	if truco_manager:
-		truco_manager.call_envido(TrucoGame.EnvidoType.ENVIDO, 0)
+	if envido_button_pressed and !envido_button_is_being_animated:
+		if truco_manager:
+			truco_manager.call_envido(TrucoGame.EnvidoType.ENVIDO, 0)
+	else:
+		_animate_envido_button()
 
 func _on_real_envido_button_pressed() -> void:
 	if truco_manager:
@@ -468,3 +476,16 @@ func _on_hand_started(_hand_num: int) -> void:
 	rival_calls_label.visible = false
 	rival_decision_state_label.text = ""
 	rival_decision_state_label.remove_theme_color_override("font_color")
+
+func _animate_envido_button() -> void:
+	if envido_button_is_being_animated: return
+
+	envido_button_is_being_animated = true
+	
+	var tween = create_tween()
+	# Animate button to y=99.0 as requested
+	tween.tween_property(envido_button, "position:y", 4.0, 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	tween.finished.connect(func():
+		envido_button_is_being_animated = false
+		envido_button_pressed = true
+	)

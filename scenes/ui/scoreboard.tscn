@@ -1,0 +1,164 @@
+[gd_scene load_steps=7 format=3 uid="uid://eyq0ed8yub0k"]
+
+[ext_resource type="Theme" uid="uid://dhi64wic7i7j0" path="res://resources/themes/truco_UI_theme.tres" id="1_rlgpq"]
+[ext_resource type="Script" uid="uid://cpq1lfoyfr1v6" path="res://scripts/ui/Scoreboard.gd" id="2_0vowc"]
+[ext_resource type="PackedScene" uid="uid://bf5jbnh010sv5" path="res://scenes/ui/points.tscn" id="2_48oo3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0vowc"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_48oo3"]
+content_margin_left = 0.0
+content_margin_top = 4.0
+content_margin_right = 0.0
+content_margin_bottom = 4.0
+color = Color(1, 1, 1, 1)
+thickness = 5
+vertical = true
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_0vowc"]
+content_margin_left = 4.0
+content_margin_top = 0.0
+content_margin_right = 4.0
+content_margin_bottom = 0.0
+color = Color(1, 1, 1, 1)
+thickness = 4
+
+[node name="Scoreboard" type="PanelContainer"]
+custom_minimum_size = Vector2(128, 128)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+offset_right = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("1_rlgpq")
+theme_override_styles/panel = SubResource("StyleBoxFlat_0vowc")
+script = ExtResource("2_0vowc")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Header" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "US"
+horizontal_alignment = 1
+
+[node name="VSeparator" type="VSeparator" parent="VBoxContainer/Header"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_48oo3")
+
+[node name="Label2" type="Label" parent="VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "THEM"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_0vowc")
+
+[node name="Control" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="Score" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="UsGridContainer" type="GridContainer" parent="VBoxContainer/Score"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 24
+columns = 2
+
+[node name="Points1" parent="VBoxContainer/Score/UsGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Points2" parent="VBoxContainer/Score/UsGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Points3" parent="VBoxContainer/Score/UsGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Points4" parent="VBoxContainer/Score/UsGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Points5" parent="VBoxContainer/Score/UsGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Points6" parent="VBoxContainer/Score/UsGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="VBoxContainer/Score"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="VSeparator2" type="VSeparator" parent="VBoxContainer/Score"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_48oo3")
+
+[node name="Control2" type="Control" parent="VBoxContainer/Score"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="ThemGridContainer" type="GridContainer" parent="VBoxContainer/Score"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 24
+columns = 2
+
+[node name="Points1" parent="VBoxContainer/Score/ThemGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Points2" parent="VBoxContainer/Score/ThemGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Points3" parent="VBoxContainer/Score/ThemGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Points4" parent="VBoxContainer/Score/ThemGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Points5" parent="VBoxContainer/Score/ThemGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Points6" parent="VBoxContainer/Score/ThemGridContainer" instance=ExtResource("2_48oo3")]
+layout_mode = 2
+
+[node name="Control2" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="Points" parent="." instance=ExtResource("2_48oo3")]
+visible = false
+layout_mode = 2
