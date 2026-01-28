@@ -14,7 +14,9 @@ signal turn_started(player_index: int)
 @export var player_nodes: Array[Node]
 
 ## ------- PUBLIC VARIABLES -------
-const CARD_THROW_DURATION: float = 0.5
+# Use TrucoConstants.CARD_THROW_DURATION for animation timing
+static var CARD_THROW_DURATION: float:
+	get: return TrucoConstants.CARD_THROW_DURATION
 var game: TrucoGame
 var players: Array[Player] = []
 
@@ -99,7 +101,7 @@ func on_player_play_card(card: Card, player_index: int) -> void:
 	game.play_card(player_index, card)
 
 func on_player_call_envido(player_index: int) -> void:
-	game.call_envido(TrucoGame.EnvidoType.ENVIDO, player_index)
+	game.call_envido(TrucoConstants.EnvidoType.ENVIDO, player_index)
 
 func on_player_call_truco(player_index: int) -> void:
 	game.call_truco(player_index)
@@ -119,51 +121,47 @@ func check_and_resolve_truco(accepted: bool, player_index: int) -> void:
 func _connect_game_signals() -> void:
 	if not game: return
 	
-	game.match_started.connect(func(): emit_signal("match_started"))
+	game.match_started.connect(func(): match_started.emit())
 	
 	game.hand_started.connect(func(hand_num):
-		TrucoSignalBus.emit_signal("on_hand_started", hand_num)
-		emit_signal("new_hand_started", hand_num)
+		TrucoSignalBus.on_hand_started.emit(hand_num)
+		new_hand_started.emit(hand_num)
 	)
 	
 	game.turn_started.connect(_on_turn_started)
 	
 	game.card_dealt.connect(func(p_idx, card):
-		TrucoSignalBus.emit_signal("on_card_dealt", p_idx, card)
+		TrucoSignalBus.on_card_dealt.emit(p_idx, card)
 	)
 	
 	game.card_played.connect(_on_card_played)
 	
 	game.envido_called.connect(func(p_idx, type):
-		TrucoSignalBus.emit_signal("on_envido_called", p_idx)
+		TrucoSignalBus.on_envido_called.emit(p_idx)
 	)
 	
 	game.envido_resolved.connect(func(accepted, winner, points):
-		TrucoSignalBus.emit_signal("on_envido_resolved", accepted, winner, points)
+		TrucoSignalBus.on_envido_resolved.emit(accepted, winner, points)
 	)
 	
 	game.truco_called.connect(func(p_idx, level):
-		TrucoSignalBus.emit_signal("on_truco_called", p_idx, level)
+		TrucoSignalBus.on_truco_called.emit(p_idx, level)
 	)
 	
 	game.truco_resolved.connect(func(accepted, winner, level):
-		TrucoSignalBus.emit_signal("on_truco_resolved", accepted, winner, level)
-	)
-	
-	game.truco_resolved.connect(func(accepted, winner, level):
-		TrucoSignalBus.emit_signal("on_truco_resolved", accepted, winner, level)
+		TrucoSignalBus.on_truco_resolved.emit(accepted, winner, level)
 	)
 
 	game.flor_called.connect(func(p_idx, type):
-		TrucoSignalBus.emit_signal("on_flor_called", p_idx, type)
+		TrucoSignalBus.on_flor_called.emit(p_idx, type)
 	)
 	
 	game.flor_resolved.connect(func(accepted, winner, points):
-		TrucoSignalBus.emit_signal("on_flor_resolved", accepted, winner, points)
+		TrucoSignalBus.on_flor_resolved.emit(accepted, winner, points)
 	)
 	
 	game.score_updated.connect(func(s0, s1):
-		TrucoSignalBus.emit_signal("on_score_updated", s0, s1)
+		TrucoSignalBus.on_score_updated.emit(s0, s1)
 	)
 	
 	game.round_ended.connect(_on_round_ended)
@@ -175,8 +173,8 @@ func _connect_game_signals() -> void:
 
 func _on_turn_started(player_index: int) -> void:
 	print_debug("TrucoManager: Turn %d" % player_index)
-	TrucoSignalBus.emit_signal("on_turn_started", player_index)
-	emit_signal("turn_started", player_index)
+	TrucoSignalBus.on_turn_started.emit(player_index)
+	turn_started.emit(player_index)
 	
 	if player_index < player_nodes.size():
 		player_nodes[player_index].start_turn()
@@ -184,12 +182,12 @@ func _on_turn_started(player_index: int) -> void:
 func _on_card_played(player_index: int, card: Card) -> void:
 	# Visual only
 	print_debug("TrucoManager: Player %d played %s" % [player_index, card])
-	TrucoSignalBus.emit_signal("on_card_played", player_index, card)
+	TrucoSignalBus.on_card_played.emit(player_index, card)
 
 func _on_round_ended(winner: int, reason: String) -> void:
 	print_debug("TrucoManager: Round Ended (%s). Winner: %d" % [reason, winner])
 	# Wait for delay before starting new hand
-	get_tree().create_timer(2.0).timeout.connect(func():
+	get_tree().create_timer(TrucoConstants.NEW_HAND_DELAY).timeout.connect(func():
 		game.start_new_hand()
 	)
 
@@ -227,5 +225,5 @@ func _input(event: InputEvent) -> void:
 
 func debug_cpu_call_envido():
 	# Check if logic allows? We can check game state
-	if game.can_call_envido(TrucoGame.EnvidoType.ENVIDO, 1):
-		game.call_envido(TrucoGame.EnvidoType.ENVIDO, 1)
+	if game.can_call_envido(TrucoConstants.EnvidoType.ENVIDO, 1):
+		game.call_envido(TrucoConstants.EnvidoType.ENVIDO, 1)

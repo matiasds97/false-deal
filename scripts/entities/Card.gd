@@ -1,5 +1,5 @@
-extends Resource
 class_name Card
+extends Resource
 
 enum Suit {
 	CLUB,

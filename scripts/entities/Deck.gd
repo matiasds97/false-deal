@@ -1,5 +1,5 @@
-extends Node
 class_name Deck
+extends Node
 
 var cards: Array[Card] = []
 var all_cards: Array[Card] = []

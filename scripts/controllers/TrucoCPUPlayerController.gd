@@ -3,6 +3,7 @@ extends TrucoPlayerController
 ## Controls the AI opponent's actions, including playing cards and making/responding to calls.
 
 @onready var truco_manager: TrucoManager = $"../TrucoManager"
+@onready var calling_audio_player: AudioStreamPlayer3D = $CallingAudioPlayer
 
 ## Whether we are waiting for a response from the opponent.
 var _waiting_for_response: bool = false
@@ -29,7 +30,7 @@ func _ready() -> void:
 func start_turn() -> void:
 	super.start_turn()
 	_waiting_for_response = false
-	_schedule_decision(1.0)
+	_schedule_decision(TrucoConstants.CPU_DECISION_DELAY)
 
 ## Schedules a decision to be made after a delay,
 ## invalidating any previous pending decisions. [br]
@@ -45,13 +46,13 @@ func _make_decision(token: int) -> void:
 	if _waiting_for_response: return
 	
 	if not truco_manager.game: return
-	if truco_manager.game.current_turn_index != 1:
+	if truco_manager.game.current_turn_index != TrucoConstants.PLAYER_CPU:
 		return
 		
 	# Check if Manager is busy (e.g. waiting for Human to respond to a resumed Truco)
-	if truco_manager.game.pending_response_action != TrucoGame.ResponseAction.NONE:
+	if truco_manager.game.pending_response_action != TrucoConstants.ResponseAction.NONE:
 		print_debug("CPU tried to decide but Manager is waiting for response. Rescheduling...")
-		_schedule_decision(1.0)
+		_schedule_decision(TrucoConstants.CPU_DECISION_DELAY)
 		return
 
 	# 0. Try to call Flor
@@ -70,7 +71,7 @@ func _make_decision(token: int) -> void:
 ## Attempts to call Envido if rules allow and strategy dictates.
 ## Returns true if an action was taken (call made).
 func _try_call_envido(my_index: int) -> bool:
-	if not truco_manager.game.can_call_envido(TrucoGame.EnvidoType.ENVIDO, my_index):
+	if not truco_manager.game.can_call_envido(TrucoConstants.EnvidoType.ENVIDO, my_index):
 		return false
 		
 	var points: int = player.get_envido_points()
@@ -81,9 +82,11 @@ func _try_call_envido(my_index: int) -> bool:
 		print_debug("CPU Decided to call Envido with %d points" % points)
 		# Randomly choose between Envido and Real Envido if points are super high
 		if points >= 30 and randf() > 0.5:
-			truco_manager.game.call_envido(TrucoGame.EnvidoType.REAL_ENVIDO, my_index)
+			truco_manager.game.call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index)
 		else:
-			truco_manager.game.call_envido(TrucoGame.EnvidoType.ENVIDO, my_index)
+			calling_audio_player.play()
+			truco_manager.game.call_envido(TrucoConstants.EnvidoType.ENVIDO, my_index)
+			
 			
 		_waiting_for_response = true
 		return true
@@ -110,11 +113,11 @@ func _try_call_truco(my_index: int) -> bool:
 
 ## Attempts to call Flor if possible.
 func _try_call_flor(my_index: int) -> bool:
-	if not truco_manager.game.can_call_flor(TrucoGame.FlorType.FLOR, my_index):
+	if not truco_manager.game.can_call_flor(TrucoConstants.FlorType.FLOR, my_index):
 		return false
 	
 	print_debug("CPU Calling Flor!")
-	truco_manager.game.call_flor(TrucoGame.FlorType.FLOR, my_index)
+	truco_manager.game.call_flor(TrucoConstants.FlorType.FLOR, my_index)
 	_waiting_for_response = true
 	return true
 
@@ -123,7 +126,7 @@ func _try_call_flor(my_index: int) -> bool:
 func _play_card() -> void:
 	if player.hand.size() > 0:
 		var card_to_play: Card = player.hand[0]
-		emit_signal("card_played", card_to_play)
+		card_played.emit(card_to_play)
 		print_debug("CPU played: " + str(card_to_play))
 
 func _on_envido_called(caller_index: int) -> void:
@@ -138,11 +141,11 @@ func _on_envido_called(caller_index: int) -> void:
 	)
 
 func _caller_was_CPU(caller_index: int) -> bool:
-	return caller_index == 1
+	return caller_index == TrucoConstants.PLAYER_CPU
 
 ## Decides how to respond to an opponent's Envido call.
 func _decide_envido_response() -> void:
-	var my_index: int = 1
+	var my_index: int = TrucoConstants.PLAYER_CPU
 	var points: int = player.get_envido_points()
 	
 	print_debug("CPU considering Envido response. Points: %d" % points)
@@ -150,9 +153,9 @@ func _decide_envido_response() -> void:
 	# Check for Flor Override
 	if player.has_flor():
 		# If we have flor, we MUST call Flor in response to Envido
-		if truco_manager.game.can_call_flor(TrucoGame.FlorType.FLOR, my_index):
+		if truco_manager.game.can_call_flor(TrucoConstants.FlorType.FLOR, my_index):
 			print_debug("CPU Responding to Envido with Flor!")
-			truco_manager.game.call_flor(TrucoGame.FlorType.FLOR, my_index)
+			truco_manager.game.call_flor(TrucoConstants.FlorType.FLOR, my_index)
 			return
 	
 	# High Points Strategy or Aggressive Bluff
@@ -160,24 +163,24 @@ func _decide_envido_response() -> void:
 	# High Points Strategy or Aggressive Bluff
 	if points >= 30 or _bluff_factor < 0.1:
 		# If we can raise to Falta Envido, do it?
-		if truco_manager.game.can_call_envido(TrucoGame.EnvidoType.FALTA_ENVIDO, my_index):
+		if truco_manager.game.can_call_envido(TrucoConstants.EnvidoType.FALTA_ENVIDO, my_index):
 			print_debug("CPU Raising to Falta Envido!")
-			truco_manager.game.call_envido(TrucoGame.EnvidoType.FALTA_ENVIDO, my_index)
+			truco_manager.game.call_envido(TrucoConstants.EnvidoType.FALTA_ENVIDO, my_index)
 			return
-		elif truco_manager.game.can_call_envido(TrucoGame.EnvidoType.REAL_ENVIDO, my_index):
+		elif truco_manager.game.can_call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index):
 			print_debug("CPU Raising to Real Envido!")
-			truco_manager.game.call_envido(TrucoGame.EnvidoType.REAL_ENVIDO, my_index)
+			truco_manager.game.call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index)
 			return
-		elif truco_manager.game.can_call_envido(TrucoGame.EnvidoType.ENVIDO, my_index): # Envido-Envido
+		elif truco_manager.game.can_call_envido(TrucoConstants.EnvidoType.ENVIDO, my_index): # Envido-Envido
 			print_debug("CPU Raising to Envido-Envido!")
-			truco_manager.game.call_envido(TrucoGame.EnvidoType.ENVIDO, my_index)
+			truco_manager.game.call_envido(TrucoConstants.EnvidoType.ENVIDO, my_index)
 			return
 			
 	# Medium Points Strategy: Accept or Raise slightly
 	if points >= 27:
 		# If opponent called simple Envido, maybe raise to Real?
-		if truco_manager.game.can_call_envido(TrucoGame.EnvidoType.REAL_ENVIDO, my_index) and randf() > 0.6:
-			truco_manager.game.call_envido(TrucoGame.EnvidoType.REAL_ENVIDO, my_index)
+		if truco_manager.game.can_call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index) and randf() > 0.6:
+			truco_manager.game.call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index)
 			return
 		
 		# Otherwise just Accept
@@ -200,7 +203,7 @@ func _decide_envido_response() -> void:
 
 func _on_truco_called_by_opponent(caller_index: int, _level: int) -> void:
 	# If WE called it, ignore.
-	if caller_index == 1: return
+	if caller_index == TrucoConstants.PLAYER_CPU: return
 	
 	_waiting_for_response = true
 	
@@ -211,24 +214,24 @@ func _on_truco_called_by_opponent(caller_index: int, _level: int) -> void:
 
 ## Decides how to respond to an opponent's Truco call.
 func _decide_truco_response() -> void:
-	var my_index: int = 1
+	var my_index: int = TrucoConstants.PLAYER_CPU
 	print_debug("CPU considering Truco response.")
 	
 	# 0. Check if we can/should shout "Envido" (The Envido First rule)
 	# If we have good points or want to bluff, we can call Envido now to interrupt Truco.
-	if truco_manager.game.can_call_envido(TrucoGame.EnvidoType.ENVIDO, my_index):
+	if truco_manager.game.can_call_envido(TrucoConstants.EnvidoType.ENVIDO, my_index):
 		var points = player.get_envido_points()
 		# Strategy: Call if points > 25 or small bluff
 		if points > 25 or (_bluff_factor < 0.2):
 			print_debug("CPU interrupting Truco with Envido!")
 			# Call the best envido we can
 			if points > 30:
-				if truco_manager.game.can_call_envido(TrucoGame.EnvidoType.REAL_ENVIDO, my_index):
-					truco_manager.game.call_envido(TrucoGame.EnvidoType.REAL_ENVIDO, my_index)
+				if truco_manager.game.can_call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index):
+					truco_manager.game.call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index)
 				else:
-					truco_manager.game.call_envido(TrucoGame.EnvidoType.ENVIDO, my_index)
+					truco_manager.game.call_envido(TrucoConstants.EnvidoType.ENVIDO, my_index)
 			else:
-				truco_manager.game.call_envido(TrucoGame.EnvidoType.ENVIDO, my_index)
+				truco_manager.game.call_envido(TrucoConstants.EnvidoType.ENVIDO, my_index)
 			return
 	
 	# Simple strategy based on bluff factor or random for now
@@ -254,8 +257,6 @@ func _decide_truco_response() -> void:
 			print_debug("CPU Accepted Truco")
 			truco_manager.game.resolve_truco(true, my_index)
 
-			truco_manager.game.resolve_truco(true, my_index)
-
 func _on_flor_called_by_opponent(caller_index: int, type: int) -> void:
 	if caller_index == 1: return
 	
@@ -267,7 +268,7 @@ func _on_flor_called_by_opponent(caller_index: int, type: int) -> void:
 	)
 
 func _decide_flor_response(type: int) -> void:
-	var my_index: int = 1
+	var my_index: int = TrucoConstants.PLAYER_CPU
 	var has_flor: bool = player.has_flor()
 	
 	# If we don't have flor, we must "Achicarse" (Reject) -> Concede 3 points
@@ -291,7 +292,7 @@ func _decide_flor_response(type: int) -> void:
 	print_debug("CPU Has Flor too!")
 	
 	# If opponent called ContraFlor (type=CONTRA_FLOR)
-	if type == TrucoGame.FlorType.CONTRA_FLOR:
+	if type == TrucoConstants.FlorType.CONTRA_FLOR:
 		# We can call Al Resto or Accept (Quiero = Showdown)
 		# Or Reject (No Quiero = they win ContraFlor points -> 6)
 		# Simple logic: Always "Quiero" ContraFlor if we have decent points?
@@ -303,9 +304,9 @@ func _decide_flor_response(type: int) -> void:
 		# Flor points are basically Envido points.
 		
 		if p_envido >= 30:
-			if truco_manager.game.can_call_flor(TrucoGame.FlorType.CONTRA_FLOR_AL_RESTO, my_index):
+			if truco_manager.game.can_call_flor(TrucoConstants.FlorType.CONTRA_FLOR_AL_RESTO, my_index):
 				print_debug("CPU Calling ContraFlor Al Resto!")
-				truco_manager.game.call_flor(TrucoGame.FlorType.CONTRA_FLOR_AL_RESTO, my_index)
+				truco_manager.game.call_flor(TrucoConstants.FlorType.CONTRA_FLOR_AL_RESTO, my_index)
 				return
 				
 		print_debug("CPU Accepting ContraFlor")
@@ -314,9 +315,9 @@ func _decide_flor_response(type: int) -> void:
 		
 	# If opponent called simple FLOR
 	# We should call ContraFlor
-	if truco_manager.game.can_call_flor(TrucoGame.FlorType.CONTRA_FLOR, my_index):
+	if truco_manager.game.can_call_flor(TrucoConstants.FlorType.CONTRA_FLOR, my_index):
 		print_debug("CPU Calling ContraFlor!")
-		truco_manager.game.call_flor(TrucoGame.FlorType.CONTRA_FLOR, my_index)
+		truco_manager.game.call_flor(TrucoConstants.FlorType.CONTRA_FLOR, my_index)
 		return
 
 	# Fallback

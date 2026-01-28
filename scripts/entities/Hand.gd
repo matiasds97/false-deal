@@ -18,6 +18,9 @@ var hover_tweens: Dictionary = {}
 var cached_target_position: Vector3 = Vector3.ZERO
 var cached_stack_height: float = 0.0
 
+# Reference to TrucoManager for accessing Player data
+@onready var _truco_manager: TrucoManager = $"../TrucoManager"
+
 signal envido_calculated(score: int)
 signal card_selected(card: Card, card_node: MeshInstance3D)
 
@@ -60,13 +63,13 @@ func _ready() -> void:
 	TrucoSignalBus.card_placement_info.connect(_on_card_placement_info)
 
 func _on_turn_started(player_index: int) -> void:
-	if player_index == 0: # Human
+	if player_index == TrucoConstants.PLAYER_HUMAN: # Human
 		enable_interaction()
 	else:
 		disable_interaction()
 
 func _on_card_played(player_index: int, card: Card) -> void:
-	if player_index == 0: # Human
+	if player_index == TrucoConstants.PLAYER_HUMAN: # Human
 		disable_interaction()
 		
 		# Find the card node corresponding to this card
@@ -88,7 +91,7 @@ func _on_hand_started(_hand_number: int) -> void:
 	deal_new_hand()
 
 func _on_card_dealt(player_index: int, card: Card) -> void:
-	if player_index == 0: # Human
+	if player_index == TrucoConstants.PLAYER_HUMAN: # Human
 		cards_in_hand.append(card)
 		var idx: int = cards_in_hand.size() - 1
 		
@@ -111,14 +114,14 @@ func _on_card_dealt(player_index: int, card: Card) -> void:
 			
 			# If this is the 3rd card, we can emit signals
 			if cards_in_hand.size() == 3:
-				emit_signal("envido_calculated", get_envido_points())
+				envido_calculated.emit(get_envido_points())
 
 func _on_card_placement_info(target_position: Vector3, stack_height: float) -> void:
 	cached_target_position = target_position
 	cached_stack_height = stack_height
 
 func _emit_initial_signals() -> void:
-	emit_signal("envido_calculated", get_envido_points())
+	envido_calculated.emit(get_envido_points())
 
 func _add_collision_to_card(card_node: CardVisual) -> void:
 	if card_node.has_node("StaticBody3D"):
@@ -154,8 +157,8 @@ func _on_card_input_event(_camera: Node, event: InputEvent, _position: Vector3, 
 		if idx != -1 and idx < cards_in_hand.size():
 			var card: Card = cards_in_hand[idx]
 			# Emit via SignalBus
-			TrucoSignalBus.emit_signal("on_user_input_card_selected", card)
-			emit_signal("card_selected", card, card_node) # Keep local for compatibility if needed
+			TrucoSignalBus.on_user_input_card_selected.emit(card)
+			card_selected.emit(card, card_node) # Keep local for compatibility if needed
 			# We don't throw immediately, we wait for the controller to tell us (or we could do optimistic, but let's be strict for now)
 			# play_card_throw_sound()
 			# throw_card(card_node)
@@ -284,10 +287,17 @@ func _update_card_visuals(card_node: CardVisual, card: Card) -> void:
 			card_node.set_front_texture(card.image)
 		# card_node.set_back_texture(back_texture) # TODO: Add back texture support
 
-## If there are at least two cards of the same suit, envido = 20 + sum of the two
-## highest envido values in that suit (cards 10/11/12 count as 0).
-## Otherwise return the highest single envido card value.
+## Returns envido points by delegating to the Player entity.
+## This avoids duplicating the envido calculation logic.
 func get_envido_points() -> int:
+	if _truco_manager and _truco_manager.players.size() > TrucoConstants.PLAYER_HUMAN:
+		return _truco_manager.players[TrucoConstants.PLAYER_HUMAN].get_envido_points()
+	# Fallback: calculate from local cards if manager not available
+	return _calculate_envido_points_fallback()
+
+## Fallback calculation for envido points (used if TrucoManager not available).
+## This is kept for edge cases during initialization.
+func _calculate_envido_points_fallback() -> int:
 	var suits_cards: Dictionary[Variant, Variant] = {}
 	for card in cards_in_hand:
 		if not suits_cards.has(card.suit):
@@ -318,9 +328,15 @@ func get_envido_points() -> int:
 		best_single = max(best_single, c.get_envido_value())
 	return best_single
 
-## If all three cards are of the same suit, return true.
-## Otherwise return false.
+## Returns true if player has flor by delegating to the Player entity.
 func has_flor() -> bool:
+	if _truco_manager and _truco_manager.players.size() > TrucoConstants.PLAYER_HUMAN:
+		return _truco_manager.players[TrucoConstants.PLAYER_HUMAN].has_flor()
+	# Fallback: calculate from local cards
+	return _has_flor_fallback()
+
+## Fallback calculation for flor (used if TrucoManager not available).
+func _has_flor_fallback() -> bool:
 	if cards_in_hand.size() < 3:
 		return false
 	var first_suit: Card.Suit = cards_in_hand[0].suit

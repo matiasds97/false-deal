@@ -15,4 +15,4 @@ func start_turn() -> void:
 	pass
 
 func _on_card_selected(card: Card, _card_node: MeshInstance3D) -> void:
-	emit_signal("card_played", card)
+	card_played.emit(card)

@@ -1,0 +1,176 @@
+[gd_scene load_steps=6 format=3 uid="uid://dp2kmrdphryrt"]
+
+[ext_resource type="PackedScene" uid="uid://bgpv7v4ctvndd" path="res://assets/models/deck/deck.glb" id="1_vxw2y"]
+[ext_resource type="Texture2D" uid="uid://b2amr04h0eaaw" path="res://assets/textures/cards_back/card_reverse.jpg" id="2_m5we2"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kuqag"]
+albedo_texture = ExtResource("2_m5we2")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vxw2y"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_py2xd"]
+albedo_texture = ExtResource("2_m5we2")
+
+[node name="Deck" instance=ExtResource("1_vxw2y")]
+
+[node name="Deck" parent="." index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_001" parent="." index="1"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_002" parent="." index="2"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_003" parent="." index="3"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_004" parent="." index="4"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_005" parent="." index="5"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_006" parent="." index="6"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_007" parent="." index="7"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_008" parent="." index="8"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_009" parent="." index="9"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_010" parent="." index="10"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_011" parent="." index="11"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_012" parent="." index="12"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_013" parent="." index="13"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_014" parent="." index="14"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_015" parent="." index="15"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_016" parent="." index="16"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_017" parent="." index="17"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_018" parent="." index="18"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_019" parent="." index="19"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_020" parent="." index="20"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_021" parent="." index="21"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_022" parent="." index="22"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_023" parent="." index="23"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_024" parent="." index="24"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_025" parent="." index="25"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_026" parent="." index="26"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_027" parent="." index="27"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_028" parent="." index="28"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_029" parent="." index="29"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_030" parent="." index="30"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_031" parent="." index="31"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_032" parent="." index="32"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_033" parent="." index="33"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_034" parent="." index="34"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_035" parent="." index="35"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_036" parent="." index="36"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_037" parent="." index="37"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_038" parent="." index="38"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")
+
+[node name="Deck_039" parent="." index="39"]
+surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")
+surface_material_override/1 = SubResource("StandardMaterial3D_py2xd")
+surface_material_override/2 = SubResource("StandardMaterial3D_vxw2y")

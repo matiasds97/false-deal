@@ -19,7 +19,7 @@ func add_card(card: Card) -> void:
 	# Emit placement info BEFORE adding card so Hand scripts have current stack height
 	var target_pos: Vector3 = table_center.global_position
 	var stack_height: float = get_stack_height()
-	TrucoSignalBus.emit_signal("card_placement_info", target_pos, stack_height)
+	TrucoSignalBus.card_placement_info.emit(target_pos, stack_height)
 	
 	cards_on_table.append(card)
 

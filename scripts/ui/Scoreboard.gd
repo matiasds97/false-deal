@@ -1,5 +1,5 @@
-extends Control
 class_name Scoreboard
+extends Control
 
 var us_points: int
 var them_points: int
@@ -7,10 +7,8 @@ var them_points: int
 var us_lines: Array[Points]
 var them_lines: Array[Points]
 
-@onready
-var us_grid_container: GridContainer = %UsGridContainer
-@onready
-var them_grid_container: GridContainer = %ThemGridContainer
+@onready var us_grid_container: GridContainer = %UsGridContainer
+@onready var them_grid_container: GridContainer = %ThemGridContainer
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

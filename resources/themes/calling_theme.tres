@@ -1,6 +1,6 @@
 [gd_resource type="Theme" load_steps=2 format=3 uid="uid://c6pjgoign3l3k"]
 
-[ext_resource type="FontFile" uid="uid://coivjjlpstwdo" path="res://assets/fonts/MetalMania-Regular.ttf" id="1_5d54h"]
+[ext_resource type="FontFile" uid="uid://crtudg4pqkcmr" path="res://assets/fonts/Jersey10-Regular.ttf" id="1_5d54h"]
 
 [resource]
 default_font = ExtResource("1_5d54h")

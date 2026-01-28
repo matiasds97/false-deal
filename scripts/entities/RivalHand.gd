@@ -45,8 +45,8 @@ func _on_hand_started(_hand_number: int) -> void:
 	reset_hand()
 
 func _on_card_played(player_index: int, card: Card) -> void:
-	# Assuming CPU is player 1
-	if player_index == 1:
+	# CPU is player 1
+	if player_index == TrucoConstants.PLAYER_CPU:
 		play_card(card)
 
 func _on_card_placement_info(target_position: Vector3, stack_height: float) -> void:
