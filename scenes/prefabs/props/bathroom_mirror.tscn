@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://b36pt2elfqs3q"]
+
+[ext_resource type="PackedScene" uid="uid://cgnor7k3cvusm" path="res://assets/models/props/bathroomMirror.fbx" id="1_m37vw"]
+
+[node name="bathroomMirror" unique_id=1336429473 instance=ExtResource("1_m37vw")]
+
+[node name="bathroomMirror" parent="." index="0" unique_id=1806655170]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.014, 0)

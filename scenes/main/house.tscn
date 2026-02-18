@@ -1,0 +1,140 @@
+[gd_scene format=3 uid="uid://wekvmb386thp"]
+
+[ext_resource type="PackedScene" uid="uid://8ptmun3mmnqh" path="res://scenes/prefabs/house_v3.tscn" id="1_ykq05"]
+[ext_resource type="PackedScene" uid="uid://bt2hr10ksuqav" path="res://scenes/player/FirstPersonPlayer.tscn" id="2_vb28t"]
+[ext_resource type="PackedScene" uid="uid://cfr2kl5oa42ew" path="res://scenes/prefabs/props/table.tscn" id="3_2ru7c"]
+[ext_resource type="PackedScene" uid="uid://bkvvh42abh2mv" path="res://scenes/prefabs/props/television_vintage.tscn" id="4_ytsrw"]
+[ext_resource type="PackedScene" uid="uid://carfhyh33iw3y" path="res://scenes/prefabs/props/kitchen_fridge.tscn" id="5_rsfnc"]
+[ext_resource type="PackedScene" uid="uid://dbjt3ddsg81pr" path="res://scenes/prefabs/props/chair.tscn" id="6_8nhub"]
+[ext_resource type="PackedScene" uid="uid://2864200dtnw7" path="res://scenes/prefabs/props/kitchen_sink.tscn" id="8_y241m"]
+[ext_resource type="PackedScene" uid="uid://xhtmb52ru3gj" path="res://scenes/prefabs/props/kitchen_stove.tscn" id="9_osh3t"]
+[ext_resource type="PackedScene" uid="uid://cy6dsgk15dl0m" path="res://scenes/prefabs/props/kitchen_cabinet.tscn" id="9_ykq05"]
+[ext_resource type="PackedScene" uid="uid://l2mud3fgjsuf" path="res://scenes/prefabs/props/washer.tscn" id="10_vb28t"]
+[ext_resource type="PackedScene" uid="uid://dbr2wg1w5kucl" path="res://scenes/prefabs/props/bathtub.tscn" id="11_2ru7c"]
+[ext_resource type="PackedScene" uid="uid://b4mubaewvwge8" path="res://scenes/prefabs/props/bed_double.tscn" id="12_ytsrw"]
+[ext_resource type="PackedScene" uid="uid://pcjs1xd22s8i" path="res://scenes/prefabs/props/toilet.tscn" id="13_rsfnc"]
+[ext_resource type="PackedScene" uid="uid://c32ghhjlm3h3o" path="res://scenes/prefabs/props/doorway.tscn" id="14_8nhub"]
+[ext_resource type="PackedScene" uid="uid://00yu136x8tr4" path="res://scenes/prefabs/props/laptop.tscn" id="15_iu77j"]
+[ext_resource type="PackedScene" uid="uid://wvmw0ifj5q08" path="res://scenes/prefabs/props/bathroom_sink.tscn" id="16_y241m"]
+[ext_resource type="PackedScene" uid="uid://b36pt2elfqs3q" path="res://scenes/prefabs/props/bathroom_mirror.tscn" id="17_osh3t"]
+
+[sub_resource type="Environment" id="Environment_osh3t"]
+background_mode = 1
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0, 0, 0, 1)
+fog_density = 0.05
+
+[node name="House" type="Node3D" unique_id=2129524260]
+
+[node name="House" parent="." unique_id=429319184 instance=ExtResource("1_ykq05")]
+
+[node name="FirstPersonPlayer" parent="." unique_id=1671700935 instance=ExtResource("2_vb28t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7506139, 0.7621274, -2.463213)
+speed = 3.5
+
+[node name="DiningRoomLight" type="OmniLight3D" parent="." unique_id=122020535]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24633384, 3.6837945, -4.5327654)
+omni_range = 15.0
+
+[node name="DiningRoomLight3" type="OmniLight3D" parent="." unique_id=361898931]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8730872, 4.640074, -11.004241)
+light_energy = 0.2
+distance_fade_enabled = true
+omni_range = 15.0
+
+[node name="DiningRoomLight4" type="OmniLight3D" parent="." unique_id=1648043960]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.346333, 4.293438, -16.299528)
+light_energy = 0.2
+distance_fade_enabled = true
+omni_range = 15.0
+
+[node name="DiningRoomLight5" type="OmniLight3D" parent="." unique_id=1561757736]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.762093, 4.7064705, -15.784643)
+light_energy = 0.5
+distance_fade_enabled = true
+omni_range = 10.0
+
+[node name="Props" type="Node3D" parent="." unique_id=1014594289]
+
+[node name="Room" type="Node3D" parent="Props" unique_id=319130063]
+
+[node name="VintageTV" parent="Props/Room" unique_id=1419696697 instance=ExtResource("4_ytsrw")]
+transform = Transform3D(-0.019853251, 0, -0.3644597, 0, 0.365, 0, 0.3644597, 0, -0.019853251, -4.370491, 0.85900474, -7.072764)
+
+[node name="TVTable" parent="Props/Room" unique_id=1162977794 instance=ExtResource("3_2ru7c")]
+transform = Transform3D(-0.0067347954, 0, -0.2644229, 0, 0.2645087, 0, 0.2644229, 0, -0.0067347954, -4.5707827, 0, -7.147065)
+
+[node name="KitchenTable" parent="Props/Room" unique_id=115098435 instance=ExtResource("3_2ru7c")]
+transform = Transform3D(0.008911567, 0, 0.34988654, 0, 0.35, 0, -0.34988654, 0, 0.008911567, 2.7000408, 0, -6.3347855)
+
+[node name="PCDesktop" parent="Props/Room" unique_id=369478122 instance=ExtResource("3_2ru7c")]
+transform = Transform3D(0.35, 0, 0, 0, 0.35, 0, 0, 0, 0.35, -1.0413066, 0, -0.7527544)
+
+[node name="chair" parent="Props/Room" unique_id=1058813901 instance=ExtResource("6_8nhub")]
+transform = Transform3D(-1.5298985e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, -1.5298985e-08, 2.1223345, 0, -6.655772)
+
+[node name="chair2" parent="Props/Room" unique_id=2051170812 instance=ExtResource("6_8nhub")]
+transform = Transform3D(-1.5298985e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, -1.5298985e-08, 2.1223345, 0, -5.358247)
+
+[node name="chair5" parent="Props/Room" unique_id=1453399495 instance=ExtResource("6_8nhub")]
+transform = Transform3D(-0.35, 0, 3.059797e-08, 0, 0.35, 0, -3.059797e-08, 0, -0.35, -1.3370283, 0, -1.2180201)
+
+[node name="chair3" parent="Props/Room" unique_id=1898896432 instance=ExtResource("6_8nhub")]
+transform = Transform3D(-1.5298985e-08, 0, 0.35, 0, 0.35, 0, -0.35, 0, -1.5298985e-08, 3.040358, 0, -5.9812493)
+
+[node name="chair4" parent="Props/Room" unique_id=2089081445 instance=ExtResource("6_8nhub")]
+transform = Transform3D(-1.5298985e-08, 0, 0.35, 0, 0.35, 0, -0.35, 0, -1.5298985e-08, 3.040358, 0, -7.2787747)
+
+[node name="laptop" parent="Props/Room" unique_id=1855819666 instance=ExtResource("15_iu77j")]
+transform = Transform3D(0.35, 0, 0, 0, 0.35, 0, 0, 0, 0.35, -0.5700885, 1.1432115, -1.1020602)
+
+[node name="Kitchen" type="Node3D" parent="Props" unique_id=143019476]
+
+[node name="kitchenFridge" parent="Props/Kitchen" unique_id=751145792 instance=ExtResource("5_rsfnc")]
+transform = Transform3D(2.6424265e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, 2.6424265e-08, -4.1086965, 0, -12.443686)
+
+[node name="kitchenSink" parent="Props/Kitchen" unique_id=1058707367 instance=ExtResource("8_y241m")]
+transform = Transform3D(-1.5298985e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, -1.5298985e-08, -3.5105293, 0, -17.177845)
+
+[node name="kitchenStove" parent="Props/Kitchen" unique_id=866522677 instance=ExtResource("9_osh3t")]
+transform = Transform3D(-1.5298985e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, -1.5298985e-08, -3.5071812, 0, -18.669441)
+
+[node name="kitchenCabinet" parent="Props/Kitchen" unique_id=1713027250 instance=ExtResource("9_ykq05")]
+transform = Transform3D(-1.5298985e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, -1.5298985e-08, -3.5073073, 0, -15.680337)
+
+[node name="washer" parent="Props/Kitchen" unique_id=2064774600 instance=ExtResource("10_vb28t")]
+transform = Transform3D(-1.5298985e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, -1.5298985e-08, -3.5652297, 0, -14.20171)
+
+[node name="Bathroom" type="Node3D" parent="Props" unique_id=1798043051]
+
+[node name="bathtub" parent="Props/Bathroom" unique_id=1545257762 instance=ExtResource("11_2ru7c")]
+transform = Transform3D(0.35, 0, 0, 0, 0.35, 0, 0, 0, 0.35, 4.643015, 0, -20.184845)
+
+[node name="toilet" parent="Props/Bathroom" unique_id=1669810269 instance=ExtResource("13_rsfnc")]
+transform = Transform3D(-1.5298985e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, -1.5298985e-08, 0.13343318, 0, -13.822461)
+
+[node name="bathroomSink" parent="Props/Bathroom" unique_id=1824658617 instance=ExtResource("16_y241m")]
+transform = Transform3D(-1.5298985e-08, 0, 0.35, 0, 0.35, 0, -0.35, 0, -1.5298985e-08, 4.081365, 0, -17.104357)
+
+[node name="bathroomMirror" parent="Props/Bathroom" unique_id=1336429473 instance=ExtResource("17_osh3t")]
+transform = Transform3D(-1.5298985e-08, 0, 0.35, 0, 0.35, 0, -0.35, 0, -1.5298985e-08, 4.9133325, 2.0182643, -17.062216)
+
+[node name="Bedroom" type="Node3D" parent="Props" unique_id=1119420428]
+
+[node name="Bed" parent="Props/Bedroom" unique_id=1676596208 instance=ExtResource("12_ytsrw")]
+transform = Transform3D(-0.4, 0, -7.54979e-08, 0, 0.4, 0, 6.039832e-08, 0, -0.5, 8.578942, 0.024213554, -14.641218)
+
+[node name="Doors" type="Node3D" parent="." unique_id=860866334]
+
+[node name="HouseDoorway" parent="Doors" unique_id=1303462804 instance=ExtResource("14_8nhub")]
+transform = Transform3D(-2.2205386e-08, 0, -0.411, 0, 0.42, 0, 0.508, 0, -1.796538e-08, 5.388149, 0.010458469, -0.29304835)
+
+[node name="RoomDoorway" parent="Doors" unique_id=2005694795 instance=ExtResource("14_8nhub")]
+transform = Transform3D(-1.792167e-08, 0, -0.324, 0, 0.41, 0, 0.41, 0, -1.416249e-08, 5.3881493, 0.03264952, -10.041141)
+
+[node name="BathroomDoorway" parent="Doors" unique_id=1970950535 instance=ExtResource("14_8nhub")]
+transform = Transform3D(-0.41, 0, 2.832498e-08, 0, 0.41, 0, -3.584334e-08, 0, -0.324, 2.7965016, 0.03264952, -12.982682)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=498172693]
+environment = SubResource("Environment_osh3t")

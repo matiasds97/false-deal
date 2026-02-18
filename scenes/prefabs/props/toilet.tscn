@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://pcjs1xd22s8i"]
+
+[ext_resource type="PackedScene" uid="uid://dq6oenb5g8kap" path="res://assets/models/props/toilet.fbx" id="1_biuhi"]
+
+[node name="toilet" unique_id=1669810269 instance=ExtResource("1_biuhi")]
+
+[node name="toilet" parent="." index="0" unique_id=841664487]
+transform = Transform3D(0, 0, -0.475, 0, 0.475, 0, 0.475, 0, 0, 0, 0, 0)

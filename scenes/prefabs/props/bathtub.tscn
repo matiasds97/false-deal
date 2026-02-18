@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dbr2wg1w5kucl"]
+
+[ext_resource type="PackedScene" uid="uid://2f4il8v11w0g" path="res://assets/models/props/bathtub.fbx" id="1_rvqys"]
+
+[node name="bathtub" unique_id=1545257762 instance=ExtResource("1_rvqys")]
+
+[node name="bathtub" parent="." index="0" unique_id=1965114542]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://wvmw0ifj5q08"]
+
+[ext_resource type="PackedScene" uid="uid://cis3jb8jx0nxo" path="res://assets/models/props/bathroomSink.fbx" id="1_i8k8i"]
+
+[node name="bathroomSink" unique_id=1824658617 instance=ExtResource("1_i8k8i")]
+
+[node name="bathroomSink" parent="." index="0" unique_id=251137442]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)

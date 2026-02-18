@@ -5,4 +5,4 @@
 [node name="kitchenFridge" unique_id=751145792 instance=ExtResource("1_pc1ux")]
 
 [node name="kitchenFridge" parent="." index="0" unique_id=66707895]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.039829254, 0, -2.180739)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

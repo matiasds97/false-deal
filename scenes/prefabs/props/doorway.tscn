@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://c32ghhjlm3h3o"]
+
+[ext_resource type="PackedScene" uid="uid://b15duc3gqacc6" path="res://assets/models/props/doorway.fbx" id="1_mdtna"]
+[ext_resource type="Script" uid="uid://gp30t37i7tki" path="res://scripts/entities/Door.gd" id="2_q72ho"]
+
+[node name="doorway" unique_id=1303462804 instance=ExtResource("1_mdtna")]
+
+[node name="doorway" parent="." index="0" unique_id=18712431]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="door 3" parent="doorway" index="0" unique_id=1423457863]
+script = ExtResource("2_q72ho")

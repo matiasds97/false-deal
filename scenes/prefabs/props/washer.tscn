@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://l2mud3fgjsuf"]
+
+[ext_resource type="PackedScene" uid="uid://cqj0sd787db6n" path="res://assets/models/props/washer.fbx" id="1_6n5j3"]
+
+[node name="washer" unique_id=2064774600 instance=ExtResource("1_6n5j3")]
+
+[node name="washer" parent="." index="0" unique_id=1786189845]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

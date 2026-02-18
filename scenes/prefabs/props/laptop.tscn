@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://00yu136x8tr4"]
+
+[ext_resource type="PackedScene" uid="uid://clenh6x6b42x" path="res://assets/models/props/laptop.fbx" id="1_6005i"]
+
+[node name="laptop" unique_id=1855819666 instance=ExtResource("1_6005i")]
+
+[node name="laptop" parent="." index="0" unique_id=164827950]
+transform = Transform3D(0.44, 0, 0, 0, 0.44, 0, 0, 0, 0.44, 0, 0, 0)

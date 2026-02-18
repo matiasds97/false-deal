@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://b4mubaewvwge8"]
+
+[ext_resource type="PackedScene" uid="uid://b5geckrcq4wqw" path="res://assets/models/props/bedDouble.fbx" id="1_ro0mc"]
+
+[node name="bedDouble" unique_id=1676596208 instance=ExtResource("1_ro0mc")]
+
+[node name="bedDouble" parent="." index="0" unique_id=1069220930]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
