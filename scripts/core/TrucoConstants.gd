@@ -20,7 +20,7 @@ const THRESHOLD_BUENAS: int = 16
 ## Duration of the card throw animation in seconds
 const CARD_THROW_DURATION: float = 0.5
 ## Default delay before CPU makes a decision
-const CPU_DECISION_DELAY: float = 1.0
+const CPU_DECISION_DELAY: float = 0.4
 ## Delay before starting a new hand after round ends
 const NEW_HAND_DELAY: float = 2.0
 

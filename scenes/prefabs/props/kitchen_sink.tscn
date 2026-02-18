@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://2864200dtnw7"]
+
+[ext_resource type="PackedScene" uid="uid://y74a6y4jijik" path="res://assets/models/props/kitchenSink.fbx" id="1_2bn6u"]
+
+[node name="kitchenSink" unique_id=1058707367 instance=ExtResource("1_2bn6u")]
+
+[node name="kitchenSink" parent="." index="0" unique_id=1004287512]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

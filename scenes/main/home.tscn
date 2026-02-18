@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bgwdtlnqvhqxs"]
+[gd_scene format=3 uid="uid://bgwdtlnqvhqxs"]
 
 [ext_resource type="Script" uid="uid://gp30t37i7tki" path="res://scripts/entities/Door.gd" id="1_1k6ep"]
 [ext_resource type="PackedScene" uid="uid://57g0g2qjsfbr" path="res://assets/models/characters/Harry Mason/Harry.dae" id="3_75q67"]
@@ -17,116 +17,109 @@ size = Vector2(8, 4)
 [sub_resource type="PlaneMesh" id="PlaneMesh_1k6ep"]
 size = Vector2(4, 4)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1k6ep"]
+[node name="Home" type="Node3D" unique_id=976147920]
 
-[node name="Home" type="Node3D"]
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1847015779]
 environment = SubResource("Environment_cptgo")
 
-[node name="Floor" type="MeshInstance3D" parent="."]
+[node name="Floor" type="MeshInstance3D" parent="." unique_id=166034102]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 2)
 mesh = SubResource("PlaneMesh_cptgo")
 
-[node name="RoomFloor" type="MeshInstance3D" parent="."]
+[node name="RoomFloor" type="MeshInstance3D" parent="." unique_id=382794482]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 6)
 mesh = SubResource("PlaneMesh_1k6ep")
 
-[node name="DiningRoomLight" type="OmniLight3D" parent="."]
+[node name="DiningRoomLight" type="OmniLight3D" parent="." unique_id=1295230205]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8120043, 2.319605, 1.7699428)
 light_color = Color(0.43453783, 0.62364274, 1, 1)
 light_energy = 0.5
 
-[node name="DiningRoomLight" type="OmniLight3D" parent="DiningRoomLight"]
+[node name="DiningRoomLight" type="OmniLight3D" parent="DiningRoomLight" unique_id=940747444]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1637187, -0.3854159, 3.041988)
 light_color = Color(0.43453783, 0.62364274, 1, 1)
 light_energy = 0.2
 distance_fade_enabled = true
 
-[node name="DiningRoomLight2" type="OmniLight3D" parent="."]
+[node name="DiningRoomLight2" type="OmniLight3D" parent="." unique_id=333220321]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5760403, 2.0139992, 1.0339622)
 light_color = Color(0.43453783, 0.62364274, 1, 1)
 light_energy = 0.5
 
-[node name="BedroomLight" type="OmniLight3D" parent="."]
+[node name="BedroomLight" type="OmniLight3D" parent="." unique_id=1988410510]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8560567, 2.0139992, 5.779567)
 light_color = Color(0.43453783, 0.62364274, 1, 1)
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=2123139644]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2502778, 2)
 size = Vector3(0.1, 2.5, 4)
 
-[node name="LargeDoor" type="Node3D" parent="."]
+[node name="LargeDoor" type="Node3D" parent="." unique_id=120779074]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45591253, 0.7731174, 3.9896116)
 script = ExtResource("1_1k6ep")
 
-[node name="DoorCSGBox3D" type="CSGBox3D" parent="LargeDoor"]
-transform = Transform3D(-4.3711385e-08, 0, -0.9999999, 0, 1, 0, 0.9999999, 0, -4.3711385e-08, 0.5077722, 0.22035003, -0.028938532)
-size = Vector3(0.1, 2, 1)
-material = SubResource("StandardMaterial3D_1k6ep")
-
-[node name="CSGBox3D4" type="CSGBox3D" parent="."]
+[node name="CSGBox3D4" type="CSGBox3D" parent="." unique_id=1699372668]
 transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, 4.0315385, 2.555999, 3.3188477)
 size = Vector3(0.1, 8.134888, 6.6376953)
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="."]
+[node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=1379480136]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1.25, 1.7095337)
 size = Vector3(0.1, 2.5, 3.4190674)
 
-[node name="CSGBox3D6" type="CSGBox3D" parent="."]
+[node name="CSGBox3D6" type="CSGBox3D" parent="." unique_id=1266686752]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1.25, 4.9835925)
 size = Vector3(0.1, 2.5, 3.14)
 
-[node name="CSGBox3D8" type="CSGBox3D" parent="."]
+[node name="CSGBox3D8" type="CSGBox3D" parent="." unique_id=1830319847]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9051294, 1.25, 4.9497886)
 size = Vector3(0.1, 2.5, 3.2076075)
 
-[node name="CSGBox3D7" type="CSGBox3D" parent="."]
+[node name="CSGBox3D7" type="CSGBox3D" parent="." unique_id=171607104]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.4228, 1.25, 6.6083536)
 size = Vector3(0.1, 2.5, 3.14)
 
-[node name="CSGBox3D3" type="CSGBox3D" parent="."]
+[node name="CSGBox3D3" type="CSGBox3D" parent="." unique_id=396503659]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.8961563, 1.25, 1.9993253)
 size = Vector3(0.1, 2.5, 2.14)
 
-[node name="CSGBox3D5" type="CSGBox3D" parent="."]
+[node name="CSGBox3D5" type="CSGBox3D" parent="." unique_id=1839834385]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.8961563, 1.25, 3.3887496)
 size = Vector3(0.1, 2.5, 2.14)
 
-[node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="." unique_id=1592055119]
 operation = 2
 use_collision = true
 
-[node name="BathWall" type="CSGBox3D" parent="CSGCombiner3D"]
+[node name="BathWall" type="CSGBox3D" parent="CSGCombiner3D" unique_id=997136585]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 5.876262, 1.25, 2.6512463)
 size = Vector3(0.1, 2.5, 1.4)
 
-[node name="DiningRoomWall" type="CSGBox3D" parent="CSGCombiner3D"]
+[node name="DiningRoomWall" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1095004088]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2.401844, 1.25, 3.9540687)
 size = Vector3(0.1, 2.5, 4.8932424)
 
-[node name="CSGBox3D3" type="CSGBox3D" parent="CSGCombiner3D"]
+[node name="CSGBox3D3" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1358698687]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 4, 1.25, 0)
 size = Vector3(0.1, 2.5, 8)
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="CSGCombiner3D"]
+[node name="CSGBox3D2" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1640348172]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.4987154, 1.5149316, -0.0012207031)
 operation = 2
 size = Vector3(1.2549438, 0.82470703, 0.111816406)
 
-[node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D"]
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1148769338]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95759904, 1.0021174, 3.9736676)
 operation = 2
 size = Vector3(1, 2, 0.16894531)
 
-[node name="CSGBox3D4" type="CSGBox3D" parent="CSGCombiner3D"]
+[node name="CSGBox3D4" type="CSGBox3D" parent="CSGCombiner3D" unique_id=78082013]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5.8830185, 1.0021174, 2.8866801)
 operation = 2
 size = Vector3(0.7, 2, 0.169)
 
-[node name="Harry" parent="." instance=ExtResource("3_75q67")]
+[node name="Harry" parent="." unique_id=1646581697 instance=ExtResource("3_75q67")]
 transform = Transform3D(-1.1934766, 0, 0.33927283, 0, 1.2407627, 0, -0.33927283, 0, -1.1934766, 0.5838734, 0, 5.175649)
 
-[node name="FirstPersonPlayer" parent="." instance=ExtResource("4_player")]
+[node name="FirstPersonPlayer" parent="." unique_id=1805176775 instance=ExtResource("4_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.790059, -0.05868137, 1.828513)
 speed = 2.0

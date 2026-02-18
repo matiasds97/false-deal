@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dbjt3ddsg81pr"]
+
+[ext_resource type="PackedScene" uid="uid://dyvabdefq2uxi" path="res://assets/models/props/chair.fbx" id="1_oxta7"]
+
+[node name="chair" unique_id=1058813901 instance=ExtResource("1_oxta7")]
+
+[node name="chair" parent="." index="0" unique_id=1383356832]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

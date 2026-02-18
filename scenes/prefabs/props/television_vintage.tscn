@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bkvvh42abh2mv"]
+
+[ext_resource type="PackedScene" uid="uid://c02fcc4u08vs8" path="res://assets/models/props/televisionVintage.fbx" id="1_ndywv"]
+
+[node name="televisionVintage" unique_id=1419696697 instance=ExtResource("1_ndywv")]
+
+[node name="televisionVintage" parent="." index="0" unique_id=1716142673]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0207276, -3.59303e-15, -0.9494934)

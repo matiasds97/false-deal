@@ -1,0 +1,85 @@
+[gd_scene format=3 uid="uid://wekvmb386thp"]
+
+[ext_resource type="PackedScene" uid="uid://8ptmun3mmnqh" path="res://scenes/prefabs/house_v3.tscn" id="1_bqcxx"]
+[ext_resource type="PackedScene" uid="uid://bt2hr10ksuqav" path="res://scenes/player/FirstPersonPlayer.tscn" id="2_ouhpp"]
+[ext_resource type="PackedScene" uid="uid://cfr2kl5oa42ew" path="res://scenes/prefabs/props/table.tscn" id="3_nqkes"]
+[ext_resource type="PackedScene" uid="uid://bkvvh42abh2mv" path="res://scenes/prefabs/props/television_vintage.tscn" id="4_mhy7h"]
+[ext_resource type="PackedScene" uid="uid://carfhyh33iw3y" path="res://scenes/prefabs/props/kitchen_fridge.tscn" id="5_mhy7h"]
+[ext_resource type="PackedScene" uid="uid://dbjt3ddsg81pr" path="res://scenes/prefabs/props/chair.tscn" id="6_usral"]
+[ext_resource type="PackedScene" uid="uid://bwm0ud6nd2o2a" path="res://scenes/prefabs/props/kitchen_bar.tscn" id="7_eu205"]
+[ext_resource type="PackedScene" uid="uid://2864200dtnw7" path="res://scenes/prefabs/props/kitchen_sink.tscn" id="8_eahf3"]
+[ext_resource type="PackedScene" uid="uid://xhtmb52ru3gj" path="res://scenes/prefabs/props/kitchen_stove.tscn" id="9_wdc6n"]
+
+[node name="House" type="Node3D" unique_id=2129524260]
+
+[node name="House" parent="." unique_id=429319184 instance=ExtResource("1_bqcxx")]
+
+[node name="FirstPersonPlayer" parent="." unique_id=1671700935 instance=ExtResource("2_ouhpp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7506139, 1.0236182, -2.463213)
+speed = 3.5
+
+[node name="DiningRoomLight" type="OmniLight3D" parent="." unique_id=122020535]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24633384, 3.6837945, -4.5327654)
+omni_range = 15.0
+
+[node name="DiningRoomLight3" type="OmniLight3D" parent="." unique_id=361898931]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8730872, 4.640074, -11.004241)
+light_energy = 0.2
+distance_fade_enabled = true
+omni_range = 15.0
+
+[node name="DiningRoomLight4" type="OmniLight3D" parent="." unique_id=1648043960]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.346333, 4.293438, -16.299528)
+light_energy = 0.2
+distance_fade_enabled = true
+omni_range = 15.0
+
+[node name="DiningRoomLight5" type="OmniLight3D" parent="." unique_id=1561757736]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.762093, 4.7064705, -15.784643)
+light_energy = 0.5
+distance_fade_enabled = true
+omni_range = 10.0
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="." unique_id=506085781]
+transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, 5.0566735, 5.0890636, -10.164726)
+visible = false
+size = Vector3(0.1, 20.720406, 20.661194)
+
+[node name="table2" parent="." unique_id=1162977794 instance=ExtResource("3_nqkes")]
+transform = Transform3D(-0.0067347954, 0, -0.2644229, 0, 0.2645087, 0, 0.2644229, 0, -0.0067347954, -4.5707827, 0, -7.147065)
+
+[node name="table" parent="." unique_id=115098435 instance=ExtResource("3_nqkes")]
+transform = Transform3D(0.008911567, 0, 0.34988654, 0, 0.35, 0, -0.34988654, 0, 0.008911567, 2.975448, 0, -6.3277707)
+
+[node name="televisionVintage" parent="." unique_id=1419696697 instance=ExtResource("4_mhy7h")]
+transform = Transform3D(-0.019853251, 0, -0.3644597, 0, 0.365, 0, 0.3644597, 0, -0.019853251, -4.370491, 0.85900474, -7.072764)
+
+[node name="kitchenFridge" parent="." unique_id=751145792 instance=ExtResource("5_mhy7h")]
+transform = Transform3D(2.6424265e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, 2.6424265e-08, -4.838294, 0, -11.089656)
+
+[node name="chair" parent="." unique_id=1058813901 instance=ExtResource("6_usral")]
+transform = Transform3D(-1.5298985e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, -1.5298985e-08, 1.8454283, 0, -6.655772)
+
+[node name="chair2" parent="." unique_id=2051170812 instance=ExtResource("6_usral")]
+transform = Transform3D(-1.5298985e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, -1.5298985e-08, 1.8454283, 0, -5.358247)
+
+[node name="chair3" parent="." unique_id=1898896432 instance=ExtResource("6_usral")]
+transform = Transform3D(-1.5298985e-08, 0, 0.35, 0, 0.35, 0, -0.35, 0, -1.5298985e-08, 3.8382487, 0, -5.9812493)
+
+[node name="chair4" parent="." unique_id=2089081445 instance=ExtResource("6_usral")]
+transform = Transform3D(-1.5298985e-08, 0, 0.35, 0, 0.35, 0, -0.35, 0, -1.5298985e-08, 3.8382487, 0, -7.2787747)
+
+[node name="kitchenBar" parent="." unique_id=458754620 instance=ExtResource("7_eu205")]
+transform = Transform3D(-1.5298985e-08, 0, 0.35, 0, 0.35, 0, -0.35, 0, -1.5298985e-08, -5.090624, 0, -15.673726)
+
+[node name="kitchenBar3" parent="." unique_id=1590936964 instance=ExtResource("7_eu205")]
+transform = Transform3D(-1.5298985e-08, 0, 0.35, 0, 0.35, 0, -0.35, 0, -1.5298985e-08, -5.090624, 0, -14.172711)
+
+[node name="kitchenBar2" parent="." unique_id=1247756591 instance=ExtResource("7_eu205")]
+transform = Transform3D(-1.5298985e-08, 0, 0.35, 0, 0.35, 0, -0.35, 0, -1.5298985e-08, -5.090624, 0, -17.173744)
+
+[node name="kitchenSink" parent="." unique_id=1058707367 instance=ExtResource("8_eahf3")]
+transform = Transform3D(-1.5298985e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, -1.5298985e-08, -3.5105293, 0, -17.177845)
+
+[node name="kitchenStove" parent="." unique_id=866522677 instance=ExtResource("9_wdc6n")]
+transform = Transform3D(-1.5298985e-08, 0, -0.35, 0, 0.35, 0, 0.35, 0, -1.5298985e-08, -3.5071812, 0, -18.669441)

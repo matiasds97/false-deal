@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bwm0ud6nd2o2a"]
+
+[ext_resource type="PackedScene" uid="uid://cxtkwa13tlrs1" path="res://assets/models/props/kitchenBar.fbx" id="1_q5kid"]
+
+[node name="kitchenBar" unique_id=458754620 instance=ExtResource("1_q5kid")]
+
+[node name="kitchenBar" parent="." index="0" unique_id=796567810]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://cki7qqjawo7bj"]
+
+[ext_resource type="PackedScene" uid="uid://x2aoa5c74pe7" path="res://assets/models/environment/house.glb" id="1_6wr1d"]
+[ext_resource type="PackedScene" uid="uid://bt2hr10ksuqav" path="res://scenes/player/FirstPersonPlayer.tscn" id="2_l1srn"]
+
+[sub_resource type="Environment" id="Environment_6wr1d"]
+background_mode = 1
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0, 0, 0, 1)
+fog_density = 0.05
+
+[node name="house" unique_id=539168628 instance=ExtResource("1_6wr1d")]
+
+[node name="FirstPersonPlayer" parent="." index="0" unique_id=807866218 instance=ExtResource("2_l1srn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0658402, -0.06115651, -3.5757804)
+speed = 2.0
+
+[node name="DiningRoomLight3" type="OmniLight3D" parent="." index="2" unique_id=1700703449]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7882631, 1.875508, -6.643488)
+light_color = Color(0.43453783, 0.62364274, 1, 1)
+light_energy = 0.2
+distance_fade_enabled = true
+
+[node name="DiningRoomLight" type="OmniLight3D" parent="." index="3" unique_id=146331427]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7977486, 2.2609239, -2.1791348)
+light_color = Color(0.43453783, 0.62364274, 1, 1)
+light_energy = 0.5
+
+[node name="DiningRoomLight2" type="OmniLight3D" parent="." index="4" unique_id=1449318304]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.579094, 2.1909525, -5.9382386)
+light_color = Color(0.43453783, 0.62364274, 1, 1)
+light_energy = 0.5
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." index="5" unique_id=1562532297]
+environment = SubResource("Environment_6wr1d")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="." index="6" unique_id=1379552482]
+transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, 4.0315385, 2.555999, -4.6224594)
+size = Vector3(0.1, 8.134888, 9.370605)
