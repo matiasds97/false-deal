@@ -274,7 +274,8 @@ func _check_round_winner() -> bool:
 				
 	if round_winner != -1:
 		_add_score(round_winner, current_stakes)
-		current_state = TrucoState.RESOLVING_HAND
+		if current_state != TrucoState.MATCH_ENDED:
+			current_state = TrucoState.RESOLVING_HAND
 		round_ended.emit(round_winner, reason)
 		return true
 		

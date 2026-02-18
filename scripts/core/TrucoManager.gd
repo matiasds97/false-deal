@@ -59,8 +59,7 @@ func _ready() -> void:
 	# Initialize Game Logic
 	game = TrucoGame.new(players, deck)
 	_connect_game_signals()
-	
-	call_deferred("start_match")
+	# Match start is triggered by TrucoUI after the splash screen finishes
 
 func start_match() -> void:
 	print_debug("TrucoManager: Starting Match...")
@@ -161,7 +160,7 @@ func _connect_game_signals() -> void:
 	
 	game.match_ended.connect(func(winner):
 		print_debug("Match Finished. Winner: %d" % winner)
-		# Add Match End UI logic here
+		TrucoSignalBus.on_match_ended.emit(winner)
 	)
 
 func _on_turn_started(player_index: int) -> void:
@@ -179,6 +178,9 @@ func _on_card_played(player_index: int, card: Card) -> void:
 
 func _on_round_ended(winner: int, reason: String) -> void:
 	print_debug("TrucoManager: Round Ended (%s). Winner: %d" % [reason, winner])
+	# If the match is over, don't start a new hand
+	if game.current_state == TrucoGame.TrucoState.MATCH_ENDED:
+		return
 	# Wait for delay before starting new hand
 	get_tree().create_timer(TrucoConstants.NEW_HAND_DELAY).timeout.connect(func():
 		game.start_new_hand()

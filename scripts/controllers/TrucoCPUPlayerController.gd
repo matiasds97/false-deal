@@ -8,6 +8,7 @@ extends TrucoPlayerController
 
 ## Whether we are waiting for a response from the opponent.
 var _waiting_for_response: bool = false
+var _match_over: bool = false
 
 ## Simple bluff factor for this hand (could be randomized per hand start).
 ## In the future it should be parameterized for every different opponent.
@@ -35,6 +36,8 @@ func _init_strategies() -> void:
 	_card_strategy = CPUCardPlayStrategy.new(player)
 
 func _connect_signals() -> void:
+	TrucoSignalBus.on_match_ended.connect(func(_w): _match_over = true)
+	TrucoSignalBus.on_hand_started.connect(func(_h): _match_over = false)
 	TrucoSignalBus.on_envido_resolved.connect(_on_envido_resolved)
 	TrucoSignalBus.on_truco_resolved.connect(_on_truco_resolved)
 	TrucoSignalBus.on_envido_called.connect(_on_envido_called)
@@ -45,6 +48,7 @@ func _connect_signals() -> void:
 # --- TURN MANAGEMENT ---
 
 func start_turn() -> void:
+	if _match_over: return
 	super.start_turn()
 	_waiting_for_response = false
 	_schedule_decision(TrucoConstants.CPU_DECISION_DELAY)
@@ -59,6 +63,7 @@ func _schedule_decision(delay: float) -> void:
 func _make_decision(token: int) -> void:
 	if token != _decision_token: return
 	if _waiting_for_response: return
+	if _match_over: return
 	
 	if truco_manager.current_turn_index != TrucoConstants.PLAYER_CPU:
 		return

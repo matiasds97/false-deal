@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://cka6chck1eqnk"]
+
+[ext_resource type="Theme" uid="uid://dhi64wic7i7j0" path="res://resources/themes/truco_UI_theme.tres" id="1_8usg1"]
+[ext_resource type="Script" uid="uid://ctma7dgmuo3uq" path="res://scripts/ui/TrucoResults.gd" id="2_script"]
+
+[node name="TrucoResults" type="Control" unique_id=444467119]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_script")
+
+[node name="Background" type="ColorRect" parent="." unique_id=602317852]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=230155088]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1869006886]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="ResultLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1642762036]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("1_8usg1")
+theme_override_font_sizes/font_size = 72
+text = "Victory"
+horizontal_alignment = 1
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer" unique_id=1292001122]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="ReplayButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonsContainer" unique_id=572502943]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 50)
+layout_mode = 2
+theme = ExtResource("1_8usg1")
+text = "Replay"
+
+[node name="ExitButton" type="Button" parent="CenterContainer/VBoxContainer/ButtonsContainer" unique_id=328774372]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 50)
+layout_mode = 2
+theme = ExtResource("1_8usg1")
+text = "Exit"

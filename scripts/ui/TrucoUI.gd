@@ -11,6 +11,7 @@ extends Control
 @onready var scoreboard: Scoreboard = %Scoreboard
 @onready var rival_calls_label: Label = %RivalCallsLabel
 @onready var rival_decision_state_label: Label = %RivalDecisionStateLabel
+@onready var rival_decision_container: MarginContainer = $RivalDecisionContainer
 
 # Calls UI Nodes
 @onready var envido_button: Button = $CallsContainer/VBoxContainer/Control/EnvidoButton
@@ -32,6 +33,11 @@ extends Control
 var calls_panel: TrucoCallsPanel
 var response_panel: TrucoResponsePanel
 var notification_display: TrucoNotificationDisplay
+var results_screen: TrucoResults
+var match_start_splash: TrucoMatchStart
+
+const RESULTS_SCENE = preload("res://scenes/ui/truco_results.tscn")
+const MATCH_START_SCENE = preload("res://scenes/ui/truco_match_start.tscn")
 
 var ui_locked: bool = false
 
@@ -50,6 +56,13 @@ func _ready() -> void:
 	
 	# 4. Initial Update
 	call_deferred("_update_ui_state")
+	
+	# 5. Hide containers that shouldn't show during splash
+	response_container.visible = false
+	rival_decision_container.visible = false
+	
+	# 6. Show splash and start match after it finishes
+	call_deferred("_start_match_with_splash")
 
 func _setup_components() -> void:
 	# Calls Panel Logic
@@ -87,6 +100,25 @@ func _setup_components() -> void:
 	
 	notification_display.rival_calls_label = rival_calls_label
 	notification_display.result_label = rival_decision_state_label
+	
+	# Results Screen (instantiated but hidden)
+	results_screen = RESULTS_SCENE.instantiate() as TrucoResults
+	add_child(results_screen)
+	results_screen.replay_requested.connect(_on_replay_requested)
+	results_screen.exit_requested.connect(_on_exit_requested)
+	
+	# Match Start Splash
+	match_start_splash = MATCH_START_SCENE.instantiate() as TrucoMatchStart
+	add_child(match_start_splash)
+	match_start_splash.finished.connect(_on_splash_finished)
+
+func _start_match_with_splash() -> void:
+	set_ui_locked(true)
+	match_start_splash.play()
+
+func _on_splash_finished() -> void:
+	rival_decision_container.visible = true
+	truco_manager.start_match()
 
 func set_ui_locked(locked: bool) -> void:
 	ui_locked = locked
@@ -121,6 +153,7 @@ func _on_ui_action_taken() -> void:
 
 func _connect_global_signals() -> void:
 	# SignalBus connections
+	TrucoSignalBus.on_match_ended.connect(_on_match_ended)
 	TrucoSignalBus.on_score_updated.connect(_on_score_updated)
 	TrucoSignalBus.on_hand_started.connect(_on_hand_started)
 	
@@ -229,3 +262,18 @@ func _on_fold_button_pressed() -> void:
 	set_ui_locked(true) # Instant lock
 	if truco_manager:
 		truco_manager.player_fold(TrucoConstants.PLAYER_HUMAN)
+
+func _on_match_ended(winner_index: int) -> void:
+	set_ui_locked(true)
+	response_container.visible = false
+	# Give the player time to see the final play before showing results
+	get_tree().create_timer(2.5).timeout.connect(func():
+		results_screen.show_result(winner_index == TrucoConstants.PLAYER_HUMAN)
+	)
+
+func _on_replay_requested() -> void:
+	results_screen.visible = false
+	_start_match_with_splash()
+
+func _on_exit_requested() -> void:
+	get_tree().quit()

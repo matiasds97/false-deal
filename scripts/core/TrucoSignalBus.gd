@@ -62,3 +62,7 @@ signal on_flor_called(player_index: int, type: int)
 # accepted: if the contraflor was accepted or not? Actually Flor itself is declaration. 
 # But for ContraFlor interactions:
 signal on_flor_resolved(accepted: bool, winner_index: int, points: int)
+
+# Emitted when the match ends (a player reached the winning score)
+# winner_index: The player who won the match
+signal on_match_ended(winner_index: int)
