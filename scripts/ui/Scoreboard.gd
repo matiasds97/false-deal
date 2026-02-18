@@ -19,9 +19,9 @@ func _ready() -> void:
 		var points: Points = child
 		them_lines.append(points)
 
-func set_points(us_points: int, them_points: int) -> void:
-	self.us_points = us_points
-	self.them_points = them_points
+func set_points(new_us_points: int, new_them_points: int) -> void:
+	self.us_points = new_us_points
+	self.them_points = new_them_points
 	
 	_update_points_display(us_lines, us_points)
 	_update_points_display(them_lines, them_points)

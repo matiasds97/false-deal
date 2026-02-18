@@ -34,7 +34,8 @@ signal on_score_updated(human_score: int, cpu_score: int)
 
 # Emitted when Envido is called
 # player_index: Who called it
-signal on_envido_called(player_index: int)
+# type: The type of Envido called (EnvidoType enum)
+signal on_envido_called(player_index: int, type: int)
 
 # Emitted when Envido is resolved (accepted/rejected)
 # accepted: true if "Quiero", false if "No Quiero"

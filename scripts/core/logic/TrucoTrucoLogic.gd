@@ -56,22 +56,17 @@ func can_call(
 	flor_state: int,
 	pending_action: int
 ) -> bool:
-	const FlorState_NONE = 0
-	const FlorState_PLAYED = 2
-	const ResponseAction_NONE = 0
-	const ResponseAction_TRUCO = 2
-	
 	# No calling if Flor is active (not NONE and not PLAYED)
-	if flor_state != FlorState_NONE and flor_state != FlorState_PLAYED:
+	if flor_state != TrucoFlorLogic.FlorState.NONE and flor_state != TrucoFlorLogic.FlorState.PLAYED:
 		return false
 
-	if pending_action == ResponseAction_NONE:
+	if pending_action == TrucoConstants.ResponseAction.NONE:
 		if current_level == 0:
 			return true
 		if current_level > 0 and current_level < MAX_LEVEL:
 			# Only opponent of last caller can raise
 			return caller_index != player_index
-	elif pending_action == ResponseAction_TRUCO:
+	elif pending_action == TrucoConstants.ResponseAction.TRUCO:
 		# Can raise if opponent of caller
 		if player_index != caller_index:
 			return proposed_level < MAX_LEVEL
@@ -83,10 +78,8 @@ func can_call(
 ## [param pending_action]: Current pending response action.
 ## [return] The proposed level after calling.
 func call_truco(player_index: int, pending_action: int) -> int:
-	const ResponseAction_TRUCO = 2
-	
 	var next_level: int = 1
-	if pending_action == ResponseAction_TRUCO:
+	if pending_action == TrucoConstants.ResponseAction.TRUCO:
 		next_level = proposed_level + 1
 	else:
 		next_level = current_level + 1

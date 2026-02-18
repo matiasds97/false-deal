@@ -100,10 +100,7 @@ func _is_envido_card() -> bool:
 ## if the card does not apply for envido.
 func get_envido_value() -> int:
 	if _is_envido_card():
-		if value > CardValue.SEVEN:
-			return 0
-		else:
-			return value
+		return value
 	return 0
 
 # Override str() to return a string representation of the card.

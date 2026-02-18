@@ -15,6 +15,7 @@ func _on_hand_started(_hand_number: int) -> void:
 
 var cards_on_table: Array[Card] = []
 
+## Registers a card as played on the table and emits placement info for visuals.
 func add_card(card: Card) -> void:
 	# Emit placement info BEFORE adding card so Hand scripts have current stack height
 	var target_pos: Vector3 = table_center.global_position
@@ -24,10 +25,11 @@ func add_card(card: Card) -> void:
 	cards_on_table.append(card)
 
 
+## Clears all cards from the table (used at hand start).
 func clear() -> void:
 	cards_on_table.clear()
 
-# Returns the Y offset for the next card to be placed on the table
+## Returns the Y offset for the next card to avoid z-fighting when stacking.
 func get_stack_height() -> float:
 	# Base height to avoid z-fighting with table + stacking offset per card
 	var height: float = 0.01 + (cards_on_table.size() * 0.0005) # Increased from 0.001 to 0.005

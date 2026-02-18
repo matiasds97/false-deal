@@ -27,9 +27,12 @@ func _ready() -> void:
 		cards = card_resources.duplicate()
 		all_cards = card_resources.duplicate()
 
+## Resets the deck, restoring all cards to the available pool.
 func reset() -> void:
 	cards = all_cards.duplicate()
 
+## Draws a random card from the remaining available pool.
+## Returns the drawn card, or null if the deck is empty.
 func draw_card() -> Card:
 	if cards.size() == 0:
 		return null

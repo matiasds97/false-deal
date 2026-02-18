@@ -141,67 +141,54 @@ func _update_ui_state() -> void:
 	# Check lock state too?
 	_check_unlock_needs()
 
-# --- EVENT HANDLERS ---
-
-func _on_turn_started(player_index: int) -> void:
+func _on_turn_started(_player_index: int) -> void:
 	_update_ui_state()
 
-func _on_envido_called(player_index: int) -> void:
-	if player_index == TrucoConstants.PLAYER_CPU:
-		response_container.visible = true
-		response_panel.update_state()
-		set_ui_locked(false) # Unlock so we can respond
-		
-		# Show notification
-		if truco_manager.envido_chain.size() > 0:
-			var last_call = truco_manager.envido_chain.back()
-			var text: String = "Envido!"
-			match last_call:
-				TrucoConstants.EnvidoType.ENVIDO: text = "Envido!"
-				TrucoConstants.EnvidoType.REAL_ENVIDO: text = "Real Envido!"
-				TrucoConstants.EnvidoType.FALTA_ENVIDO: text = "Falta Envido!"
-			notification_display.show_call(text)
-	else:
-		response_container.visible = false
-		set_ui_locked(true) # Convert local action lock to persistent wait state
-	
+# --- CALL EVENT HANDLERS ---
+
+## Shared handler for when the opponent (CPU) makes a call.
+func _handle_opponent_call(call_text: String) -> void:
+	response_container.visible = true
+	response_panel.update_state()
+	set_ui_locked(false)
+	notification_display.show_call(call_text)
 	calls_panel.update_state()
+
+## Shared handler for when we (human) make a call.
+func _handle_own_call() -> void:
+	response_container.visible = false
+	set_ui_locked(true)
+	calls_panel.update_state()
+
+func _on_envido_called(player_index: int, type: int) -> void:
+	if player_index == TrucoConstants.PLAYER_CPU:
+		var text: String = "Envido!"
+		match type:
+			TrucoConstants.EnvidoType.REAL_ENVIDO: text = "Real Envido!"
+			TrucoConstants.EnvidoType.FALTA_ENVIDO: text = "Falta Envido!"
+		_handle_opponent_call(text)
+	else:
+		_handle_own_call()
 
 func _on_truco_called(player_index: int, level: int) -> void:
 	if player_index == TrucoConstants.PLAYER_CPU:
-		response_container.visible = true
-		response_panel.update_state()
-		set_ui_locked(false)
-		
 		var text: String = "Truco!"
 		match level:
-			1: text = "Truco!"
 			2: text = "Retruco!"
 			3: text = "Vale 4!"
-		notification_display.show_call(text)
+		_handle_opponent_call(text)
 	else:
-		response_container.visible = false
-		set_ui_locked(true)
-	
-	calls_panel.update_state()
+		_handle_own_call()
 
 func _on_flor_called(player_index: int, type: int) -> void:
 	if player_index == TrucoConstants.PLAYER_CPU:
-		response_container.visible = true
-		response_panel.update_state()
-		set_ui_locked(false)
-		
 		var text: String = "Flor!"
 		match type:
-			TrucoConstants.FlorType.FLOR: text = "Flor!"
 			TrucoConstants.FlorType.CONTRA_FLOR: text = "Contra Flor!"
 			TrucoConstants.FlorType.CONTRA_FLOR_AL_RESTO: text = "Contra Flor Al Resto!"
-		notification_display.show_call(text)
+		_handle_opponent_call(text)
 	else:
-		response_container.visible = false
-		set_ui_locked(true)
-		
-	calls_panel.update_state()
+		_handle_own_call()
 
 func _on_envido_resolved(accepted: bool, winner_index: int, points: int) -> void:
 	response_container.visible = false

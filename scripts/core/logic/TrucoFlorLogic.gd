@@ -52,30 +52,23 @@ func can_call(
 	pending_action: int,
 	proposed_truco_level: int
 ) -> bool:
-	# Import response actions (we'll use constants)
-	const TrucoCallState_NONE = 0
-	const TrucoCallState_CALLED = 1
-	const ResponseAction_NONE = 0
-	const ResponseAction_ENVIDO = 1
-	const ResponseAction_TRUCO = 2
-	
 	# Check if player has flor
 	if not has_flor:
 		return false
 		
 	# Blocked by Truco? Similar to Envido.
-	var is_truco_pending_response = (truco_state == TrucoCallState_CALLED \
-		and pending_action == ResponseAction_TRUCO \
+	var is_truco_pending_response = (truco_state == TrucoTrucoLogic.TrucoCallState.CALLED \
+		and pending_action == TrucoConstants.ResponseAction.TRUCO \
 		and proposed_truco_level == 1)
 		
-	if truco_state != TrucoCallState_NONE and not is_truco_pending_response:
+	if truco_state != TrucoTrucoLogic.TrucoCallState.NONE and not is_truco_pending_response:
 		return false
 		
 	if state == FlorState.PLAYED:
 		return false
 		
 	# If Envido is pending, we CAN call Flor to cancel it
-	if pending_action == ResponseAction_ENVIDO:
+	if pending_action == TrucoConstants.ResponseAction.ENVIDO:
 		return true
 
 	if chain.is_empty():
@@ -83,7 +76,7 @@ func can_call(
 		if vuelta_count > 0:
 			return false
 		# Can start flor if nothing else is pending
-		if pending_action == ResponseAction_NONE:
+		if pending_action == TrucoConstants.ResponseAction.NONE:
 			return true
 		# Or if responding to Truco (first level)
 		if is_truco_pending_response:

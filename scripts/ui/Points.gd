@@ -14,10 +14,6 @@ func _ready() -> void:
 
 	set_points(0)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
-	pass
-
 func set_points(points: int) -> void:
 	_points = points
 	_draw_lines()

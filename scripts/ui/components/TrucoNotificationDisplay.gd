@@ -26,7 +26,7 @@ func clear_result() -> void:
 		result_label.text = ""
 		result_label.remove_theme_color_override("font_color")
 
-func on_envido_resolved(accepted: bool, winner_index: int, points: int, p0_score: int, p1_score: int) -> void:
+func on_envido_resolved(accepted: bool, winner_index: int, _points: int, p0_score: int, p1_score: int) -> void:
 	hide_call()
 	
 	if accepted:

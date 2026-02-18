@@ -1,5 +1,5 @@
 class_name TrucoResponsePanel
-extends PanelContainer
+extends Node
 
 ## Handles the response buttons (Quiero, No Quiero, Raises).
 ## Should be attached to the ResponseContainer.
@@ -81,7 +81,7 @@ func update_state() -> void:
 	# This logic is best kept in TrucoUI or checked here via a "is_responding" flag?
 	# Let's assume this panel is VISIBLE only when needed, so we just update content.
 	
-	if not visible: return # Skip update if hidden
+	if not vbox_container or not vbox_container.is_visible_in_tree(): return # Skip update if hidden
 	
 	var action = truco_manager.pending_response_action
 	
@@ -175,7 +175,7 @@ func _update_truco_response(p_index: int) -> void:
 
 func _update_flor_response(p_index: int) -> void:
 	# Analyze chain
-	var _chain = truco_manager.game.flor_chain # Accessing logic property via wrapper if available
+	var _chain = truco_manager.flor_chain
 	# Or assume last call implies state.
 	
 	# If simple "Flor" called:

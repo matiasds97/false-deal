@@ -1,5 +1,5 @@
 class_name TrucoCallsPanel
-extends PanelContainer
+extends Node
 
 ## Handles the initial call buttons (Envido, Truco, Flor).
 ## Should be attached to the container holding these buttons.

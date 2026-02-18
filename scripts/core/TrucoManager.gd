@@ -43,6 +43,9 @@ var pending_response_action: int:
 var flor_state: int:
 	get: return game.flor_state
 
+var flor_chain: Array[int]:
+	get: return game.flor_chain
+
 # --- LIFECYCLE ---
 
 func _ready() -> void:
@@ -106,16 +109,6 @@ func on_player_call_envido(player_index: int) -> void:
 func on_player_call_truco(player_index: int) -> void:
 	game.call_truco(player_index)
 
-# Specific specific calls
-func call_envido_specific(type: int, player_index: int) -> void:
-	game.call_envido(type, player_index)
-
-func check_and_resolve_envido(accepted: bool, player_index: int) -> void:
-	game.resolve_envido(accepted, player_index)
-
-func check_and_resolve_truco(accepted: bool, player_index: int) -> void:
-	game.resolve_truco(accepted, player_index)
-
 # --- GAME SIGNAL HANDLERS ---
 
 func _connect_game_signals() -> void:
@@ -137,7 +130,7 @@ func _connect_game_signals() -> void:
 	game.card_played.connect(_on_card_played)
 	
 	game.envido_called.connect(func(p_idx, type):
-		TrucoSignalBus.on_envido_called.emit(p_idx)
+		TrucoSignalBus.on_envido_called.emit(p_idx, type)
 	)
 	
 	game.envido_resolved.connect(func(accepted, winner, points):
@@ -217,13 +210,3 @@ func _connect_player_node_signals(index: int) -> void:
 	
 	if node.has_signal("truco_called") and not node.truco_called.is_connected(on_player_call_truco):
 		node.truco_called.connect(on_player_call_truco.bind(index))
-
-# --- DEBUG INPUT ---
-func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and event.keycode == KEY_E:
-		debug_cpu_call_envido()
-
-func debug_cpu_call_envido():
-	# Check if logic allows? We can check game state
-	if game.can_call_envido(TrucoConstants.EnvidoType.ENVIDO, 1):
-		game.call_envido(TrucoConstants.EnvidoType.ENVIDO, 1)
