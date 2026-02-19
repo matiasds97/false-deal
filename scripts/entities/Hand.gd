@@ -16,6 +16,10 @@ signal card_selected(card: Card, card_node: MeshInstance3D)
 var can_interact: bool = false
 
 
+func _get_player_index() -> int:
+	return TrucoConstants.PLAYER_HUMAN
+
+
 func _ready() -> void:
 	_setup_card_placeholders()
 	

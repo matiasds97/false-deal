@@ -23,9 +23,10 @@ signal on_baza_resolved(winner_index: int)
 signal on_user_input_card_selected(card: Card)
 
 # Emitted by Table to provide card placement information
+# player_index: Which player is placing the card
 # target_position: Global position where cards should be placed
 # stack_height: Y offset for stacking cards
-signal card_placement_info(target_position: Vector3, stack_height: float)
+signal card_placement_info(player_index: int, target_position: Vector3, stack_height: float)
 
 # Emitted when the score is updated
 # human_score: The current score of the human player

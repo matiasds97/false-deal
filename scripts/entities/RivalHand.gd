@@ -13,6 +13,10 @@ var _card_to_node: Dictionary = {}
 var _deal_index: int = 0
 
 
+func _get_player_index() -> int:
+	return TrucoConstants.PLAYER_CPU
+
+
 func _ready() -> void:
 	_setup_card_placeholders()
 	_reset_card_nodes(true)

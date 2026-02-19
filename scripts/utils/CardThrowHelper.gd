@@ -26,11 +26,12 @@ static func throw_card(
 		card_node.reparent(new_parent, true)
 		card_node.scale = Vector3.ONE
 
-	# Calculate final position with random offset for a "messy pile" effect
+	# Add subtle scatter within the slot for a natural feel
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
 	var target_pos := target_position
-	target_pos += Vector3(rng.randf_range(-0.009, 0.009), 0, rng.randf_range(-0.009, 0.009))
+	var scatter: float = TrucoConstants.SLOT_SCATTER
+	target_pos += Vector3(rng.randf_range(-scatter, scatter), 0, rng.randf_range(-scatter, scatter))
 	target_pos.y += stack_height
 
 	# Animate movement and rotation
@@ -41,8 +42,9 @@ static func throw_card(
 
 	tween.tween_property(card_node, "global_position", target_pos, duration)
 
-	# Random Y-axis rotation so it lands flat on the table
-	var random_rot_y: float = rng.randf_range(0, 360)
+	# Small random Y-axis rotation so cards land nearly aligned but with natural variation
+	var rot_range: float = TrucoConstants.SLOT_ROTATION_RANGE
+	var random_rot_y: float = rng.randf_range(-rot_range, rot_range)
 	var final_rotation := Vector3(0, deg_to_rad(random_rot_y), 0)
 	tween.tween_property(card_node, "global_rotation", final_rotation, duration * 0.8)
 

@@ -47,7 +47,15 @@ func _connect_base_signals() -> void:
 	TrucoSignalBus.card_placement_info.connect(_on_card_placement_info)
 
 
-func _on_card_placement_info(target_position: Vector3, stack_height: float) -> void:
+## Override in subclass to return the player index this hand represents.
+func _get_player_index() -> int:
+	push_error("BaseHand._get_player_index() must be overridden!")
+	return -1
+
+
+func _on_card_placement_info(player_index: int, target_position: Vector3, stack_height: float) -> void:
+	if player_index != _get_player_index():
+		return
 	cached_target_position = target_position
 	cached_stack_height = stack_height
 

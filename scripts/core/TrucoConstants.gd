@@ -24,6 +24,20 @@ const CPU_DECISION_DELAY: float = 0.4
 ## Delay before starting a new hand after round ends
 const NEW_HAND_DELAY: float = 2.0
 
+# --- TABLE LAYOUT (2×3 slot grid) ---
+## X-positions for the 3 card columns: baza 1 (left), baza 2 (center), baza 3 (right)
+const TABLE_SLOT_X := [-0.08, 0.0, 0.08]
+## Z-offset for human player's row (closer to camera)
+const HUMAN_ROW_Z: float = 0.05
+## Z-offset for CPU player's row (farther from camera)
+const CPU_ROW_Z: float = -0.05
+## Small random scatter within each slot for natural feel
+const SLOT_SCATTER: float = 0.005
+## Small random rotation range (degrees) when a card is placed in a slot
+const SLOT_ROTATION_RANGE: float = 10.0
+## Y-height increment per stacked card on the same slot
+const CARD_STACK_HEIGHT: float = 0.002
+
 # --- ENVIDO TYPES ---
 enum EnvidoType {
 	ENVIDO,

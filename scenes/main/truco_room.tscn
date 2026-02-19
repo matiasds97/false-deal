@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://bast0hh7ibgn5" path="res://scripts/entities/Table.gd" id="5_uee4n"]
 [ext_resource type="Script" uid="uid://bq3w2mabv2hb5" path="res://scripts/entities/Hand.gd" id="7_ja30i"]
 [ext_resource type="Shader" uid="uid://bityksus0srie" path="res://shaders/psx_camera_shader.gdshader" id="7_y2xxy"]
+[ext_resource type="PackedScene" uid="uid://cfr2kl5oa42ew" path="res://scenes/prefabs/props/table.tscn" id="8_32kxe"]
 [ext_resource type="AudioStream" uid="uid://c57pqlncckyxp" path="res://assets/audio/sounds/card-place-1.ogg" id="8_bkcf0"]
 [ext_resource type="Script" uid="uid://dhyfhi6fa8mta" path="res://scripts/entities/RivalHand.gd" id="9_32kxe"]
 [ext_resource type="Script" uid="uid://c56pmoeww7vlq" path="res://scripts/ui/TrucoUI.gd" id="10_jide4"]
@@ -17,6 +18,9 @@
 [ext_resource type="PackedScene" uid="uid://eyq0ed8yub0k" path="res://scenes/ui/scoreboard.tscn" id="12_e57oh"]
 [ext_resource type="Theme" uid="uid://c6pjgoign3l3k" path="res://resources/themes/calling_theme.tres" id="13_e57oh"]
 [ext_resource type="PackedScene" uid="uid://dp2kmrdphryrt" path="res://scenes/prefabs/deck.tscn" id="15_x2plq"]
+[ext_resource type="PackedScene" uid="uid://dbjt3ddsg81pr" path="res://scenes/prefabs/props/chair.tscn" id="19_jide4"]
+[ext_resource type="PackedScene" uid="uid://c32ghhjlm3h3o" path="res://scenes/prefabs/props/doorway.tscn" id="20_8v2wn"]
+[ext_resource type="Script" path="res://scripts/visuals/TrucoCameraController.gd" id="21_cam01"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_0vyix"]
 size = Vector3(1.2, 0.05, 0.8)
@@ -25,7 +29,7 @@ size = Vector3(1.2, 0.05, 0.8)
 
 [sub_resource type="BoxMesh" id="BoxMesh_y2xxy"]
 flip_faces = true
-size = Vector3(8, 2.8, 3)
+size = Vector3(8, 2.8, 5)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_confp"]
 render_priority = 0
@@ -88,8 +92,16 @@ stream = ExtResource("4_uee4n")
 [node name="Deck" type="Node" parent="." unique_id=952816939]
 script = ExtResource("4_e57oh")
 
+[node name="table" parent="." unique_id=115098435 instance=ExtResource("8_32kxe")]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, -0.17338896, 0.11826688, 0.06)
+script = ExtResource("5_uee4n")
+
+[node name="TableCenter" type="Marker3D" parent="table" unique_id=1920125343]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3332999, 0)
+
 [node name="Table" type="MeshInstance3D" parent="." unique_id=759943116]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+visible = false
 mesh = SubResource("BoxMesh_0vyix")
 skeleton = NodePath("../Room")
 surface_material_override/0 = SubResource("StandardMaterial3D_47gtt")
@@ -122,15 +134,18 @@ light_energy = 0.2
 light_size = 5.0
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=731283459]
-transform = Transform3D(1, 0, 0, 0, 0.88617915, 0.46334273, 0, -0.46334273, 0.88617915, 0, 1.0802062, 0.5246976)
-fov = 50.0
+transform = Transform3D(1, 0, 0, 0, 0.92718387, 0.37460658, 0, -0.37460658, 0.92718387, 0, 1.15, 0.65)
+fov = 65.0
+script = ExtResource("21_cam01")
+table_center_path = NodePath("../table/TableCenter")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D" unique_id=1528957899]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045264512, -9.655952e-06, -0.07030392)
+visible = false
 mesh = SubResource("QuadMesh_pu42s")
 
 [node name="HumanHand" type="Marker3D" parent="." unique_id=1719383420]
-transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.8435285, 0.29692185)
+transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.89479315, 0.42)
 script = ExtResource("7_ja30i")
 
 [node name="Card1" type="MeshInstance3D" parent="HumanHand" unique_id=1882203265]
@@ -408,3 +423,12 @@ horizontal_alignment = 1
 
 [node name="Deck2" parent="." unique_id=1546186603 instance=ExtResource("15_x2plq")]
 transform = Transform3D(0.2805868, 0, 0.41384906, 0, 0.5, 0, -0.41384906, 0, 0.2805868, -0.2934054, 0.7824089, 0.0017529726)
+
+[node name="chair" parent="." unique_id=1058813901 instance=ExtResource("19_jide4")]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0.18406469, 0, 0.4035535)
+
+[node name="chair2" parent="." unique_id=1639880336 instance=ExtResource("19_jide4")]
+transform = Transform3D(-0.2, 0, -1.7484556e-08, 0, 0.2, 0, 1.7484556e-08, 0, -0.2, -0.17996544, 0, -0.66829765)
+
+[node name="doorway" parent="." unique_id=1303462804 instance=ExtResource("20_8v2wn")]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, -1.2076138, 0, -2.590594)
