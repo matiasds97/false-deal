@@ -9,6 +9,8 @@ var _manager: TrucoManager
 var _player: Player
 var _brain: CPUBrain
 
+signal voice_required(voice_key: String)
+
 func _init(manager: TrucoManager, player: Player, brain: CPUBrain) -> void:
 	_manager = manager
 	_player = player
@@ -22,6 +24,7 @@ func try_call(my_index: int) -> bool:
 		return false
 
 	# Flor is mandatory to declare when you have it — always call.
+	voice_required.emit("flor")
 	_manager.call_flor(TrucoConstants.FlorType.FLOR, my_index)
 	return true
 
@@ -33,6 +36,8 @@ func decide_response(my_index: int, type: int) -> void:
 
 	# If we don't have flor, we acknowledge (accept the declaration)
 	if not has_flor:
+		# Just acknowledge points
+		# voice_required.emit("quiero") # Optional, but maybe silent is better if just acknowledging points without contest
 		_manager.resolve_flor(true, my_index)
 		return
 
@@ -45,12 +50,19 @@ func decide_response(my_index: int, type: int) -> void:
 		# Only raise to ContraFlor al Resto with strong flor + aggression
 		if perceived_points >= 30 and randf() < params.raise_tendency:
 			if _manager.can_call_flor(TrucoConstants.FlorType.CONTRA_FLOR_AL_RESTO, my_index):
+				voice_required.emit("contra_flor")
 				_manager.call_flor(TrucoConstants.FlorType.CONTRA_FLOR_AL_RESTO, my_index)
 				return
 
 		# Accept or reject ContraFlor based on fold resistance + perceived strength
 		var wants_to_accept: bool = perceived_points >= 26 or randf() < params.fold_resistance * 0.4
 		wants_to_accept = _brain.apply_noise(wants_to_accept)
+		
+		if wants_to_accept:
+			voice_required.emit("quiero")
+		else:
+			voice_required.emit("no_quiero")
+
 		_manager.resolve_flor(wants_to_accept, my_index)
 		return
 
@@ -62,8 +74,10 @@ func decide_response(my_index: int, type: int) -> void:
 	wants_to_raise = _brain.apply_noise(wants_to_raise)
 
 	if wants_to_raise and _manager.can_call_flor(TrucoConstants.FlorType.CONTRA_FLOR, my_index):
+		voice_required.emit("contra_flor")
 		_manager.call_flor(TrucoConstants.FlorType.CONTRA_FLOR, my_index)
 		return
 
-	# Fallback: accept
+	# Fallback: accept (We have flor too)
+	voice_required.emit("flor")
 	_manager.resolve_flor(true, my_index)

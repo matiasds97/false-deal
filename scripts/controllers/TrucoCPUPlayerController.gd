@@ -28,6 +28,22 @@ var _decision_token: int = 0
 var _brain: CPUBrain
 var _mood: CPUMood
 
+# --- AUDIO ---
+var _voice_lines: Dictionary = {
+	"envido": preload("res://assets/audio/sounds/calls/envido.mp3"),
+	"real_envido": preload("res://assets/audio/sounds/calls/real_envido.mp3"),
+	"falta_envido": preload("res://assets/audio/sounds/calls/falta_envido.mp3"),
+	"truco": preload("res://assets/audio/sounds/calls/truco.mp3"),
+	"retruco": preload("res://assets/audio/sounds/calls/retruco.mp3"),
+	"vale_4": preload("res://assets/audio/sounds/calls/vale_4.mp3"),
+	"quiero": preload("res://assets/audio/sounds/calls/quiero.mp3"),
+	"no_quiero": preload("res://assets/audio/sounds/calls/no_quiero.mp3"),
+	"flor": preload("res://assets/audio/sounds/calls/flor.mp3"),
+	"contra_flor": preload("res://assets/audio/sounds/calls/contraflor.mp3"),
+	"quiero_retruco": preload("res://assets/audio/sounds/calls/quiero_retruco.mp3"),
+	"quiero_vale4": preload("res://assets/audio/sounds/calls/quiero_vale4.mp3"),
+}
+
 # --- STRATEGIES ---
 var _envido_strategy: CPUEnvidoStrategy
 var _truco_strategy: CPUTrucoStrategy
@@ -52,6 +68,14 @@ func _init_strategies() -> void:
 	_truco_strategy = CPUTrucoStrategy.new(truco_manager, player, _brain)
 	_flor_strategy = CPUFlorStrategy.new(truco_manager, player, _brain)
 	_card_strategy = CPUCardPlayStrategy.new(player, _brain, truco_manager)
+
+	# Connect Voice Signals
+	if _envido_strategy.has_signal("voice_required"):
+		_envido_strategy.voice_required.connect(_play_voice)
+	if _truco_strategy.has_signal("voice_required"):
+		_truco_strategy.voice_required.connect(_play_voice)
+	if _flor_strategy.has_signal("voice_required"):
+		_flor_strategy.voice_required.connect(_play_voice)
 
 func _connect_signals() -> void:
 	TrucoSignalBus.on_match_ended.connect(func(_w): _match_over = true)
@@ -113,6 +137,14 @@ func _play_card() -> void:
 	var card = _card_strategy.select_card()
 	if card:
 		card_played.emit(card)
+
+func _play_voice(voice_key: String) -> void:
+	if _voice_lines.has(voice_key):
+		# print_debug("CPU Playing Voice: %s" % voice_key)
+		calling_audio_player.stream = _voice_lines[voice_key]
+		calling_audio_player.play()
+	else:
+		print_debug("CPU Voice Missing for key: %s" % voice_key)
 
 # --- INCOMING CALL HANDLERS ---
 

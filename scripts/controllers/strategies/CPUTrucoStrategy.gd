@@ -9,6 +9,8 @@ var _manager: TrucoManager
 var _player: Player
 var _brain: CPUBrain
 
+signal voice_required(voice_key: String)
+
 func _init(manager: TrucoManager, player: Player, brain: CPUBrain) -> void:
 	_manager = manager
 	_player = player
@@ -44,6 +46,7 @@ func try_call(my_index: int) -> bool:
 	should_call = _brain.apply_noise(should_call)
 
 	if should_call:
+		voice_required.emit("truco")
 		_manager.call_truco(my_index)
 		return true
 
@@ -66,8 +69,10 @@ func decide_response(my_index: int) -> void:
 		if wants_envido:
 			if perceived_points > 30 and params.aggression > 0.5:
 				if _manager.can_call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index):
+					voice_required.emit("real_envido")
 					_manager.call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index)
 					return
+			voice_required.emit("envido")
 			_manager.call_envido(TrucoConstants.EnvidoType.ENVIDO, my_index)
 			return
 
@@ -84,12 +89,21 @@ func decide_response(my_index: int) -> void:
 	wants_to_accept = _brain.apply_noise(wants_to_accept)
 
 	if not wants_to_accept:
+		voice_required.emit("no_quiero")
 		_manager.resolve_truco(false, my_index)
 		return
 
 	# Try to raise instead of just accepting
 	var wants_to_raise: bool = randf() < params.raise_tendency * 0.5
 	if wants_to_raise and _manager.can_call_truco(my_index):
+		var next_voice = "retruco"
+		if _manager.proposed_truco_level == 2:
+			next_voice = "quiero_retruco"
+		elif _manager.proposed_truco_level == 3:
+			next_voice = "quiero_vale4"
+		
+		voice_required.emit(next_voice)
 		_manager.call_truco(my_index)
 	else:
+		voice_required.emit("quiero")
 		_manager.resolve_truco(true, my_index)

@@ -9,6 +9,8 @@ var _manager: TrucoManager
 var _player: Player
 var _brain: CPUBrain
 
+signal voice_required(voice_key: String)
+
 func _init(manager: TrucoManager, player: Player, brain: CPUBrain) -> void:
 	_manager = manager
 	_player = player
@@ -45,8 +47,10 @@ func try_call(my_index: int) -> bool:
 		# Decide which type to call based on aggression + raise_tendency
 		if perceived_points >= 30 and randf() < params.aggression * 0.7:
 			if _manager.can_call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index):
+				voice_required.emit("real_envido")
 				_manager.call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index)
 				return true
+		voice_required.emit("envido")
 		_manager.call_envido(TrucoConstants.EnvidoType.ENVIDO, my_index)
 		return true
 
@@ -71,18 +75,22 @@ func decide_response(my_index: int) -> void:
 
 	if wants_to_raise:
 		if _manager.can_call_envido(TrucoConstants.EnvidoType.FALTA_ENVIDO, my_index):
+			voice_required.emit("falta_envido")
 			_manager.call_envido(TrucoConstants.EnvidoType.FALTA_ENVIDO, my_index)
 			return
 		elif _manager.can_call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index):
+			voice_required.emit("real_envido")
 			_manager.call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index)
 			return
 		elif _manager.can_call_envido(TrucoConstants.EnvidoType.ENVIDO, my_index):
+			voice_required.emit("envido")
 			_manager.call_envido(TrucoConstants.EnvidoType.ENVIDO, my_index)
 			return
 
 	# Medium-tier raise: good points + some raise tendency
 	if perceived_points >= 27 and randf() < params.raise_tendency * 0.6:
 		if _manager.can_call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index):
+			voice_required.emit("real_envido")
 			_manager.call_envido(TrucoConstants.EnvidoType.REAL_ENVIDO, my_index)
 			return
 
@@ -96,5 +104,10 @@ func decide_response(my_index: int) -> void:
 
 	# Apply noise
 	wants_to_accept = _brain.apply_noise(wants_to_accept)
+
+	if wants_to_accept:
+		voice_required.emit("quiero")
+	else:
+		voice_required.emit("no_quiero")
 
 	_manager.resolve_envido(wants_to_accept, my_index)
