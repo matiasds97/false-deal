@@ -30,6 +30,10 @@ var raise_contra_flor_resto_btn: Button
 var controls_locked: bool = false
 signal action_taken
 
+func _ready() -> void:
+	if quiero_button: quiero_button.add_to_group("ui_buttons")
+	if no_quiero_button: no_quiero_button.add_to_group("ui_buttons")
+
 func initialize(manager: TrucoManager) -> void:
 	truco_manager = manager
 	_create_dynamic_buttons()
@@ -58,6 +62,7 @@ func _create_btn(text: String, callback: Callable, parent: Control) -> Button:
 	btn.text = text
 	btn.visible = false
 	btn.pressed.connect(callback)
+	btn.add_to_group("ui_buttons")
 	parent.add_child(btn)
 	return btn
 

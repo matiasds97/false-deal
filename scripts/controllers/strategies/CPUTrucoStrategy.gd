@@ -46,7 +46,14 @@ func try_call(my_index: int) -> bool:
 	should_call = _brain.apply_noise(should_call)
 
 	if should_call:
-		voice_required.emit("truco")
+		var next_level_val = _manager.current_truco_level + 1
+		var voice_key = "truco"
+		if next_level_val == 2:
+			voice_key = "retruco"
+		elif next_level_val == 3:
+			voice_key = "vale_4"
+
+		voice_required.emit(voice_key)
 		_manager.call_truco(my_index)
 		return true
 
@@ -96,10 +103,8 @@ func decide_response(my_index: int) -> void:
 	# Try to raise instead of just accepting
 	var wants_to_raise: bool = randf() < params.raise_tendency * 0.5
 	if wants_to_raise and _manager.can_call_truco(my_index):
-		var next_voice = "retruco"
+		var next_voice = "quiero_retruco"
 		if _manager.proposed_truco_level == 2:
-			next_voice = "quiero_retruco"
-		elif _manager.proposed_truco_level == 3:
 			next_voice = "quiero_vale4"
 		
 		voice_required.emit(next_voice)

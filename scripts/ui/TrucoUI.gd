@@ -32,6 +32,8 @@ const RESULTS_SCENE = preload("res://scenes/ui/truco_results.tscn")
 const MATCH_START_SCENE = preload("res://scenes/ui/truco_match_start.tscn")
 
 var ui_locked: bool = false
+var click_sound: AudioStream = preload("res://assets/audio/sounds/button_click.mp3")
+const UI_BUTTON_GROUP = "ui_buttons"
 
 func _ready() -> void:
 	# 0. Resolve external dependencies
@@ -59,6 +61,9 @@ func _ready() -> void:
 		hand.envido_calculated.connect(_on_envido_calculated)
 	
 	fold_button.pressed.connect(_on_fold_button_pressed)
+	fold_button.add_to_group(UI_BUTTON_GROUP)
+	
+	_connect_group_signals()
 	
 	# 4. Initial Update
 	call_deferred("_update_ui_state")
@@ -138,6 +143,18 @@ func _connect_global_signals() -> void:
 	TrucoSignalBus.on_envido_called.connect(_on_envido_called)
 	TrucoSignalBus.on_truco_called.connect(_on_truco_called)
 	TrucoSignalBus.on_flor_called.connect(_on_flor_called)
+
+func _connect_group_signals() -> void:
+	var buttons = get_tree().get_nodes_in_group(UI_BUTTON_GROUP)
+	for btn in buttons:
+		if btn is BaseButton:
+			if not btn.pressed.is_connected(_play_click_sound):
+				btn.pressed.connect(_play_click_sound)
+
+func _play_click_sound() -> void:
+	if ui_audio_player:
+		ui_audio_player.stream = click_sound
+		ui_audio_player.play()
 
 func _update_ui_state() -> void:
 	calls_panel.update_state()

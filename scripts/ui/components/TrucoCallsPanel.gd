@@ -32,6 +32,13 @@ func set_locked(locked: bool) -> void:
 	controls_locked = locked
 	update_state()
 
+func _ready() -> void:
+	# Add buttons to the global UI group for sound handling
+	var buttons = [envido_button, real_envido_button, falta_envido_button, flor_button, truco_button]
+	for btn in buttons:
+		if btn:
+			btn.add_to_group("ui_buttons")
+
 func _connect_signals() -> void:
 	envido_button.pressed.connect(_on_envido_pressed)
 	real_envido_button.pressed.connect(_on_real_envido_pressed)
