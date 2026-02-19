@@ -3,8 +3,10 @@
 [ext_resource type="Script" uid="uid://f5t5okbpxgcg" path="res://scripts/core/TrucoManager.gd" id="1_vyrup"]
 [ext_resource type="Script" uid="uid://c5l4c5yo26h5n" path="res://scripts/controllers/TrucoHumanPlayerController.gd" id="2_y2xxy"]
 [ext_resource type="Script" uid="uid://bb30jga5fr8vr" path="res://scripts/controllers/TrucoCPUPlayerController.gd" id="3_pu42s"]
+[ext_resource type="Resource" uid="uid://cnv3t5dasjp46" path="res://resources/cpu_players/hard_character/hard_character_personality.tres" id="4_bkcf0"]
 [ext_resource type="Script" uid="uid://chpu4iupivv7r" path="res://scripts/entities/Deck.gd" id="4_e57oh"]
 [ext_resource type="AudioStream" uid="uid://xvepj688udij" path="res://assets/audio/sounds/Envido.wav" id="4_uee4n"]
+[ext_resource type="Resource" uid="uid://dg3yodny40fvj" path="res://resources/cpu_players/hard_character/hard_character_skill.tres" id="5_32kxe"]
 [ext_resource type="Script" uid="uid://bast0hh7ibgn5" path="res://scripts/entities/Table.gd" id="5_uee4n"]
 [ext_resource type="Script" uid="uid://bq3w2mabv2hb5" path="res://scripts/entities/Hand.gd" id="7_ja30i"]
 [ext_resource type="Shader" uid="uid://bityksus0srie" path="res://shaders/psx_camera_shader.gdshader" id="7_y2xxy"]
@@ -76,6 +78,8 @@ script = ExtResource("2_y2xxy")
 
 [node name="CPUPlayer" type="Node" parent="." unique_id=499028868]
 script = ExtResource("3_pu42s")
+personality = ExtResource("4_bkcf0")
+skill = ExtResource("5_32kxe")
 
 [node name="CallingAudioPlayer" type="AudioStreamPlayer3D" parent="CPUPlayer" unique_id=1425031214]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.91329026, -0.35166693)
@@ -122,7 +126,7 @@ transform = Transform3D(1, 0, 0, 0, 0.88617915, 0.46334273, 0, -0.46334273, 0.88
 fov = 50.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D" unique_id=1528957899]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045387387, 0, -0.070322394)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045264512, -9.655952e-06, -0.07030392)
 mesh = SubResource("QuadMesh_pu42s")
 
 [node name="HumanHand" type="Marker3D" parent="." unique_id=1719383420]
@@ -130,7 +134,7 @@ transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.8435285,
 script = ExtResource("7_ja30i")
 
 [node name="Card1" type="MeshInstance3D" parent="HumanHand" unique_id=1882203265]
-transform = Transform3D(0.9966375, -0.08193849, 0, 0.021207253, 0.25794867, -0.96592605, 0.079146534, 0.9626775, 0.25881913, -0.03840795, -0.0009999871, 0)
+transform = Transform3D(0.9966375, -0.08193849, 0, 0.021207253, 0.25794867, -0.96592605, 0.079146534, 0.9626775, 0.25881913, -0.057, -0.001, 0)
 mesh = SubResource("PlaneMesh_txkv6")
 skeleton = NodePath("../..")
 
@@ -140,7 +144,7 @@ mesh = SubResource("PlaneMesh_txkv6")
 skeleton = NodePath("../..")
 
 [node name="Card3" type="MeshInstance3D" parent="HumanHand" unique_id=23085097]
-transform = Transform3D(1, 0, 0, 0, 0.25881898, -0.96592593, 0, 0.9659255, 0.2588191, 0.03362878, -0.0019999743, 0)
+transform = Transform3D(1, 0, 0, 0, 0.25881898, -0.96592593, 0, 0.9659255, 0.2588191, 0.057, -0.002, 0)
 mesh = SubResource("PlaneMesh_txkv6")
 skeleton = NodePath("../..")
 

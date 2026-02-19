@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CPUSkill" format=3 uid="uid://dfqlqqwrly75m"]
+
+[ext_resource type="Script" uid="uid://d1g2imc87n4jr" path="res://scripts/controllers/CPUSkill.gd" id="1_cd4w0"]
+
+[resource]
+script = ExtResource("1_cd4w0")
+hand_evaluation_accuracy = 0.6
+opponent_read_accuracy = 0.3
+decision_noise = 0.25
+reaction_control = 0.4

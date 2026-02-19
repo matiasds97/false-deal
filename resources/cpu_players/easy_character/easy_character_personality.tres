@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CPUPersonality" format=3 uid="uid://bjp2kl4shbjnn"]
+
+[ext_resource type="Script" uid="uid://23osdqg767c0" path="res://scripts/controllers/CPUPersonality.gd" id="1_xdwc4"]
+
+[resource]
+script = ExtResource("1_xdwc4")
+truco_call_rate = 0.4
+fold_resistance = 0.4
+raise_tendency = 0.3
+risk_tolerance = 0.3
+info_seeking = 0.5
