@@ -14,6 +14,15 @@ var card_sounds: Array[AudioStream] = [
 	load("res://assets/audio/sounds/card-place-3.ogg")
 ]
 
+var suit_sounds: Dictionary = {
+	Card.Suit.CLUB: load("res://assets/audio/sounds/suits/club_ace.mp3"),
+	Card.Suit.CUP: load("res://assets/audio/sounds/suits/cup_ace.mp3"),
+	Card.Suit.GOLD: load("res://assets/audio/sounds/suits/gold_ace.mp3"),
+	Card.Suit.SWORD: load("res://assets/audio/sounds/suits/sword_ace.mp3")
+}
+
+var suit_sounds_player: AudioStreamPlayer3D
+
 var card_nodes: Array[CardVisual] = []
 var initial_transforms: Array[Transform3D] = []
 
@@ -28,6 +37,11 @@ func _setup_card_placeholders() -> void:
 	var placeholders = [$Card1, $Card2, $Card3]
 	
 	for i in range(placeholders.size()):
+		if i == 0:
+			suit_sounds_player = AudioStreamPlayer3D.new()
+			suit_sounds_player.name = "SuitSoundsPlayer"
+			add_child(suit_sounds_player)
+	
 		var placeholder = placeholders[i]
 		if placeholder:
 			initial_transforms.append(placeholder.transform)
@@ -85,9 +99,11 @@ func _reset_card_nodes(make_visible: bool = false) -> void:
 
 
 ## Throws a card node toward the table using CardThrowHelper.
-func _throw_card_to_table(card_node: CardVisual) -> void:
+func _throw_card_to_table(card_node: CardVisual, card: Card = null) -> void:
 	if not card_node.visible: return
 	
+	if card:
+		CardThrowHelper.play_suit_sound(suit_sounds_player, suit_sounds, card.suit)
 	CardThrowHelper.play_random_card_sound(card_sounds_player, card_sounds)
 	CardThrowHelper.throw_card(
 		card_node, get_parent(),

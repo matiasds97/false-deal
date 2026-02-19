@@ -6,10 +6,14 @@ var lines: Array[ColorRect]
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	var control: Control = get_child(0)
+	var control: Control = $Container
+	if not control:
+		push_error("Points node missing 'Container' child")
+		return
+		
 	for child in control.get_children():
-		var color_rect: ColorRect = child
-		lines.append(color_rect)
+		if child is ColorRect:
+			lines.append(child)
 
 	set_points(0)
 

@@ -8,6 +8,8 @@ signal finished
 
 @onready var label: Label = %MatchStartLabel
 
+@onready var audio: AudioStreamPlayer = $AudioStreamPlayer
+
 ## Duration the splash stays fully visible before fading.
 @export var hold_duration: float = 1.0
 ## Duration of the fade-out animation.
@@ -17,6 +19,7 @@ signal finished
 func play() -> void:
 	visible = true
 	modulate.a = 1.0
+	audio.play()
 	get_tree().create_timer(hold_duration).timeout.connect(_fade_out)
 
 func _fade_out() -> void:

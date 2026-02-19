@@ -55,7 +55,7 @@ func _on_card_played(player_index: int, card: Card) -> void:
 			if card_idx < card_nodes.size():
 				var node = card_nodes[card_idx]
 				_remove_card_collision(node)
-				_throw_card_to_table(node)
+				_throw_card_to_table(node, card)
 		else:
 			printerr("Hand: Played card not found in hand!")
 

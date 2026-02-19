@@ -8,7 +8,7 @@ extends Node3D
 @export var mesh_path: NodePath = "Card"
 @onready var mesh: MeshInstance3D = get_node(mesh_path)
 
-const DEFAULT_BACK_TEXTURE = preload("res://assets/textures/cards_back/card_reverse.jpg")
+const DEFAULT_BACK_TEXTURE = preload("res://assets/textures/cards_back/card_reverse_blue.png")
 
 func _ready() -> void:
 	if mesh:

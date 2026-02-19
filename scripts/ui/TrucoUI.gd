@@ -14,6 +14,9 @@ extends Control
 @onready var envido_value_label: Label = %EnvidoValueLabel
 @onready var fold_button: Button = $MarginContainer2/HBoxContainer/FoldButton
 
+var points_win_sound: AudioStream = preload("res://assets/audio/sounds/points_win.mp3")
+var ui_audio_player: AudioStreamPlayer
+
 # --- EXTERNAL DEPENDENCIES (set from parent scene) ---
 @export var truco_manager_path: NodePath
 @export var hand_path: NodePath
@@ -43,6 +46,10 @@ func _ready() -> void:
 	
 	# 1. Initialize Sub-components (inject manager reference only)
 	_setup_components()
+	
+	# Create audio player for UI sounds
+	ui_audio_player = AudioStreamPlayer.new()
+	add_child(ui_audio_player)
 	
 	# 2. Connect Global Signals
 	_connect_global_signals()
@@ -194,6 +201,10 @@ func _on_envido_resolved(accepted: bool, winner_index: int, points: int) -> void
 	var p0_score: int = truco_manager.players[0].get_envido_points()
 	var p1_score: int = truco_manager.players[1].get_envido_points()
 	
+	if winner_index == TrucoConstants.PLAYER_HUMAN:
+		ui_audio_player.stream = points_win_sound
+		ui_audio_player.play()
+	
 	notification_display.on_envido_resolved(accepted, winner_index, points, p0_score, p1_score)
 	_update_ui_state()
 
@@ -206,6 +217,11 @@ func _on_truco_resolved(accepted: bool, player_index: int, level: int) -> void:
 func _on_flor_resolved(accepted: bool, winner_index: int, points: int) -> void:
 	response_panel.visible = false
 	calls_panel.visible = true
+	
+	if winner_index == TrucoConstants.PLAYER_HUMAN:
+		ui_audio_player.stream = points_win_sound
+		ui_audio_player.play()
+		
 	notification_display.on_flor_resolved(accepted, winner_index, points)
 	_update_ui_state()
 
@@ -214,6 +230,7 @@ func _on_hand_started(_hand_num: int) -> void:
 	notification_display.hide_call()
 	notification_display.clear_result()
 	calls_panel.reset()
+	calls_panel.visible = true
 	_update_ui_state()
 
 func _on_score_updated(human_score: int, cpu_score: int) -> void:

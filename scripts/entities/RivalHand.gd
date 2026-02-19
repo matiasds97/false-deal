@@ -74,4 +74,4 @@ func play_card(card_data: Card) -> void:
 		return
 
 	_update_card_visuals(card_node, card_data)
-	_throw_card_to_table(card_node)
+	_throw_card_to_table(card_node, card_data)

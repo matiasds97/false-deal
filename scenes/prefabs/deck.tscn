@@ -1,18 +1,18 @@
-[gd_scene load_steps=6 format=3 uid="uid://dp2kmrdphryrt"]
+[gd_scene format=3 uid="uid://dp2kmrdphryrt"]
 
 [ext_resource type="PackedScene" uid="uid://bgpv7v4ctvndd" path="res://assets/models/deck/deck.glb" id="1_vxw2y"]
+[ext_resource type="Texture2D" uid="uid://bnhv88e8xcu22" path="res://assets/textures/cards_back/card_reverse_blue.png" id="2_kuqag"]
 [ext_resource type="Texture2D" uid="uid://b2amr04h0eaaw" path="res://assets/textures/cards_back/card_reverse.jpg" id="2_m5we2"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kuqag"]
-albedo_texture = ExtResource("2_m5we2")
+albedo_texture = ExtResource("2_kuqag")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vxw2y"]
-albedo_color = Color(0, 0, 0, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_py2xd"]
 albedo_texture = ExtResource("2_m5we2")
 
-[node name="Deck" instance=ExtResource("1_vxw2y")]
+[node name="Deck" unique_id=315536724 instance=ExtResource("1_vxw2y")]
 
 [node name="Deck" parent="." index="0"]
 surface_material_override/0 = SubResource("StandardMaterial3D_kuqag")

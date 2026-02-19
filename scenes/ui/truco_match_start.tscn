@@ -2,6 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://dhi64wic7i7j0" path="res://resources/themes/truco_UI_theme.tres" id="1_theme"]
 [ext_resource type="Script" uid="uid://blntmfkri87n8" path="res://scripts/ui/TrucoMatchStart.gd" id="2_script"]
+[ext_resource type="AudioStream" uid="uid://8t8as24eekfg" path="res://assets/audio/sounds/match_start.mp3" id="3_om73e"]
 
 [node name="TrucoMatchStart" type="Control" unique_id=1480085299]
 layout_mode = 3
@@ -36,3 +37,6 @@ theme = ExtResource("1_theme")
 theme_override_font_sizes/font_size = 72
 text = "Truco match start"
 horizontal_alignment = 1
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1030240082]
+stream = ExtResource("3_om73e")

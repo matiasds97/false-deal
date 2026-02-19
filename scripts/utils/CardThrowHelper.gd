@@ -61,3 +61,19 @@ static func play_random_card_sound(
 	rng.randomize()
 	audio_player.stream = sounds[rng.randi_range(0, sounds.size() - 1)]
 	audio_player.play()
+
+
+## Plays a suit-specific sound if available.
+## [param audio_player]: The AudioStreamPlayer3D to use (should be separate from card placement player).
+## [param suit_sounds]: Dictionary mapping Card.Suit enum values to AudioStream resources.
+## [param suit]: The suit of the card being played.
+static func play_suit_sound(
+	audio_player: AudioStreamPlayer3D,
+	suit_sounds: Dictionary,
+	suit: int
+) -> void:
+	if not audio_player or suit_sounds.is_empty(): return
+	
+	if suit_sounds.has(suit):
+		audio_player.stream = suit_sounds[suit]
+		audio_player.play()

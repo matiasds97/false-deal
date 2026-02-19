@@ -10,6 +10,7 @@ signal exit_requested
 @onready var result_label: Label = %ResultLabel
 @onready var replay_button: Button = %ReplayButton
 @onready var exit_button: Button = %ExitButton
+@onready var audio: AudioStreamPlayer = $AudioStreamPlayer
 
 func _ready() -> void:
 	replay_button.pressed.connect(func(): replay_requested.emit())
@@ -19,6 +20,7 @@ func _ready() -> void:
 func show_result(player_won: bool) -> void:
 	if player_won:
 		result_label.text = "Victory"
+		audio.play()
 	else:
 		result_label.text = "Defeat"
 	modulate.a = 0.0

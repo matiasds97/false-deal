@@ -162,6 +162,4 @@ layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.05
 
-[node name="Points" parent="." instance=ExtResource("2_48oo3")]
-visible = false
-layout_mode = 2
+
