@@ -6,7 +6,7 @@ extends Camera3D
 
 ## Reference to the table center marker for calculating the top-down view target
 @export var table_center_path: NodePath
-@onready var _table_center: Marker3D = get_node_or_null(table_center_path)
+@onready var _audio: AudioStreamPlayer = $AudioStreamPlayer
 
 ## Duration of the camera transition tween
 const TWEEN_DURATION: float = 0.4
@@ -53,8 +53,10 @@ func _toggle_view() -> void:
 		top_down_transform.basis = Basis.from_euler(Vector3(deg_to_rad(-90), 0, 0))
 
 		_active_tween.tween_property(self, "global_transform", top_down_transform, TWEEN_DURATION)
+		_audio.play()
 	else:
 		_animate_to_default()
+		_audio.play()
 
 
 func _return_to_default() -> void:

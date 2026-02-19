@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://dpgpsqfnfgjyn"]
+
+[ext_resource type="Script" uid="uid://b8rkd1cp0cnjc" path="res://scripts/ui/components/TrucoNotificationDisplay.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://c6pjgoign3l3k" path="res://resources/themes/calling_theme.tres" id="2_theme"]
+
+[node name="TrucoNotificationDisplay" type="MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 20
+script = ExtResource("1_script")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="RivalDecisionStateLabel" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+
+[node name="RivalCallsLabel" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("2_theme")
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 24
+text = ""
+horizontal_alignment = 1

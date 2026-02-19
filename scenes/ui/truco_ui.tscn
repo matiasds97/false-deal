@@ -1,0 +1,147 @@
+[gd_scene format=3 uid="uid://c0csfq4dx3ljy"]
+
+[ext_resource type="Script" uid="uid://c56pmoeww7vlq" path="res://scripts/ui/TrucoUI.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://dhi64wic7i7j0" path="res://resources/themes/truco_UI_theme.tres" id="2_theme"]
+[ext_resource type="PackedScene" uid="uid://eyq0ed8yub0k" path="res://scenes/ui/scoreboard.tscn" id="3_score"]
+[ext_resource type="PackedScene" path="res://scenes/ui/truco_calls_panel.tscn" id="4_calls"]
+[ext_resource type="PackedScene" uid="uid://ds5o0y28g5gjp" path="res://scenes/ui/truco_response_panel.tscn" id="5_resp"]
+[ext_resource type="PackedScene" path="res://scenes/ui/truco_notification_display.tscn" id="6_notif"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_envido"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[node name="TrucoUI" type="Control" unique_id=644378327]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=11811587]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=2039011524]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="EnvidoContainer" type="PanelContainer" parent="MarginContainer/VBoxContainer" unique_id=406126505]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_envido")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/EnvidoContainer" unique_id=1104049143]
+layout_mode = 2
+
+[node name="EnvidoLabel" type="Label" parent="MarginContainer/VBoxContainer/EnvidoContainer/HBoxContainer" unique_id=59859051]
+layout_mode = 2
+text = "Envido: "
+
+[node name="EnvidoValueLabel" type="Label" parent="MarginContainer/VBoxContainer/EnvidoContainer/HBoxContainer" unique_id=1974411337]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="MarginContainer2" type="MarginContainer" parent="." unique_id=545444597]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -59.0
+offset_right = 133.0
+grow_vertical = 0
+theme_override_constants/margin_left = 25
+theme_override_constants/margin_bottom = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer2" unique_id=1699373839]
+layout_mode = 2
+
+[node name="FoldButton" type="Button" parent="MarginContainer2/HBoxContainer" unique_id=1072496400]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Fold"
+
+[node name="Scoreboard" parent="." unique_id=2000234387 instance=ExtResource("3_score")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(130.61, 128)
+layout_direction = 2
+layout_mode = 1
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_top = 0.0
+offset_right = 272.0
+offset_bottom = 223.0
+grow_horizontal = 1
+grow_vertical = 1
+size_flags_vertical = 0
+
+[node name="TrucoCallsPanel" parent="." unique_id=1433627453 instance=ExtResource("4_calls")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -185.0
+offset_top = -206.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="TrucoResponsePanel" parent="." unique_id=935937725 instance=ExtResource("5_resp")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -184.0
+offset_top = -49.0
+offset_bottom = 49.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="TrucoNotificationDisplay" parent="." unique_id=1956130119 instance=ExtResource("6_notif")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+
+[node name="CameraHintLabel" type="Label" parent="." unique_id=181748386]
+modulate = Color(1, 1, 1, 0.4)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -60.0
+offset_top = -30.0
+offset_right = 60.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "[W] Top view"
+horizontal_alignment = 1

@@ -13,14 +13,12 @@
 [ext_resource type="PackedScene" uid="uid://cfr2kl5oa42ew" path="res://scenes/prefabs/props/table.tscn" id="8_32kxe"]
 [ext_resource type="AudioStream" uid="uid://c57pqlncckyxp" path="res://assets/audio/sounds/card-place-1.ogg" id="8_bkcf0"]
 [ext_resource type="Script" uid="uid://dhyfhi6fa8mta" path="res://scripts/entities/RivalHand.gd" id="9_32kxe"]
-[ext_resource type="Script" uid="uid://c56pmoeww7vlq" path="res://scripts/ui/TrucoUI.gd" id="10_jide4"]
-[ext_resource type="Theme" uid="uid://dhi64wic7i7j0" path="res://resources/themes/truco_UI_theme.tres" id="10_pu42s"]
-[ext_resource type="PackedScene" uid="uid://eyq0ed8yub0k" path="res://scenes/ui/scoreboard.tscn" id="12_e57oh"]
-[ext_resource type="Theme" uid="uid://c6pjgoign3l3k" path="res://resources/themes/calling_theme.tres" id="13_e57oh"]
+[ext_resource type="AudioStream" uid="uid://b6wqtoq5ylfgw" path="res://assets/audio/sounds/whoosh.mp3" id="12_jide4"]
 [ext_resource type="PackedScene" uid="uid://dp2kmrdphryrt" path="res://scenes/prefabs/deck.tscn" id="15_x2plq"]
 [ext_resource type="PackedScene" uid="uid://dbjt3ddsg81pr" path="res://scenes/prefabs/props/chair.tscn" id="19_jide4"]
 [ext_resource type="PackedScene" uid="uid://c32ghhjlm3h3o" path="res://scenes/prefabs/props/doorway.tscn" id="20_8v2wn"]
-[ext_resource type="Script" path="res://scripts/visuals/TrucoCameraController.gd" id="21_cam01"]
+[ext_resource type="Script" uid="uid://hsyjqvuuwso0" path="res://scripts/visuals/TrucoCameraController.gd" id="21_cam01"]
+[ext_resource type="PackedScene" uid="uid://c0csfq4dx3ljy" path="res://scenes/ui/truco_ui.tscn" id="25_ui"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_0vyix"]
 size = Vector3(1.2, 0.05, 0.8)
@@ -53,22 +51,6 @@ size = Vector2(2, 2)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_txkv6"]
 size = Vector2(0.06, 0.1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0vyix"]
-bg_color = Color(0, 0, 0, 1)
-corner_radius_top_left = 10
-corner_radius_bottom_left = 10
-expand_margin_left = 10.0
-expand_margin_top = 10.0
-expand_margin_right = 10.0
-expand_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_pu42s"]
-content_margin_left = 4.0
-content_margin_top = 0.0
-content_margin_right = 4.0
-content_margin_bottom = 0.0
-color = Color(1, 1, 1, 1)
 
 [node name="TrucoRoom" type="Node3D" unique_id=841968280]
 
@@ -144,8 +126,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045264512, -9.655952e-06, -
 visible = false
 mesh = SubResource("QuadMesh_pu42s")
 
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Camera3D" unique_id=1693640552]
+stream = ExtResource("12_jide4")
+volume_db = -1.0
+
 [node name="HumanHand" type="Marker3D" parent="." unique_id=1719383420]
-transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.89479315, 0.42)
+transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.9152026, 0.42)
 script = ExtResource("7_ja30i")
 
 [node name="Card1" type="MeshInstance3D" parent="HumanHand" unique_id=1882203265]
@@ -193,233 +179,9 @@ skeleton = NodePath("../..")
 stream = ExtResource("8_bkcf0")
 max_distance = 2.5
 
-[node name="TrucoUI" type="Control" parent="." unique_id=1789159100]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme = ExtResource("10_pu42s")
-script = ExtResource("10_jide4")
-
-[node name="MarginContainer" type="MarginContainer" parent="TrucoUI" unique_id=252594689]
-visible = false
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 5
-
-[node name="VBoxContainer" type="VBoxContainer" parent="TrucoUI/MarginContainer" unique_id=887461466]
-layout_mode = 2
-theme_override_constants/separation = 40
-
-[node name="EnvidoContainer" type="PanelContainer" parent="TrucoUI/MarginContainer/VBoxContainer" unique_id=351656507]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_0vyix")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TrucoUI/MarginContainer/VBoxContainer/EnvidoContainer" unique_id=956467181]
-layout_mode = 2
-
-[node name="EnvidoLabel" type="Label" parent="TrucoUI/MarginContainer/VBoxContainer/EnvidoContainer/HBoxContainer" unique_id=1406898913]
-layout_mode = 2
-text = "Envido: "
-
-[node name="EnvidoValueLabel" type="Label" parent="TrucoUI/MarginContainer/VBoxContainer/EnvidoContainer/HBoxContainer" unique_id=940821309]
-unique_name_in_owner = true
-layout_mode = 2
-text = "0"
-
-[node name="MarginContainer2" type="MarginContainer" parent="TrucoUI" unique_id=1207894893]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -59.0
-offset_right = 133.0
-grow_vertical = 0
-theme_override_constants/margin_left = 25
-theme_override_constants/margin_bottom = 20
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TrucoUI/MarginContainer2" unique_id=1691324648]
-layout_mode = 2
-
-[node name="FoldButton" type="Button" parent="TrucoUI/MarginContainer2/HBoxContainer" unique_id=1532586827]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Fold"
-
-[node name="Scoreboard" parent="TrucoUI" unique_id=376953327 instance=ExtResource("12_e57oh")]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(130.61, 128)
-layout_direction = 2
-layout_mode = 1
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_top = 0.0
-offset_right = 272.0
-offset_bottom = 223.0
-grow_horizontal = 1
-grow_vertical = 1
-size_flags_vertical = 0
-
-[node name="ScoreContainer" type="MarginContainer" parent="TrucoUI" unique_id=413133877]
-visible = false
-custom_minimum_size = Vector2(128, 128)
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -275.0
-offset_right = -3.0
-offset_bottom = 274.0
-grow_horizontal = 0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="TrucoUI/ScoreContainer" unique_id=116019778]
-visible = false
-layout_mode = 2
-theme_override_constants/separation = 40
-
-[node name="ScoreContainer" type="PanelContainer" parent="TrucoUI/ScoreContainer/VBoxContainer" unique_id=1089172422]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_0vyix")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TrucoUI/ScoreContainer/VBoxContainer/ScoreContainer" unique_id=1615985220]
-layout_mode = 2
-
-[node name="ScoreLabel" type="Label" parent="TrucoUI/ScoreContainer/VBoxContainer/ScoreContainer/HBoxContainer" unique_id=1879130402]
-layout_mode = 2
-text = "Human: 0 | CPU: 0"
-
-[node name="CallsContainer" type="MarginContainer" parent="TrucoUI" unique_id=1146967693]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -185.0
-offset_top = -206.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-
-[node name="VBoxContainer" type="VBoxContainer" parent="TrucoUI/CallsContainer" unique_id=284326680]
-layout_mode = 2
-theme_override_constants/separation = 4
-alignment = 2
-
-[node name="Control" type="Control" parent="TrucoUI/CallsContainer/VBoxContainer" unique_id=803215237]
-layout_mode = 2
-size_flags_vertical = 2
-
-[node name="EnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer/Control" unique_id=1610436553]
-layout_mode = 0
-offset_top = 99.0
-offset_right = 174.0
-offset_bottom = 142.0
-text = "Envido"
-
-[node name="FlorButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer/Control" unique_id=1080276819]
-unique_name_in_owner = true
-visible = false
-layout_mode = 0
-offset_top = 99.0
-offset_right = 174.0
-offset_bottom = 142.0
-text = "Flor"
-
-[node name="RealEnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer/Control" unique_id=1208467535]
-visible = false
-layout_mode = 0
-offset_top = 51.0
-offset_right = 174.0
-offset_bottom = 94.0
-text = "Real Envido"
-
-[node name="FaltaEnvidoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer/Control" unique_id=1011762384]
-visible = false
-layout_mode = 0
-offset_top = 98.0
-offset_right = 174.0
-offset_bottom = 141.0
-text = "Falta Envido"
-
-[node name="HSeparator" type="HSeparator" parent="TrucoUI/CallsContainer/VBoxContainer/Control" unique_id=1997919873]
-layout_mode = 0
-offset_top = 145.0
-offset_right = 174.0
-offset_bottom = 155.0
-theme_override_constants/separation = 10
-theme_override_styles/separator = SubResource("StyleBoxLine_pu42s")
-
-[node name="TrucoButton" type="Button" parent="TrucoUI/CallsContainer/VBoxContainer/Control" unique_id=1172454487]
-layout_mode = 0
-offset_top = 159.0
-offset_right = 174.0
-offset_bottom = 202.0
-text = "Truco"
-
-[node name="ResponseContainer" type="MarginContainer" parent="TrucoUI" unique_id=143913649]
-layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -184.0
-offset_top = -49.0
-offset_bottom = 49.0
-grow_horizontal = 0
-grow_vertical = 2
-theme_override_constants/margin_right = 10
-
-[node name="VBoxContainer" type="VBoxContainer" parent="TrucoUI/ResponseContainer" unique_id=37469341]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="QuieroButton" type="Button" parent="TrucoUI/ResponseContainer/VBoxContainer" unique_id=960271549]
-layout_mode = 2
-text = "Quiero"
-
-[node name="NoQuieroButton" type="Button" parent="TrucoUI/ResponseContainer/VBoxContainer" unique_id=4614641]
-layout_mode = 2
-text = "No quiero"
-
-[node name="RivalDecisionContainer" type="MarginContainer" parent="TrucoUI" unique_id=292747658]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -20.0
-offset_right = 20.0
-offset_bottom = 40.0
-grow_horizontal = 2
-theme_override_constants/margin_top = 20
-
-[node name="VBoxContainer" type="VBoxContainer" parent="TrucoUI/RivalDecisionContainer" unique_id=1851863340]
-layout_mode = 2
-
-[node name="RivalDecisionStateLabel" type="Label" parent="TrucoUI/RivalDecisionContainer/VBoxContainer" unique_id=1877027191]
-unique_name_in_owner = true
-layout_mode = 2
-text = "CPU accepted the envido with"
-horizontal_alignment = 1
-
-[node name="RivalCallsLabel" type="Label" parent="TrucoUI/RivalDecisionContainer/VBoxContainer" unique_id=1493123568]
-unique_name_in_owner = true
-layout_mode = 2
-theme = ExtResource("13_e57oh")
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 24
-text = "Truco!"
-horizontal_alignment = 1
+[node name="TrucoUI" parent="." unique_id=728011721 instance=ExtResource("25_ui")]
+truco_manager_path = NodePath("../TrucoManager")
+hand_path = NodePath("../HumanHand")
 
 [node name="Deck2" parent="." unique_id=1546186603 instance=ExtResource("15_x2plq")]
 transform = Transform3D(0.2805868, 0, 0.41384906, 0, 0.5, 0, -0.41384906, 0, 0.2805868, -0.2934054, 0.7824089, 0.0017529726)

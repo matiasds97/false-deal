@@ -30,7 +30,7 @@ fog_density = 0.05
 [node name="House" parent="." unique_id=429319184 instance=ExtResource("1_ykq05")]
 
 [node name="FirstPersonPlayer" parent="." unique_id=1671700935 instance=ExtResource("2_vb28t")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7506139, 0.7621274, -2.463213)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7506139, 1.2001097, -2.463213)
 speed = 3.5
 
 [node name="DiningRoomLight" type="OmniLight3D" parent="." unique_id=122020535]

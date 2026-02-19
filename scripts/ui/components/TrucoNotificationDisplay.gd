@@ -1,30 +1,26 @@
 class_name TrucoNotificationDisplay
-extends VBoxContainer
+extends MarginContainer
 
 ## Handles displaying in-game notifications (Rival calls, results).
+## Self-contained scene with its own visual hierarchy.
 
-@export var rival_calls_label: Label
-@export var result_label: Label
+@onready var rival_calls_label: Label = %RivalCallsLabel
+@onready var result_label: Label = %RivalDecisionStateLabel
 
 func show_call(text: String) -> void:
-	if rival_calls_label:
-		rival_calls_label.text = text
-		rival_calls_label.visible = true
+	rival_calls_label.text = text
+	rival_calls_label.visible = true
 
 func hide_call() -> void:
-	if rival_calls_label:
-		rival_calls_label.visible = false
+	rival_calls_label.visible = false
 
 func show_result(text: String, color: Color = Color.WHITE) -> void:
-	if result_label:
-		result_label.text = text
-		result_label.add_theme_color_override("font_color", color)
-		# Auto clear after some time? TrucoUI managed state reset on hand start.
+	result_label.text = text
+	result_label.add_theme_color_override("font_color", color)
 
 func clear_result() -> void:
-	if result_label:
-		result_label.text = ""
-		result_label.remove_theme_color_override("font_color")
+	result_label.text = ""
+	result_label.remove_theme_color_override("font_color")
 
 func on_envido_resolved(accepted: bool, winner_index: int, _points: int, p0_score: int, p1_score: int) -> void:
 	hide_call()
@@ -42,7 +38,7 @@ func on_envido_resolved(accepted: bool, winner_index: int, _points: int, p0_scor
 
 func on_truco_resolved(accepted: bool, player_index: int, level: int) -> void:
 	hide_call()
-	clear_result() # Reset color
+	clear_result()
 	
 	var level_name = "truco"
 	match level:
