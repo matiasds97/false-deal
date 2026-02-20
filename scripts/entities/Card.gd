@@ -77,10 +77,25 @@ func _calculate_truco_value() -> int:
 			return 2
 		[_, CardValue.FOUR]:
 			return 1
-		[_, _]:
-			return 0
 		_:
 			return 0
+
+## Returns the highest possible truco value for a given suit.[br][br]
+## Sword: 14, Club: 13, Gold: 11, Cup: 10.
+static func get_max_truco_value_for_suit(p_suit: Suit) -> int:
+	match p_suit:
+		Suit.SWORD: return 14
+		Suit.CLUB: return 13
+		Suit.GOLD: return 11
+		Suit.CUP: return 10
+	return 10
+
+## Returns a value between 0.0 and 1.0 representing the volume based on hierarchy.
+func get_card_relative_volume() -> float:
+	var max_val = get_max_truco_value_for_suit(suit)
+	if max_val <= 0: return 1.0
+	var ratio = float(truco_value) / float(max_val)
+	return pow(ratio, 2.5)
 
 ## Compares the card with another card based on their truco values.[br][br]
 ## [param other_card]: The card to compare with.[br][br]

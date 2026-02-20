@@ -52,14 +52,17 @@ static func throw_card(
 ## Plays a random card placement sound from the provided array.
 ## [param audio_player]: The AudioStreamPlayer3D to use.
 ## [param sounds]: Array of AudioStream sounds to pick from.
+## [param volume_linear]: Volume scale (0.0 to 1.0).
 static func play_random_card_sound(
 	audio_player: AudioStreamPlayer3D,
-	sounds: Array[AudioStream]
+	sounds: Array[AudioStream],
+	volume_linear: float = 1.0
 ) -> void:
 	if sounds.is_empty(): return
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
 	audio_player.stream = sounds[rng.randi_range(0, sounds.size() - 1)]
+	audio_player.volume_db = linear_to_db(volume_linear)
 	audio_player.play()
 
 
@@ -67,13 +70,16 @@ static func play_random_card_sound(
 ## [param audio_player]: The AudioStreamPlayer3D to use (should be separate from card placement player).
 ## [param suit_sounds]: Dictionary mapping Card.Suit enum values to AudioStream resources.
 ## [param suit]: The suit of the card being played.
+## [param volume_linear]: Volume scale (0.0 to 1.0).
 static func play_suit_sound(
 	audio_player: AudioStreamPlayer3D,
 	suit_sounds: Dictionary,
-	suit: int
+	suit: int,
+	volume_linear: float = 1.0
 ) -> void:
 	if not audio_player or suit_sounds.is_empty(): return
 	
 	if suit_sounds.has(suit):
 		audio_player.stream = suit_sounds[suit]
+		audio_player.volume_db = linear_to_db(volume_linear)
 		audio_player.play()

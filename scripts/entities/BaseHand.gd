@@ -103,8 +103,12 @@ func _throw_card_to_table(card_node: CardVisual, card: Card = null) -> void:
 	if not card_node.visible: return
 	
 	if card:
-		CardThrowHelper.play_suit_sound(suit_sounds_player, suit_sounds, card.suit)
-	CardThrowHelper.play_random_card_sound(card_sounds_player, card_sounds)
+		var rel_volume = card.get_card_relative_volume()
+		CardThrowHelper.play_suit_sound(suit_sounds_player, suit_sounds, card.suit, rel_volume)
+		CardThrowHelper.play_random_card_sound(card_sounds_player, card_sounds, rel_volume)
+	else:
+		CardThrowHelper.play_random_card_sound(card_sounds_player, card_sounds)
+
 	CardThrowHelper.throw_card(
 		card_node, get_parent(),
 		cached_target_position, cached_stack_height, self
