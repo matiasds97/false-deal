@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://dp2kmrdphryrt" path="res://scenes/prefabs/deck.tscn" id="15_x2plq"]
 [ext_resource type="PackedScene" uid="uid://dbjt3ddsg81pr" path="res://scenes/prefabs/props/chair.tscn" id="19_jide4"]
 [ext_resource type="PackedScene" uid="uid://c32ghhjlm3h3o" path="res://scenes/prefabs/props/doorway.tscn" id="20_8v2wn"]
+[ext_resource type="AudioStream" uid="uid://di2lijp75fnw6" path="res://assets/audio/music/match_eric-matyas.ogg" id="20_28tny"]
 [ext_resource type="Script" uid="uid://hsyjqvuuwso0" path="res://scripts/visuals/TrucoCameraController.gd" id="21_cam01"]
 [ext_resource type="PackedScene" uid="uid://c0csfq4dx3ljy" path="res://scenes/ui/truco_ui.tscn" id="25_ui"]
 
@@ -125,7 +126,7 @@ spot_angle = 0.0
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=731283459]
 transform = Transform3D(1, 0, 0, 0, 0.92718387, 0.37460658, 0, -0.37460658, 0.92718387, 0, 1.15, 0.65)
-fov = 65.0
+fov = 60.0
 script = ExtResource("21_cam01")
 table_center_path = NodePath("../table/TableCenter")
 
@@ -139,7 +140,7 @@ stream = ExtResource("12_jide4")
 volume_db = -1.0
 
 [node name="HumanHand" type="Marker3D" parent="." unique_id=1719383420]
-transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.9152026, 0.42)
+transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0.96987176, 0.46315846)
 script = ExtResource("7_ja30i")
 
 [node name="Card1" type="MeshInstance3D" parent="HumanHand" unique_id=1882203265]
@@ -202,7 +203,16 @@ transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0.18406469, 0, 0.403553
 transform = Transform3D(-0.2, 0, -1.7484556e-08, 0, 0.2, 0, 1.7484556e-08, 0, -0.2, -0.17996544, 0, -0.66829765)
 
 [node name="doorway" parent="." unique_id=1303462804 instance=ExtResource("20_8v2wn")]
-transform = Transform3D(0.25, 0, 0, 0, 0.2, 0, 0, 0, 0.2, -1.2076138, 0, -2.590594)
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, -1.2076138, 0, -2.590594)
+
+[node name="door 3" parent="doorway/doorway" parent_id_path=PackedInt32Array(1303462804, 18712431) index="0" unique_id=1423457863]
+script = null
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1915553272]
 environment = SubResource("Environment_jide4")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1305157041]
+stream = ExtResource("20_28tny")
+autoplay = true
+
+[editable path="doorway"]
