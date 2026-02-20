@@ -24,9 +24,11 @@ func show_result(player_won: bool) -> void:
 	if player_won:
 		audio.set_stream(_win_sting)
 		result_label.text = "Victory"
+		result_label.add_theme_color_override("font_color", Color("#038f3b"))
 	else:
 		audio.set_stream(_lose_sting)
 		result_label.text = "Defeat"
+		result_label.add_theme_color_override("font_color", Color("#8f0303"))
 	audio.play()
 	modulate.a = 0.0
 	visible = true

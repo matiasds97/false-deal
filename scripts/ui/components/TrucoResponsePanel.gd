@@ -101,6 +101,7 @@ func update_state() -> void:
 
 func _reset_all() -> void:
 	# Reset response group
+	response_group.visible = true
 	quiero_button.visible = true
 	no_quiero_button.visible = true
 	quiero_button.text = "Quiero"
