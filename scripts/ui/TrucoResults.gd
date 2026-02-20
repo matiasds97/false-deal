@@ -12,6 +12,9 @@ signal exit_requested
 @onready var exit_button: Button = %ExitButton
 @onready var audio: AudioStreamPlayer = $AudioStreamPlayer
 
+var _win_sting: AudioStream = preload("res://assets/audio/sounds/game_win.mp3")
+var _lose_sting: AudioStream = preload("res://assets/audio/sounds/game_lose.mp3")
+
 func _ready() -> void:
 	replay_button.pressed.connect(func(): replay_requested.emit())
 	exit_button.pressed.connect(func(): exit_requested.emit())
@@ -19,10 +22,12 @@ func _ready() -> void:
 ## Shows the results screen with the appropriate message, fading in.
 func show_result(player_won: bool) -> void:
 	if player_won:
+		audio.set_stream(_win_sting)
 		result_label.text = "Victory"
-		audio.play()
 	else:
+		audio.set_stream(_lose_sting)
 		result_label.text = "Defeat"
+	audio.play()
 	modulate.a = 0.0
 	visible = true
 	var tween = create_tween()

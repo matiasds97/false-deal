@@ -12,6 +12,7 @@ signal turn_started(player_index: int)
 ## ------- EXPORT VARIABLES -------
 @export var deck: Deck
 @export var player_nodes: Array[Node]
+@export var match_music_player: AudioStreamPlayer
 
 ## ------- PUBLIC VARIABLES -------
 # Use TrucoConstants.CARD_THROW_DURATION for animation timing
@@ -55,6 +56,7 @@ func _ready() -> void:
 
 	_find_player_nodes_if_missing()
 	_initialize_player_controllers()
+	_setup_music_player()
 	
 	# Initialize Game Logic
 	game = TrucoGame.new(players, deck)
@@ -113,7 +115,10 @@ func on_player_call_truco(player_index: int) -> void:
 func _connect_game_signals() -> void:
 	if not game: return
 	
-	game.match_started.connect(func(): match_started.emit())
+	game.match_started.connect(func():
+		match_started.emit()
+		_on_match_started_music()
+	)
 	
 	game.hand_started.connect(func(hand_num):
 		TrucoSignalBus.on_hand_started.emit(hand_num)
@@ -161,6 +166,7 @@ func _connect_game_signals() -> void:
 	game.match_ended.connect(func(winner):
 		print_debug("Match Finished. Winner: %d" % winner)
 		TrucoSignalBus.on_match_ended.emit(winner)
+		_on_match_ended_music(winner)
 	)
 
 func _on_turn_started(player_index: int) -> void:
@@ -185,6 +191,36 @@ func _on_round_ended(winner: int, reason: String) -> void:
 	get_tree().create_timer(TrucoConstants.NEW_HAND_DELAY).timeout.connect(func():
 		game.start_new_hand()
 	)
+
+# --- AUDIO HELPERS ---
+
+func _setup_music_player() -> void:
+	if not match_music_player:
+		match_music_player = get_node_or_null("../AudioStreamPlayer")
+	
+	if match_music_player:
+		match_music_player.autoplay = false
+		match_music_player.stop()
+
+func _on_match_started_music() -> void:
+	if not match_music_player: return
+	
+	match_music_player.volume_db = -40.0
+	match_music_player.play()
+	_fade_music(0.0, TrucoConstants.MUSIC_FADE_IN_DURATION)
+
+func _on_match_ended_music(_winner: int) -> void:
+	if not match_music_player: return
+	
+	_fade_music(-40.0, TrucoConstants.MUSIC_FADE_OUT_DURATION, true)
+
+func _fade_music(target_db: float, duration: float, stop_on_complete: bool = false) -> void:
+	if not match_music_player: return
+	
+	var tween = create_tween()
+	tween.tween_property(match_music_player, "volume_db", target_db, duration)
+	if stop_on_complete:
+		tween.finished.connect(match_music_player.stop)
 
 # --- SETUP HELPERS ---
 

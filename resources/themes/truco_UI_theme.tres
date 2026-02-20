@@ -2,6 +2,18 @@
 
 [ext_resource type="FontFile" uid="uid://crtudg4pqkcmr" path="res://assets/fonts/Jersey10-Regular.ttf" id="1_eexld"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hn53s"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.41960785, 0.41960785, 0.41960785, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gda5s"]
 content_margin_left = 16.0
 content_margin_right = 16.0
@@ -10,7 +22,19 @@ border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(1, 0.7058824, 0, 1)
+border_color = Color(0.9490196, 0.7058824, 0, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rviph"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.7, 0.525, 0, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -31,12 +55,30 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 anti_aliasing = false
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_em18j"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.7, 0.525, 0, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [resource]
 Button/colors/font_color = Color(1, 1, 1, 1)
+Button/colors/font_disabled_color = Color(0.41960785, 0.41960785, 0.41960785, 1)
 Button/colors/font_hover_color = Color(0.9490196, 0.7058824, 0, 1)
+Button/colors/font_hover_pressed_color = Color(0.7, 0.525, 0, 1)
+Button/colors/font_pressed_color = Color(0.7, 0.525, 0, 1)
 Button/font_sizes/font_size = 32
 Button/fonts/font = ExtResource("1_eexld")
+Button/styles/disabled = SubResource("StyleBoxFlat_hn53s")
 Button/styles/hover = SubResource("StyleBoxFlat_gda5s")
+Button/styles/hover_pressed = SubResource("StyleBoxFlat_rviph")
 Button/styles/normal = SubResource("StyleBoxFlat_eexld")
+Button/styles/pressed = SubResource("StyleBoxFlat_em18j")
 Label/font_sizes/font_size = 32
 Label/fonts/font = ExtResource("1_eexld")

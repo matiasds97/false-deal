@@ -59,3 +59,8 @@ enum ResponseAction {
 	TRUCO,
 	FLOR
 }
+# --- AUDIO ---
+## Duration of the music fade-in when match starts (seconds)
+const MUSIC_FADE_IN_DURATION: float = 1.0
+## Duration of the music fade-out when match ends (seconds)
+const MUSIC_FADE_OUT_DURATION: float = 2.0
