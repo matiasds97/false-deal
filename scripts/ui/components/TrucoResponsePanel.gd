@@ -200,6 +200,13 @@ func _update_truco_response(p_index: int) -> void:
 		_set_flor_group_visible(true)
 
 func _update_flor_response(p_index: int) -> void:
+	var has_flor: bool = truco_manager.players[p_index].has_flor()
+	
+	if not has_flor:
+		quiero_button.visible = false
+		no_quiero_button.visible = false
+		return
+
 	if truco_manager.can_call_flor(TrucoConstants.FlorType.CONTRA_FLOR, p_index):
 		quiero_button.text = "Flor (Quiero)"
 		no_quiero_button.visible = false

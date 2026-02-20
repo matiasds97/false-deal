@@ -208,6 +208,15 @@ func _on_flor_called(player_index: int, type: int) -> void:
 			TrucoConstants.FlorType.CONTRA_FLOR: text = "Contra Flor!"
 			TrucoConstants.FlorType.CONTRA_FLOR_AL_RESTO: text = "Contra Flor Al Resto!"
 		_handle_opponent_call(text)
+		
+		# Auto-resolve if Human doesn't have Flor and it's a simple Flor call
+		if type == TrucoConstants.FlorType.FLOR \
+		and not truco_manager.players[TrucoConstants.PLAYER_HUMAN].has_flor():
+			set_ui_locked(true)
+			get_tree().create_timer(1.5).timeout.connect(func():
+				if truco_manager.pending_response_action == TrucoConstants.ResponseAction.FLOR:
+					truco_manager.resolve_flor(true, TrucoConstants.PLAYER_HUMAN)
+			)
 	else:
 		_handle_own_call()
 

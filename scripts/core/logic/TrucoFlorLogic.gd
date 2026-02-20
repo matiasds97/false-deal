@@ -154,7 +154,7 @@ func resolve(
 				else:
 					winner = mano_player_index
 				
-				points = 3 # Flor vs Flor is 3 points
+				points = 4 # Flor vs Flor is 4 points
 			else:
 				# Answering player doesn't have Flor - caller wins
 				winner = caller_index
