@@ -14,6 +14,11 @@ signal turn_started(player_index: int)
 @export var player_nodes: Array[Node]
 @export var match_music_player: AudioStreamPlayer
 
+@export_group("Visuals")
+@export var visual_deck: Node3D
+@export var deck_pos_human: Marker3D
+@export var deck_pos_cpu: Marker3D
+
 ## ------- PUBLIC VARIABLES -------
 # Use TrucoConstants.CARD_THROW_DURATION for animation timing
 static var CARD_THROW_DURATION: float:
@@ -28,6 +33,9 @@ var players: Array[Player] = []
 # --- DELEGATE PROPERTIES ---
 var current_turn_index: int:
 	get: return game.current_turn_index
+
+var dealer_index: int:
+	get: return game.dealer_index
 
 var envido_chain: Array[int]:
 	get: return game.envido_chain
@@ -121,6 +129,7 @@ func _connect_game_signals() -> void:
 	)
 	
 	game.hand_started.connect(func(hand_num):
+		_update_visual_deck_position()
 		TrucoSignalBus.on_hand_started.emit(hand_num)
 		new_hand_started.emit(hand_num)
 	)
@@ -191,6 +200,20 @@ func _on_round_ended(winner: int, reason: String) -> void:
 	get_tree().create_timer(TrucoConstants.NEW_HAND_DELAY).timeout.connect(func():
 		game.start_new_hand()
 	)
+
+# --- VISUAL HELPERS ---
+
+func _update_visual_deck_position() -> void:
+	if not visual_deck: return
+	
+	var target_marker: Node3D = null
+	if dealer_index == TrucoConstants.PLAYER_HUMAN:
+		target_marker = deck_pos_human
+	else:
+		target_marker = deck_pos_cpu
+		
+	if target_marker:
+		visual_deck.global_transform = target_marker.global_transform
 
 # --- AUDIO HELPERS ---
 

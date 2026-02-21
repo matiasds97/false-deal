@@ -29,6 +29,21 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_table_view"):
 		_toggle_view()
+		return
+		
+	if event.is_action_pressed("return_table_view"):
+		if _is_table_view:
+			_toggle_view()
+		return
+		
+	if event.is_action_pressed("hold_table_view"):
+		if not _is_table_view:
+			_toggle_view()
+		return
+	elif event.is_action_released("hold_table_view"):
+		if _is_table_view:
+			_toggle_view()
+		return
 
 
 func _on_hand_started(_hand_number: int) -> void:

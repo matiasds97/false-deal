@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://dbjt3ddsg81pr" path="res://scenes/prefabs/props/chair.tscn" id="19_jide4"]
 [ext_resource type="PackedScene" uid="uid://c32ghhjlm3h3o" path="res://scenes/prefabs/props/doorway.tscn" id="20_8v2wn"]
 [ext_resource type="AudioStream" uid="uid://di2lijp75fnw6" path="res://assets/audio/music/match_eric-matyas.ogg" id="20_28tny"]
+[ext_resource type="PackedScene" uid="uid://cxkqq25np1shv" path="res://scenes/characters/human_sitting_idle.tscn" id="21_28tny"]
 [ext_resource type="Script" uid="uid://hsyjqvuuwso0" path="res://scripts/visuals/TrucoCameraController.gd" id="21_cam01"]
 [ext_resource type="PackedScene" uid="uid://c0csfq4dx3ljy" path="res://scenes/ui/truco_ui.tscn" id="25_ui"]
 
@@ -62,10 +63,13 @@ fog_density = 0.05
 
 [node name="TrucoRoom" type="Node3D" unique_id=841968280]
 
-[node name="TrucoManager" type="Node" parent="." unique_id=1936281240 node_paths=PackedStringArray("deck", "player_nodes")]
+[node name="TrucoManager" type="Node" parent="." unique_id=1936281240 node_paths=PackedStringArray("deck", "player_nodes", "visual_deck", "deck_pos_human", "deck_pos_cpu")]
 script = ExtResource("1_vyrup")
 deck = NodePath("../Deck")
 player_nodes = [NodePath("../HumanPlayer"), NodePath("../CPUPlayer")]
+visual_deck = NodePath("../DeckObject")
+deck_pos_human = NodePath("../DeckPositionHuman")
+deck_pos_cpu = NodePath("../DeckPositionCPU")
 
 [node name="HumanPlayer" type="Node" parent="." unique_id=538496313]
 script = ExtResource("2_y2xxy")
@@ -193,8 +197,14 @@ max_distance = 2.5
 truco_manager_path = NodePath("../TrucoManager")
 hand_path = NodePath("../HumanHand")
 
-[node name="Deck2" parent="." unique_id=1546186603 instance=ExtResource("15_x2plq")]
-transform = Transform3D(0.2805868, 0, 0.41384906, 0, 0.5, 0, -0.41384906, 0, 0.2805868, -0.2934054, 0.7824089, 0.0017529726)
+[node name="DeckPositionHuman" type="Marker3D" parent="." unique_id=336783573]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.3, 0.775, 0.281)
+
+[node name="DeckPositionCPU" type="Marker3D" parent="." unique_id=645473112]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.3409521, 0.775, -0.22516403)
+
+[node name="DeckObject" parent="." unique_id=1546186603 instance=ExtResource("15_x2plq")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.3409521, 0.775, -0.22516403)
 
 [node name="chair" parent="." unique_id=1058813901 instance=ExtResource("19_jide4")]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0.18406469, 0, 0.4035535)
@@ -214,5 +224,8 @@ environment = SubResource("Environment_jide4")
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1305157041]
 stream = ExtResource("20_28tny")
 autoplay = true
+
+[node name="Sitting Idle" parent="." unique_id=26403747 instance=ExtResource("21_28tny")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.003401041, 0.004181713, -0.87187046)
 
 [editable path="doorway"]
