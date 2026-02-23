@@ -54,7 +54,8 @@ func can_call(
 	proposed_truco_level: int
 ) -> bool:
 	# 0. Flor cancels Envido interactions if Flor is active
-	if flor_state != TrucoFlorLogic.FlorState.NONE:
+	# FlorState.NONE == 0
+	if flor_state != 0:
 		return false
 		
 	# If player HAS flor, they cannot call Envido (must call Flor)
@@ -62,11 +63,13 @@ func can_call(
 		return false
 
 	# Blocked by Truco (unless pending response to First Truco)
-	var is_truco_pending_response = (truco_state == TrucoTrucoLogic.TrucoCallState.CALLED \
+	# TrucoCallState.CALLED == 1
+	var is_truco_pending_response = (truco_state == 1 \
 		and pending_action == TrucoConstants.ResponseAction.TRUCO \
  		and proposed_truco_level == 1)
 		
-	if truco_state != TrucoTrucoLogic.TrucoCallState.NONE and not is_truco_pending_response:
+	# TrucoCallState.NONE == 0
+	if truco_state != 0 and not is_truco_pending_response:
 		return false
 		
 	if state == EnvidoCallState.PLAYED:

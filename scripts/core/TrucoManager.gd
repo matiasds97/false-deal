@@ -25,7 +25,7 @@ static var CARD_THROW_DURATION: float:
 	get: return TrucoConstants.CARD_THROW_DURATION
 var game: TrucoGame
 var players: Array[Player] = []
-
+var _deal_queue: Array[Dictionary] = []
 # Forwarding Enums for convenience (optional, or clients can load TrucoGame)
 # We can't easily export Enums from another inner class in GDScript 2.0 unless we user named classes.
 # TrucoGame is a named class, so clients can use TrucoGame.EnvidoType
@@ -132,12 +132,13 @@ func _connect_game_signals() -> void:
 		_update_visual_deck_position()
 		TrucoSignalBus.on_hand_started.emit(hand_num)
 		new_hand_started.emit(hand_num)
+		_play_deal_animation_sequence()
 	)
 	
 	game.turn_started.connect(_on_turn_started)
 	
 	game.card_dealt.connect(func(p_idx, card):
-		TrucoSignalBus.on_card_dealt.emit(p_idx, card)
+		_deal_queue.append({"player_index": p_idx, "card": card})
 	)
 	
 	game.card_played.connect(_on_card_played)
@@ -200,6 +201,20 @@ func _on_round_ended(winner: int, reason: String) -> void:
 	get_tree().create_timer(TrucoConstants.NEW_HAND_DELAY).timeout.connect(func():
 		game.start_new_hand()
 	)
+
+func _play_deal_animation_sequence() -> void:
+	# Wait one frame so TrucoGame.gd has time to populate the queue synchronously
+	await get_tree().process_frame
+	
+	# Process the queue of dealt cards sequentially
+	for deal_data in _deal_queue:
+		TrucoSignalBus.on_card_dealt.emit(deal_data["player_index"], deal_data["card"])
+		await get_tree().create_timer(0.15).timeout
+	
+	_deal_queue.clear()
+	# Notify logic that dealing is visually done
+	if game and game.has_method("finish_dealing_visuals"):
+		game.finish_dealing_visuals()
 
 # --- VISUAL HELPERS ---
 

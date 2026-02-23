@@ -7,7 +7,6 @@ script = ExtResource("1_kbf61")
 display_name = "Hard"
 bluff_tendency = 0.5
 truco_call_rate = 0.5
-card_play_style = 2
 raise_tendency = 0.5
 info_seeking = 0.5
 taunting = 0.5

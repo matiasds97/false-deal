@@ -7,5 +7,5 @@ script = ExtResource("1_xa8hl")
 hand_evaluation_accuracy = 0.9
 opponent_read_accuracy = 0.9
 memory_depth = 9
-decision_noise = 0.05
+decision_noise = 0.0
 reaction_control = 1.0

@@ -166,7 +166,12 @@ func _deal_cards() -> void:
 				players[p_idx].receive_card(card)
 				card_dealt.emit(p_idx, card)
 	
-	_start_turn_cycle()
+# Turn cycle will be started by TrucoManager via finish_dealing_visuals()
+#once animations complete.
+
+func finish_dealing_visuals() -> void:
+	if current_state == TrucoState.DEALING:
+		_start_turn_cycle()
 
 func _start_turn_cycle() -> void:
 	if _is_match_over():

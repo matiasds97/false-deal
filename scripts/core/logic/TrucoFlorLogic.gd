@@ -57,11 +57,13 @@ func can_call(
 		return false
 		
 	# Blocked by Truco? Similar to Envido.
-	var is_truco_pending_response = (truco_state == TrucoTrucoLogic.TrucoCallState.CALLED \
+	# TrucoCallState.CALLED == 1
+	var is_truco_pending_response = (truco_state == 1 \
 		and pending_action == TrucoConstants.ResponseAction.TRUCO \
 		and proposed_truco_level == 1)
 		
-	if truco_state != TrucoTrucoLogic.TrucoCallState.NONE and not is_truco_pending_response:
+	# TrucoCallState.NONE == 0
+	if truco_state != 0 and not is_truco_pending_response:
 		return false
 		
 	if state == FlorState.PLAYED:

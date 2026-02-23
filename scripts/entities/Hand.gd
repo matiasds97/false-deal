@@ -74,12 +74,20 @@ func _on_card_dealt(player_index: int, card: Card) -> void:
 			if card_node.get_parent() != self:
 				card_node.reparent(self, false)
 			
-			# Reset transform
 			if idx < initial_transforms.size():
-				card_node.transform = initial_transforms[idx]
+				card_node.visible = true
+				if _truco_manager and _truco_manager.visual_deck:
+					card_node.global_transform = _truco_manager.visual_deck.global_transform
+				
+				var tween = create_tween()
+				tween.set_ease(Tween.EASE_OUT)
+				tween.set_trans(Tween.TRANS_CUBIC)
+				tween.tween_property(card_node, "transform", initial_transforms[idx], 0.2)
+				
+				# Play deal sound using existing helper
+				CardThrowHelper.play_random_card_sound(card_sounds_player, card_sounds)
 			
 			_update_card_visuals(card_node, card)
-			card_node.visible = true
 			
 			# Add collision
 			_add_collision_to_card(card_node)

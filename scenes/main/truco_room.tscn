@@ -59,7 +59,7 @@ background_mode = 1
 tonemap_mode = 2
 fog_enabled = true
 fog_light_color = Color(0, 0, 0, 1)
-fog_density = 0.05
+fog_density = 0.5
 
 [node name="TrucoRoom" type="Node3D" unique_id=841968280]
 

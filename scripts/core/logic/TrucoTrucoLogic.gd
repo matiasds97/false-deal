@@ -57,7 +57,8 @@ func can_call(
 	pending_action: int
 ) -> bool:
 	# No calling if Flor is active (not NONE and not PLAYED)
-	if flor_state != TrucoFlorLogic.FlorState.NONE and flor_state != TrucoFlorLogic.FlorState.PLAYED:
+	# FlorState.NONE == 0, FlorState.PLAYED == 2
+	if flor_state != 0 and flor_state != 2:
 		return false
 
 	if pending_action == TrucoConstants.ResponseAction.NONE:

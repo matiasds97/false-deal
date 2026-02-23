@@ -12,6 +12,8 @@ extends BaseHand
 var _card_to_node: Dictionary = {}
 var _deal_index: int = 0
 
+@onready var _truco_manager: TrucoManager = $"../TrucoManager"
+
 
 func _get_player_index() -> int:
 	return TrucoConstants.PLAYER_CPU
@@ -19,7 +21,7 @@ func _get_player_index() -> int:
 
 func _ready() -> void:
 	_setup_card_placeholders()
-	_reset_card_nodes(true)
+	_reset_card_nodes(false)
 
 	# Connect to SignalBus
 	_connect_base_signals()
@@ -31,7 +33,7 @@ func _ready() -> void:
 func _on_hand_started(_hand_number: int) -> void:
 	_card_to_node.clear()
 	_deal_index = 0
-	_reset_card_nodes(true)
+	_reset_card_nodes(false)
 
 
 func _on_card_dealt(player_index: int, card: Card) -> void:
@@ -40,6 +42,22 @@ func _on_card_dealt(player_index: int, card: Card) -> void:
 
 	# Map this card to the next available card node
 	if _deal_index < card_nodes.size():
+		var card_node = card_nodes[_deal_index]
+		
+		# Animate the visual dealing
+		if _deal_index < initial_transforms.size():
+			card_node.visible = true
+			if _truco_manager and _truco_manager.visual_deck:
+				card_node.global_transform = _truco_manager.visual_deck.global_transform
+			
+			var tween = create_tween()
+			tween.set_ease(Tween.EASE_OUT)
+			tween.set_trans(Tween.TRANS_CUBIC)
+			tween.tween_property(card_node, "transform", initial_transforms[_deal_index], 0.2)
+			
+			# Play deal sound using existing helper
+			CardThrowHelper.play_random_card_sound(card_sounds_player, card_sounds)
+			
 		_card_to_node[card] = _deal_index
 		_deal_index += 1
 
