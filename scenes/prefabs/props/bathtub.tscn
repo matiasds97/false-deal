@@ -2,7 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://2f4il8v11w0g" path="res://assets/models/props/bathtub.fbx" id="1_rvqys"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_rvqys"]
+size = Vector3(11.884399, 3.4857788, 5.618103)
+
 [node name="bathtub" unique_id=1545257762 instance=ExtResource("1_rvqys")]
 
 [node name="bathtub" parent="." index="0" unique_id=1965114542]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=1601940832]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1287969574]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.9541626, 1.7452698, 2.7904358)
+shape = SubResource("BoxShape3D_rvqys")

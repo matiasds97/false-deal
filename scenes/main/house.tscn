@@ -3,9 +3,13 @@
 [ext_resource type="PackedScene" uid="uid://8ptmun3mmnqh" path="res://scenes/prefabs/house_v3.tscn" id="1_ykq05"]
 [ext_resource type="PackedScene" uid="uid://bt2hr10ksuqav" path="res://scenes/player/FirstPersonPlayer.tscn" id="2_vb28t"]
 [ext_resource type="PackedScene" uid="uid://cfr2kl5oa42ew" path="res://scenes/prefabs/props/table.tscn" id="3_2ru7c"]
+[ext_resource type="Script" uid="uid://6avdxajh3ubn" path="res://scripts/interaction/Interactable.gd" id="4_nyn0r"]
 [ext_resource type="PackedScene" uid="uid://bkvvh42abh2mv" path="res://scenes/prefabs/props/television_vintage.tscn" id="4_ytsrw"]
 [ext_resource type="PackedScene" uid="uid://carfhyh33iw3y" path="res://scenes/prefabs/props/kitchen_fridge.tscn" id="5_rsfnc"]
+[ext_resource type="Script" uid="uid://dtdnl0yagikvm" path="res://scripts/interaction/resources/DialogueMessage.gd" id="5_xysr7"]
 [ext_resource type="PackedScene" uid="uid://dbjt3ddsg81pr" path="res://scenes/prefabs/props/chair.tscn" id="6_8nhub"]
+[ext_resource type="Script" uid="uid://cqosiuwcx4byv" path="res://scripts/interaction/resources/DialogueChoice.gd" id="6_ebqlo"]
+[ext_resource type="Script" uid="uid://dy4m7s0wk2ubt" path="res://scripts/interaction/resources/DialogueData.gd" id="7_4l3e0"]
 [ext_resource type="PackedScene" uid="uid://2864200dtnw7" path="res://scenes/prefabs/props/kitchen_sink.tscn" id="8_y241m"]
 [ext_resource type="PackedScene" uid="uid://xhtmb52ru3gj" path="res://scenes/prefabs/props/kitchen_stove.tscn" id="9_osh3t"]
 [ext_resource type="PackedScene" uid="uid://cy6dsgk15dl0m" path="res://scenes/prefabs/props/kitchen_cabinet.tscn" id="9_ykq05"]
@@ -17,25 +21,44 @@
 [ext_resource type="PackedScene" uid="uid://00yu136x8tr4" path="res://scenes/prefabs/props/laptop.tscn" id="15_iu77j"]
 [ext_resource type="PackedScene" uid="uid://wvmw0ifj5q08" path="res://scenes/prefabs/props/bathroom_sink.tscn" id="16_y241m"]
 [ext_resource type="PackedScene" uid="uid://b36pt2elfqs3q" path="res://scenes/prefabs/props/bathroom_mirror.tscn" id="17_osh3t"]
+[ext_resource type="PackedScene" uid="uid://0ehwhgsbe7tx" path="res://scenes/ui/dialogue_ui.tscn" id="18_m0lbq"]
+[ext_resource type="PackedScene" uid="uid://cekxslru0me4n" path="res://scenes/ui/object_inspector.tscn" id="19_nyn0r"]
+[ext_resource type="AudioStream" uid="uid://c6iwtj85krv3d" path="res://assets/audio/sounds/crickets.mp3" id="24_ebqlo"]
+
+[sub_resource type="Resource" id="Resource_4ymjl"]
+script = ExtResource("5_xysr7")
+speaker = "Player"
+text = "An old TV that was a gift from a friend.
+I don't know if I'll see him again.
+Too much nostalgia, gotta go."
+metadata/_custom_type_script = "uid://dtdnl0yagikvm"
+
+[sub_resource type="Resource" id="Resource_dgu2r"]
+script = ExtResource("7_4l3e0")
+messages = Array[ExtResource("5_xysr7")]([SubResource("Resource_4ymjl")])
+metadata/_custom_type_script = "uid://dy4m7s0wk2ubt"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_plpsh"]
+size = Vector3(4.1606445, 2.6679382, 2.1540527)
 
 [sub_resource type="Environment" id="Environment_osh3t"]
 background_mode = 1
 tonemap_mode = 2
 fog_enabled = true
 fog_light_color = Color(0, 0, 0, 1)
-fog_density = 0.3
+fog_density = 0.2
 
 [node name="House" type="Node3D" unique_id=2129524260]
 
 [node name="House" parent="." unique_id=429319184 instance=ExtResource("1_ykq05")]
 
 [node name="FirstPersonPlayer" parent="." unique_id=1671700935 instance=ExtResource("2_vb28t")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7506139, 1.2001097, -2.463213)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7506139, -0.0002169609, -6.6653385)
 speed = 3.5
 
 [node name="DiningRoomLight" type="OmniLight3D" parent="." unique_id=122020535]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24633384, 3.6837945, -4.5327654)
-omni_range = 15.0
+omni_range = 12.0
 
 [node name="DiningRoomLight3" type="OmniLight3D" parent="." unique_id=361898931]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8730872, 4.640074, -11.004241)
@@ -61,6 +84,17 @@ omni_range = 10.0
 
 [node name="VintageTV" parent="Props/Room" unique_id=1419696697 instance=ExtResource("4_ytsrw")]
 transform = Transform3D(-0.019853251, 0, -0.3644597, 0, 0.365, 0, 0.3644597, 0, -0.019853251, -4.370491, 0.85900474, -7.072764)
+
+[node name="Interactable" type="Area3D" parent="Props/Room/VintageTV" unique_id=149244359]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("4_nyn0r")
+interaction_name = "Examine"
+dialogue_data = SubResource("Resource_dgu2r")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Props/Room/VintageTV/Interactable" unique_id=1566098040]
+transform = Transform3D(0.9999992, 0, 7.450581e-09, 0, 0.9999999, 0, -7.450581e-09, 0, 0.9999992, -0.010744095, 1.3466334, 0.13903713)
+shape = SubResource("BoxShape3D_plpsh")
 
 [node name="TVTable" parent="Props/Room" unique_id=1162977794 instance=ExtResource("3_2ru7c")]
 transform = Transform3D(-0.0067347954, 0, -0.2644229, 0, 0.2645087, 0, 0.2644229, 0, -0.0067347954, -4.5707827, 0, -7.147065)
@@ -128,7 +162,7 @@ transform = Transform3D(-0.4, 0, -7.54979e-08, 0, 0.4, 0, 6.039832e-08, 0, -0.5,
 [node name="Doors" type="Node3D" parent="." unique_id=860866334]
 
 [node name="HouseDoorway" parent="Doors" unique_id=1303462804 instance=ExtResource("14_8nhub")]
-transform = Transform3D(-2.2205386e-08, 0, -0.411, 0, 0.42, 0, 0.508, 0, -1.796538e-08, 5.388149, 0.010458469, -0.29304835)
+transform = Transform3D(-2.2205386e-08, 0, -0.411, 0, 0.42, 0, 0.508, 0, -1.796538e-08, 5.388149, 0.010458469, -0.32328436)
 
 [node name="RoomDoorway" parent="Doors" unique_id=2005694795 instance=ExtResource("14_8nhub")]
 transform = Transform3D(-1.792167e-08, 0, -0.324, 0, 0.41, 0, 0.41, 0, -1.416249e-08, 5.3881493, 0.03264952, -10.041141)
@@ -138,3 +172,18 @@ transform = Transform3D(-0.41, 0, 2.832498e-08, 0, 0.41, 0, -3.584334e-08, 0, -0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=498172693]
 environment = SubResource("Environment_osh3t")
+
+[node name="DialogueUI" parent="." unique_id=208525625 instance=ExtResource("18_m0lbq")]
+blip_frequency = 200.0
+blip_volume_db = -30.0
+
+[node name="ObjectInspector" parent="." unique_id=1567231270 instance=ExtResource("19_nyn0r")]
+
+[node name="Crickets" type="AudioStreamPlayer3D" parent="." unique_id=1006134641]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.831581, 1.1542716, -9.739084)
+stream = ExtResource("24_ebqlo")
+autoplay = true
+max_distance = 20.0
+emission_angle_enabled = true
+attenuation_filter_db = -35.0
+doppler_tracking = 2

@@ -2,7 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://eo4vjuttkkw5" path="res://assets/models/props/kitchenFridge.fbx" id="1_pc1ux"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_pc1ux"]
+size = Vector3(4.304077, 9.215515, 2.8376236)
+
 [node name="kitchenFridge" unique_id=751145792 instance=ExtResource("1_pc1ux")]
 
 [node name="kitchenFridge" parent="." index="0" unique_id=66707895]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=245851469]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1173635639]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1463013, 4.5957336, 1.4161186)
+shape = SubResource("BoxShape3D_pc1ux")

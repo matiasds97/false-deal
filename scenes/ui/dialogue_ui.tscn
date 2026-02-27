@@ -1,0 +1,86 @@
+[gd_scene format=3 uid="uid://0ehwhgsbe7tx"]
+
+[ext_resource type="Script" uid="uid://d28yd80pvpwgj" path="res://scripts/interaction/ui/DialogueUI.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://dhi64wic7i7j0" path="res://resources/themes/truco_UI_theme.tres" id="2_sd0pw"]
+[ext_resource type="FontFile" uid="uid://crtudg4pqkcmr" path="res://assets/fonts/Jersey10-Regular.ttf" id="3_font"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+bg_color = Color(0.05, 0.05, 0.08, 0.88)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 1, 1, 0.7019608)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+anti_aliasing = false
+
+[node name="DialogueUI" type="CanvasLayer" unique_id=268256230]
+layer = 20
+script = ExtResource("1_script")
+
+[node name="DialoguePanel" type="PanelContainer" parent="." unique_id=154931583]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -200.0
+offset_right = -40.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("2_sd0pw")
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="DialoguePanel" unique_id=630756697]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DialoguePanel/MarginContainer" unique_id=1264458631]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SpeakerLabel" type="Label" parent="DialoguePanel/MarginContainer/VBoxContainer" unique_id=2027801012]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.75, 0.5, 1)
+text = "Speaker"
+
+[node name="TextLabel" type="RichTextLabel" parent="DialoguePanel/MarginContainer/VBoxContainer" unique_id=1568510342]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/default_color = Color(0.82, 0.82, 0.82, 1)
+theme_override_fonts/normal_font = ExtResource("3_font")
+scroll_active = false
+clip_contents = true
+
+[node name="ChoicesContainer" type="VBoxContainer" parent="DialoguePanel/MarginContainer/VBoxContainer" unique_id=1347539785]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ContinueIndicator" type="Label" parent="." unique_id=1775990361]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -50.0
+offset_right = -52.0
+offset_bottom = -32.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 0.7)
+theme_override_font_sizes/font_size = 14
+text = "▼"
+horizontal_alignment = 2

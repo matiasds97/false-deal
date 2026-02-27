@@ -2,7 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://d1ob1tjahb5gp" path="res://assets/models/props/table.fbx" id="1_tckug"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_tckug"]
+size = Vector3(8.420898, 3.2601929, 4.3933105)
+
 [node name="table" unique_id=115098435 instance=ExtResource("1_tckug")]
 
-[node name="table" parent="." index="0" unique_id=688078819]
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="0" unique_id=208683679]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1392107405]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.33447266, 1.6227112, -0.41027832)
+shape = SubResource("BoxShape3D_tckug")
+
+[node name="table" parent="." index="1" unique_id=688078819]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5124884, 2.54925e-14, -2.6547585)

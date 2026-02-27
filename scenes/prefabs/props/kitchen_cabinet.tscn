@@ -2,7 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://uscnb5jpc28s" path="res://assets/models/props/kitchenCabinet.fbx" id="1_oa07a"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_oa07a"]
+size = Vector3(4.309387, 4.498871, 4.500061)
+
 [node name="kitchenCabinet" unique_id=1713027250 instance=ExtResource("1_oa07a")]
 
-[node name="kitchenCabinet" parent="." index="0" unique_id=1349171830]
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="0" unique_id=153056235]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1776248824]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1531067, 2.2470245, 2.249298)
+shape = SubResource("BoxShape3D_oa07a")
+
+[node name="kitchenCabinet" parent="." index="1" unique_id=1349171830]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

@@ -2,7 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://c02fcc4u08vs8" path="res://assets/models/props/televisionVintage.fbx" id="1_ndywv"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_ndywv"]
+size = Vector3(4.1223145, 3.1922607, 2.69339)
+
 [node name="televisionVintage" unique_id=1419696697 instance=ExtResource("1_ndywv")]
 
-[node name="televisionVintage" parent="." index="0" unique_id=1716142673]
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="0" unique_id=451322379]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=531745571]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03479004, 1.0961304, 0.38383484)
+shape = SubResource("BoxShape3D_ndywv")
+
+[node name="televisionVintage" parent="." index="1" unique_id=1716142673]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0207276, -3.59303e-15, -0.9494934)

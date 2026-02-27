@@ -2,7 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://dq6oenb5g8kap" path="res://assets/models/props/toilet.fbx" id="1_biuhi"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_biuhi"]
+size = Vector3(3.1364746, 4.50296, 4.784546)
+
 [node name="toilet" unique_id=1669810269 instance=ExtResource("1_biuhi")]
 
 [node name="toilet" parent="." index="0" unique_id=841664487]
 transform = Transform3D(0, 0, -0.475, 0, 0.475, 0, 0.475, 0, 0, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=2087991359]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=474902118]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5777588, 2.2574005, -2.3744507)
+shape = SubResource("BoxShape3D_biuhi")
