@@ -3,6 +3,15 @@
 [ext_resource type="PackedScene" uid="uid://b15duc3gqacc6" path="res://assets/models/props/doorway.fbx" id="1_mdtna"]
 [ext_resource type="Script" uid="uid://gp30t37i7tki" path="res://scripts/entities/Door.gd" id="2_q72ho"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_q72ho"]
+size = Vector3(4.2914696, 9.787323, 0.40734863)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ei2fo"]
+size = Vector3(0.19367981, 10.097626, 0.89208984)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_h6rd8"]
+size = Vector3(4.8403625, 0.30706024, 0.89208984)
+
 [node name="doorway" unique_id=1303462804 instance=ExtResource("1_mdtna")]
 
 [node name="doorway" parent="." index="0" unique_id=18712431]
@@ -10,3 +19,23 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="door 3" parent="doorway" index="0" unique_id=1423457863]
 script = ExtResource("2_q72ho")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="doorway/door 3" index="0" unique_id=383497086]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="doorway/door 3/StaticBody3D" index="0" unique_id=1590940522]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1453342, 4.8982086, 6.106496e-05)
+shape = SubResource("BoxShape3D_q72ho")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="doorway" index="1" unique_id=102506283]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="doorway/StaticBody3D" index="0" unique_id=1630549768]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.19902802, 5.049759, 0.44848633)
+shape = SubResource("BoxShape3D_ei2fo")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="doorway/StaticBody3D" index="1" unique_id=1973289331]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.7109966, 5.049759, 0.44848633)
+shape = SubResource("BoxShape3D_ei2fo")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="doorway/StaticBody3D" index="2" unique_id=986656440]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4381084, 9.945042, 0.44848633)
+shape = SubResource("BoxShape3D_h6rd8")

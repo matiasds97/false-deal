@@ -2,7 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://dbred8ym3c6f1" path="res://assets/models/props/kitchenStove.fbx" id="1_6l0sb"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_6l0sb"]
+size = Vector3(4.3029175, 4.495102, 4.503937)
+
 [node name="kitchenStove" unique_id=866522677 instance=ExtResource("1_6l0sb")]
 
 [node name="kitchenStove" parent="." index="0" unique_id=1160310315]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=1431211509]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1204665060]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.143207, 2.250389, 2.2637177)
+shape = SubResource("BoxShape3D_6l0sb")

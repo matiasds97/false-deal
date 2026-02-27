@@ -2,7 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://b5geckrcq4wqw" path="res://assets/models/props/bedDouble.fbx" id="1_ro0mc"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_ro0mc"]
+size = Vector3(9.520386, 3.758728, 11.240784)
+
 [node name="bedDouble" unique_id=1676596208 instance=ExtResource("1_ro0mc")]
 
 [node name="bedDouble" parent="." index="0" unique_id=1069220930]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=1478314507]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1226883728]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.751526, 1.8734436, 5.630707)
+shape = SubResource("BoxShape3D_ro0mc")

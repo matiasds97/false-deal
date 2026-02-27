@@ -2,7 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://dyvabdefq2uxi" path="res://assets/models/props/chair.fbx" id="1_oxta7"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_oxta7"]
+size = Vector3(2.0064697, 4.701935, 2.0057983)
+
 [node name="chair" unique_id=1058813901 instance=ExtResource("1_oxta7")]
 
-[node name="chair" parent="." index="0" unique_id=1383356832]
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="0" unique_id=311363347]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=855028152]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.99627686, 2.3488007, 1.000885)
+shape = SubResource("BoxShape3D_oxta7")
+
+[node name="chair" parent="." index="1" unique_id=1383356832]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)

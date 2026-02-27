@@ -2,7 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://cis3jb8jx0nxo" path="res://assets/models/props/bathroomSink.fbx" id="1_i8k8i"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_i8k8i"]
+size = Vector3(3.4002686, 4.9252625, 2.899292)
+
 [node name="bathroomSink" unique_id=1824658617 instance=ExtResource("1_i8k8i")]
 
 [node name="bathroomSink" parent="." index="0" unique_id=251137442]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=1197761016]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=852519249]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6842651, 2.4332733, 1.4491577)
+shape = SubResource("BoxShape3D_i8k8i")

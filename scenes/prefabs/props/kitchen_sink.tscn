@@ -2,7 +2,16 @@
 
 [ext_resource type="PackedScene" uid="uid://y74a6y4jijik" path="res://assets/models/props/kitchenSink.fbx" id="1_2bn6u"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_2bn6u"]
+size = Vector3(4.3171387, 4.894867, 4.4891357)
+
 [node name="kitchenSink" unique_id=1058707367 instance=ExtResource("1_2bn6u")]
 
 [node name="kitchenSink" parent="." index="0" unique_id=1004287512]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=1441579375]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1524796518]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1478271, 2.4546967, 2.2542114)
+shape = SubResource("BoxShape3D_2bn6u")
